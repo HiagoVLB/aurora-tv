@@ -22,12 +22,7 @@ lv_obj_t *appitem_view(apps_fragment_t *controller, lv_obj_t *parent) {
     lv_obj_set_size(item, controller->col_width, controller->col_height);
     lv_img_set_antialias(item, true);
 
-    /* Selection is shown with an outline only, no zoom/scale transform. A scale
-     * transform moves the effective draw rect away from the (unzoomed) rounded-
-     * corner clip mask computed for the object's base bounds, which is why the
-     * cover art used to lose its rounding -- and gain a slight overflow past the
-     * frame -- specifically while focused. Matches the reference LG webOS
-     * Moonlight client, which doesn't zoom the selected tile either. */
+    /* Keep the cover bounds fixed; selection only fades the outline. */
     lv_obj_set_style_outline_opa(item, LV_OPA_COVER, LV_STATE_FOCUS_KEY);
     lv_obj_set_style_transition(item, &styles->tr_pressed, LV_STATE_PRESSED | LV_STATE_FOCUS_KEY);
     lv_obj_set_style_transition(item, &styles->tr_released, LV_STATE_DEFAULT);
@@ -68,12 +63,11 @@ lv_obj_t *appitem_view(apps_fragment_t *controller, lv_obj_t *parent) {
 void appitem_style_init(appitem_styles_t *style) {
     lv_style_init(&style->cover);
     lv_style_set_pad_all(&style->cover, 0);
-    /* Subtle rounding, no border, no shadow: the theme is OLED-first (near-black
-     * background), where a drop shadow has nothing dark enough to blend into and
-     * reads as a hard-edged rectangle around the corner radius instead of a soft
-     * falloff. Selection is indicated by the outline below. */
-    lv_style_set_radius(&style->cover, LV_DPX(6));
-    lv_style_set_clip_corner(&style->cover, true);
+    /* Keep covers rectangular. SDL's rounded-image path draws the four corners
+     * separately and can leave square cutouts on webOS. Avoid that path for
+     * both focused and unfocused covers; selection uses the outline below. */
+    lv_style_set_radius(&style->cover, 0);
+    lv_style_set_clip_corner(&style->cover, false);
     lv_style_set_border_width(&style->cover, 0);
     lv_style_set_shadow_opa(&style->cover, LV_OPA_TRANSP);
     lv_style_set_outline_color(&style->cover, ml_color_hex(ML_COLOR_PRIMARY));

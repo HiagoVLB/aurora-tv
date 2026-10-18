@@ -19,6 +19,8 @@ typedef struct {
     lv_obj_t *actions;
     lv_obj_t *kbd_btn, *vmouse_btn;
     lv_obj_t *suspend_btn, *quit_btn;
+    lv_obj_t *quit_dialog;
+    bool remote_display;
     lv_obj_t *stats;
     struct {
         lv_obj_t *header;

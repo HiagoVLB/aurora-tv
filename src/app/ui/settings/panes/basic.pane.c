@@ -149,12 +149,14 @@ static lv_obj_t *create_obj(lv_fragment_t *self, lv_obj_t *container) {
 
     lv_obj_t *br_row = pref_focus_row(view, locstr("Bitrate"));
     pane->bitrate_label = lv_label_create(br_row);
-    lv_obj_set_width(pane->bitrate_label, LV_DPX(96));
+    lv_obj_set_width(pane->bitrate_label, LV_PCT(18));
+    lv_obj_set_style_max_width(pane->bitrate_label, LV_DPX(96), 0);
     lv_obj_set_style_text_align(pane->bitrate_label, LV_TEXT_ALIGN_RIGHT, 0);
     lv_obj_clear_flag(pane->bitrate_label, LV_OBJ_FLAG_FLEX_IN_NEW_TRACK);
     unsigned int max = 400000;
     lv_obj_t *bitrate_slider = pref_slider(br_row, &app_configuration->stream.bitrate, 5000, (int) max, BITRATE_STEP);
-    lv_obj_set_width(bitrate_slider, LV_DPX(188));
+    lv_obj_set_width(bitrate_slider, LV_PCT(32));
+    lv_obj_set_style_max_width(bitrate_slider, LV_DPX(188), 0);
     lv_obj_clear_flag(bitrate_slider, LV_OBJ_FLAG_FLEX_IN_NEW_TRACK);
     lv_obj_add_event_cb(bitrate_slider, on_bitrate_changed, LV_EVENT_VALUE_CHANGED, self);
     pane->bitrate_slider = bitrate_slider;

@@ -73,6 +73,9 @@ int gs_get_status(GS_CLIENT hnd, PSERVER_DATA server, const char *address, uint1
 int gs_start_app(GS_CLIENT hnd, PSERVER_DATA server, PSTREAM_CONFIGURATION config, int appId, bool is_gfe, bool sops,
                  bool localaudio, int gamepad_mask, const char *surround_params);
 
+int gs_start_app_ex(GS_CLIENT hnd, PSERVER_DATA server, PSTREAM_CONFIGURATION config, int appId, bool is_gfe,
+                    bool sops, bool localaudio, int gamepad_mask, const char *surround_params, const char *app_uuid);
+
 int gs_applist(GS_CLIENT hnd, const SERVER_DATA *server, PAPP_LIST *app_list);
 
 int gs_unpair(GS_CLIENT hnd, PSERVER_DATA server);
@@ -109,6 +112,8 @@ typedef struct {
 } GS_ABR_ACTION;
 
 int gs_set_bitrate(GS_CLIENT hnd, const SERVER_DATA *server, int bitrate_kbps);
+/* Returns the bitrate actually accepted by VibeShine, which may clamp it. */
+int gs_set_bitrate_ex(GS_CLIENT hnd, const SERVER_DATA *server, int bitrate_kbps, int *applied_kbps);
 
 int gs_get_abr_capabilities(GS_CLIENT hnd, const SERVER_DATA *server, GS_ABR_CAPABILITIES *caps);
 

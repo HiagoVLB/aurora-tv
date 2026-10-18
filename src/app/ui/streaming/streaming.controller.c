@@ -398,6 +398,7 @@ static void constructor(lv_fragment_t *self, void *args) {
 
     const streaming_scene_arg_t *arg = (streaming_scene_arg_t *) args;
     controller->global = arg->global;
+    controller->remote_display = xml_app_is_remote_display(&arg->app);
     if (app_session_begin(arg->global, &arg->uuid, &arg->app) != 0) {
         commons_log_error("Streaming", "Failed to start session");
         lv_async_call((lv_async_cb_t) lv_fragment_del, controller);
@@ -442,6 +443,10 @@ static bool on_event(lv_fragment_t *self, int code, void *userdata) {
             break;
         }
         case USER_STREAM_CLOSE: {
+            if (controller->quit_dialog) {
+                lv_msgbox_close(controller->quit_dialog);
+                controller->quit_dialog = NULL;
+            }
             controller->progress = progress_dialog_create(locstr("Disconnecting..."));
             lv_obj_add_flag(controller->overlay, LV_OBJ_FLAG_HIDDEN);
             lv_obj_add_flag(controller->stats, LV_OBJ_FLAG_HIDDEN);
@@ -514,6 +519,11 @@ static void on_view_created(lv_fragment_t *self, lv_obj_t *view) {
     streaming_controller_t *controller = (streaming_controller_t *) self;
     app_input_set_group(&controller->global->ui.input, controller->group);
     lv_obj_add_event_cb(controller->quit_btn, exit_streaming, LV_EVENT_CLICKED, self);
+    if (controller->remote_display) {
+        /* /cancel targets the configured game, not the remote role. Release a
+         * retained monitor with the host's Disconnect Monitor catalogue item. */
+        lv_obj_add_state(controller->quit_btn, LV_STATE_DISABLED);
+    }
     lv_obj_add_event_cb(controller->suspend_btn, suspend_streaming, LV_EVENT_CLICKED, self);
     lv_obj_add_event_cb(controller->kbd_btn, open_keyboard, LV_EVENT_CLICKED, self);
     lv_obj_add_event_cb(controller->vmouse_btn, toggle_vmouse, LV_EVENT_CLICKED, self);
@@ -591,6 +601,10 @@ static void on_view_created(lv_fragment_t *self, lv_obj_t *view) {
 static void on_delete_obj(lv_fragment_t *self, lv_obj_t *view) {
     LV_UNUSED(view);
     streaming_controller_t *controller = (streaming_controller_t *) self;
+    if (controller->quit_dialog) {
+        lv_msgbox_close(controller->quit_dialog);
+        controller->quit_dialog = NULL;
+    }
     if (controller->notice) {
         lv_obj_del(controller->notice);
     }
@@ -612,9 +626,36 @@ static void on_obj_deleted(lv_fragment_t *self, lv_obj_t *view) {
     lv_obj_del(controller->detached_root);
 }
 
+static void quit_session_confirm(lv_event_t *event) {
+    streaming_controller_t *self = lv_event_get_user_data(event);
+    lv_obj_t *dialog = lv_event_get_current_target(event);
+    bool confirmed = lv_event_get_code(event) == LV_EVENT_VALUE_CHANGED &&
+                     lv_msgbox_get_active_btn(dialog) == 1;
+    self->quit_dialog = NULL;
+    lv_msgbox_close(dialog);
+    if (confirmed && self->global->session) {
+        session_interrupt(self->global->session, true, STREAMING_INTERRUPT_USER);
+    }
+}
+
+static void quit_session_dialog_deleted(lv_event_t *event) {
+    streaming_controller_t *self = lv_event_get_user_data(event);
+    self->quit_dialog = NULL;
+}
+
 static void exit_streaming(lv_event_t *event) {
     streaming_controller_t *self = lv_event_get_user_data(event);
-    session_interrupt(self->global->session, true, STREAMING_INTERRUPT_USER);
+    if (self->quit_dialog || self->remote_display) return;
+    static const char *buttons[] = {translatable("Cancel"), translatable("End session"), ""};
+    self->quit_dialog = lv_msgbox_create_i18n(NULL, locstr("End session on PC?"),
+        locstr("This asks the host to close the application or desktop session and restore its display. To leave it running, choose Disconnect."),
+        buttons, false);
+    lv_obj_set_width(self->quit_dialog, LV_PCT(80));
+    lv_obj_add_event_cb(self->quit_dialog, quit_session_confirm, LV_EVENT_VALUE_CHANGED, self);
+    /* The theme handles Back/Cancel and can delete the dialog before later
+     * cancel callbacks run. Track deletion instead of retaining a stale pointer. */
+    lv_obj_add_event_cb(self->quit_dialog, quit_session_dialog_deleted, LV_EVENT_DELETE, self);
+    lv_obj_center(self->quit_dialog);
 }
 
 static void suspend_streaming(lv_event_t *event) {

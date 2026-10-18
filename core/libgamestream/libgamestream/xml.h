@@ -25,6 +25,8 @@ typedef struct APP_LIST {
     char *name;
     int id;
     int hdr;
+    char uuid[37];
+    char art_version[128];
     struct APP_LIST *next;
 } APP_LIST, *PAPP_LIST;
 
@@ -44,3 +46,7 @@ int xml_applist(char *data, size_t len, PAPP_LIST *app_list);
 int xml_modelist(char *data, size_t len, PDISPLAY_MODE *mode_list);
 
 int xml_status(char *data, size_t len);
+int xml_status_ex(char *data, size_t len, int *status_code, char *message, size_t message_size);
+/* VibeShine advertises synthetic controls using stable, reserved UUIDs. */
+bool xml_app_is_remote_control(const APP_LIST *app);
+bool xml_app_is_remote_display(const APP_LIST *app);

@@ -128,6 +128,7 @@ lv_obj_t *pref_focus_row(lv_obj_t *parent, const char *title) {
     lv_obj_t *lab = lv_label_create(row);
     lv_label_set_text(lab, title);
     lv_label_set_long_mode(lab, LV_LABEL_LONG_DOT);
+    lv_obj_set_width(lab, 0);
     lv_obj_set_flex_grow(lab, 1);
     lv_obj_set_style_text_font(lab, lv_theme_get_font_normal(row), 0);
     lv_obj_set_style_text_color(lab, ml_color_hex(ML_COLOR_TEXT), 0);
@@ -169,7 +170,8 @@ void pref_style_inline_control(lv_obj_t *ctrl) {
     if (ctrl == NULL) {
         return;
     }
-    lv_obj_set_width(ctrl, PREF_CONTROL_WIDTH);
+    lv_obj_set_width(ctrl, LV_PCT(56));
+    lv_obj_set_style_max_width(ctrl, PREF_CONTROL_WIDTH, 0);
     lv_obj_clear_flag(ctrl, LV_OBJ_FLAG_FLEX_IN_NEW_TRACK);
     if (lv_obj_has_class(ctrl, &lv_dropdown_class)) {
         lv_obj_set_height(ctrl, LV_DPX(40));

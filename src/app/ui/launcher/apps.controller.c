@@ -679,15 +679,16 @@ static void item_click_cb(lv_event_t *event) {
         return;
     }
     appitem_viewholder_t *holder = (appitem_viewholder_t *) lv_obj_get_user_data(target);
+    const apploader_item_t *item = apploader_list_item_by_id(controller->apploader_apps, holder->app_id);
+    assert(item != NULL);
     int current_app = pcmanager_server_current_app(pcmanager, &controller->uuid);
-    if (current_app != 0) {
+    /* Let the host arbitrate its advertised controls while a game is running. */
+    if (current_app != 0 && !xml_app_is_remote_control(&item->base)) {
         if (holder->app_id == current_app) {
             open_context_menu(controller, holder);
         }
         return;
     }
-    const apploader_item_t *item = apploader_list_item_by_id(controller->apploader_apps, holder->app_id);
-    assert(item != NULL);
     launcher_launch_game(holder->controller, item);
 }
 
@@ -847,7 +848,7 @@ static void open_context_menu(apps_fragment_t *fragment, appitem_viewholder_t *h
     lv_obj_add_event_cb(content, context_menu_click_cb, LV_EVENT_SHORT_CLICKED, fragment);
 
     int currentId = pcmanager_server_current_app(pcmanager, &fragment->uuid);
-    if (!currentId || currentId == app->base.id) {
+    if (!currentId || currentId == app->base.id || xml_app_is_remote_control(&app->base)) {
         lv_obj_t *start_btn = lv_list_add_btn(content, NULL,
                                               currentId == app->base.id ? locstr("Resume streaming")
                                                                         : locstr("Start streaming"));
@@ -855,7 +856,7 @@ static void open_context_menu(apps_fragment_t *fragment, appitem_viewholder_t *h
         lv_obj_set_user_data(start_btn, launcher_launch_game);
     }
 
-    if (currentId) {
+    if (currentId && !xml_app_is_remote_control(&app->base)) {
         lv_obj_t *quit_btn = lv_list_add_btn(content, NULL, locstr("Stop streaming"));
         lv_obj_add_flag(quit_btn, LV_OBJ_FLAG_EVENT_BUBBLE);
         lv_obj_set_user_data(quit_btn, launcher_quit_game);
@@ -913,8 +914,10 @@ static void app_detail_dialog(apps_fragment_t *fragment, const apploader_item_t 
     lv_obj_t *msgobj = lv_msgbox_get_text(msgbox);
     lv_label_set_text_fmt(msgobj,
                           "ID: %d\n"
-                          "Support HDR: %s",
-                          app->base.id, app->base.hdr ? "Yes" : "No");
+                          "Support HDR: %s\nUUID: %s\nArtVersion: %s",
+                          app->base.id, app->base.hdr ? "Yes" : "No",
+                          app->base.uuid[0] ? app->base.uuid : "-",
+                          app->base.art_version[0] ? app->base.art_version : "-");
     lv_obj_center(msgbox);
     lv_obj_add_event_cb(msgbox, app_detail_click_cb, LV_EVENT_CLICKED, NULL);
 }
@@ -953,7 +956,10 @@ static lv_gridview_data_change_t *apps_list_detect_change(const apploader_list_t
         return NULL;
     }
     for (int i = 0; i < old_list->count; i++) {
-        if (old_list->items[i].base.id != new_list->items[i].base.id) {
+        const APP_LIST *old_app = &old_list->items[i].base;
+        const APP_LIST *new_app = &new_list->items[i].base;
+        if (old_app->id != new_app->id || strcmp(old_app->name, new_app->name) != 0 ||
+            strcmp(old_app->uuid, new_app->uuid) != 0 || old_app->hdr != new_app->hdr) {
             *num_changes = -1;
             return NULL;
         }

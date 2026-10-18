@@ -97,8 +97,16 @@ int session_worker(session_t *session) {
     }
     commons_log_info("Session", "Launch gamepad mask=0x%x (local count=%d, gfe=%d)", gamepad_mask,
                      app_input_get_gamepads_count(&app->input), server->isGfe ? 1 : 0);
-    int ret = gs_start_app(client, server, &session->config.stream, appId, server->isGfe, session->config.sops,
-                           session->config.local_audio, gamepad_mask, surround_params);
+    int ret = gs_start_app_ex(client, server, &session->config.stream, appId, server->isGfe, session->config.sops,
+                           session->config.local_audio, gamepad_mask, surround_params, session->app_uuid);
+    if (ret == GS_HOST_ACTION_COMPLETE) {
+        commons_log_info("Session", "Host catalogue action complete app=%d", appId);
+        worker_context_t update_ctx = {.app = app, .manager = pcmanager};
+        uuidstr_fromstr(&update_ctx.uuid, server->uuid);
+        pcmanager_update_by_host(&update_ctx, server->serverInfo.address, server->extPort, true);
+        session_set_state(session, STREAMING_NONE);
+        goto thread_cleanup;
+    }
     if (ret != GS_OK) {
         session_set_state(session, STREAMING_ERROR);
         const char *gs_error = NULL;
@@ -178,6 +186,7 @@ int session_worker(session_t *session) {
             .gs_client = client,
             .server = server,
             .initial_bitrate = session->config.stream.bitrate,
+            .decoder_max_bitrate = (int) app->ss4s.video_cap.maxBitrate,
             .mode = (abr_mode_t) session->config.abr_mode,
             .recovery_only = false,
         };
@@ -193,6 +202,10 @@ int session_worker(session_t *session) {
 
     session_set_state(session, STREAMING_DISCONNECTING);
     Uint32 teardown_started = SDL_GetTicks();
+    /* Join ABR while the connection and its transport metrics still exist.
+     * The host bitrate belongs to this session; /cancel leaves nothing to restore. */
+    adaptive_bitrate_stop(session->abr, false);
+    session->abr = NULL;
     commons_log_info("Session", "Teardown connection stop begin");
     LiStopConnection();
     commons_log_info("Session", "Teardown connection stop complete elapsed_ms=%u",

@@ -27,6 +27,9 @@ typedef struct discovery_task_t {
     struct discovery_t *discovery;
     SDL_mutex *lock;
     bool stop;
+    SDL_Thread *thread;
+    SDL_atomic_t completed;
+    struct discovery_task_t *next;
 } discovery_task_t;
 
 int discovery_worker(discovery_task_t *task);

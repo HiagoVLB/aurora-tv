@@ -65,7 +65,7 @@ void discovery_callback(discovery_task_t *task, int status, const struct rr_entr
         commons_log_error("Discovery", "error: %s", err);
         return;
     }
-    if (task->stop) { return; }
+    if (discovery_is_stopped(task)) { return; }
     sockaddr_t *addr = sockaddr_new();
     for (const struct rr_entry *cur = entries; cur != NULL; cur = cur->next) {
         switch (cur->type) {

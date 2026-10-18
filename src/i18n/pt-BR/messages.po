@@ -21,6 +21,10 @@ msgstr ""
 msgid "[Localized Language]"
 msgstr "Português do Brasil"
 
+#: src/app/ui/settings/settings.controller.c
+msgid "More settings"
+msgstr "Mais configurações"
+
 #: src/app/app.c:277 src/app/ui/launcher/add.dialog.c:42
 #: src/app/ui/launcher/apps.controller.c:732
 #: src/app/ui/launcher/server.context_menu.c:89
@@ -915,3 +919,12 @@ msgstr "total"
 msgid "not available"
 msgstr "indisponível"
 
+
+msgid "End session"
+msgstr "Encerrar sessão"
+
+msgid "End session on PC?"
+msgstr "Encerrar sessão no PC?"
+
+msgid "This asks the host to close the application or desktop session and restore its display. To leave it running, choose Disconnect."
+msgstr "Isso pede ao computador para fechar o aplicativo ou a sessão de desktop e restaurar o monitor. Para manter a sessão aberta, escolha Desconectar."

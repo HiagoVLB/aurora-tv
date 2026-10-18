@@ -131,8 +131,17 @@ int xml_modelist(char *data, size_t len, PDISPLAY_MODE *mode_list) {
 
 }
 
+typedef struct {
+    int code;
+    char message[1024];
+} xml_status_result_t;
+
 int xml_status(char *data, size_t len) {
-    int status = 0;
+    return xml_status_ex(data, len, NULL, NULL, 0);
+}
+
+int xml_status_ex(char *data, size_t len, int *status_code, char *message, size_t message_size) {
+    xml_status_result_t status = {0};
     XML_Parser parser = XML_ParserCreate("UTF-8");
     XML_SetUserData(parser, &status);
     XML_SetElementHandler(parser, start_status_element, end_status_element);
@@ -144,7 +153,12 @@ int xml_status(char *data, size_t len) {
     }
 
     XML_ParserFree(parser);
-    return status == STATUS_OK ? GS_OK : GS_ERROR;
+    if (status_code) *status_code = status.code;
+    if (message && message_size) snprintf(message, message_size, "%s", status.message);
+    if (status.code != STATUS_OK) {
+        gs_set_error(GS_ERROR, "Bad status %d: %s", status.code, status.message);
+    }
+    return status.code == STATUS_OK ? GS_OK : GS_ERROR;
 }
 
 void start_element(void *userData, const char *name, const char **atts) {
@@ -172,9 +186,12 @@ void start_applist_element(void *userData, const char *name, const char **atts) 
         app->id = 0;
         app->name = NULL;
         app->hdr = 0;
+        app->uuid[0] = 0;
+        app->art_version[0] = 0;
         app->next = (PAPP_LIST) search->data;
         search->data = app;
-    } else if (strcmp("ID", name) == 0 || strcmp("AppTitle", name) == 0 || strcmp("IsHdrSupported", name) == 0) {
+    } else if (strcmp("ID", name) == 0 || strcmp("AppTitle", name) == 0 || strcmp("IsHdrSupported", name) == 0 ||
+               strcmp("UUID", name) == 0 || strcmp("ArtVersion", name) == 0) {
         search->memory = malloc(1);
         search->size = 0;
         search->start = 1;
@@ -195,6 +212,15 @@ void end_applist_element(void *userData, const char *name) {
             search->memory = NULL;
         } else if (strcmp("AppTitle", name) == 0) {
             list->name = search->memory;
+            search->memory = NULL;
+        } else if (strcmp("UUID", name) == 0 || strcmp("ArtVersion", name) == 0) {
+            if (strcmp("UUID", name) == 0) {
+                snprintf(list->uuid, sizeof(list->uuid), "%s", search->memory);
+            } else {
+                snprintf(list->art_version, sizeof(list->art_version), "%s", search->memory);
+            }
+            free(search->memory);
+            search->memory = NULL;
         } else if (strcmp("IsHdrSupported", name) == 0) {
             list->hdr = (int) strtol(search->memory, NULL, 10);
             free(search->memory);
@@ -243,12 +269,12 @@ void start_status_element(void *userData, const char *name, const char **atts) {
     if (strcmp("root", name) != 0) {
         return;
     }
-    int *status = (int *) userData;
+    xml_status_result_t *status = userData;
     for (int i = 0; atts[i]; i += 2) {
         if (strcmp("status_code", atts[i]) == 0) {
-            *status = atoi(atts[i + 1]);
-        } else if (*status != STATUS_OK && strcmp("status_message", atts[i]) == 0) {
-            gs_set_error(GS_FAILED, "Bad status %d: %s", *status, atts[i + 1]);
+            status->code = atoi(atts[i + 1]);
+        } else if (strcmp("status_message", atts[i]) == 0) {
+            snprintf(status->message, sizeof(status->message), "%s", atts[i + 1]);
         }
     }
 }
@@ -267,4 +293,14 @@ void write_cdata(void *userData, const XML_Char *s, int len) {
     memcpy(search->memory + search->size, s, len);
     search->size += len;
     search->memory[search->size] = 0;
+}
+
+bool xml_app_is_remote_control(const APP_LIST *app) {
+    static const char prefix[] = "9a1c5a25-58fe-40e0-b9aa-7d3f0000000";
+    return app && strlen(app->uuid) == 36 && strncmp(app->uuid, prefix, 35) == 0 &&
+           app->uuid[35] >= '1' && app->uuid[35] <= '7';
+}
+
+bool xml_app_is_remote_display(const APP_LIST *app) {
+    return xml_app_is_remote_control(app) && (app->uuid[35] == '5' || app->uuid[35] == '6');
 }

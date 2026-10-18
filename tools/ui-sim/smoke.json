@@ -1,0 +1,30 @@
+{
+  "name": "launcher-settings-and-safe-exit",
+  "steps": [
+    {"wait": 300},
+    {"action": "settings"},
+    {"expect": "Resolution"},
+    {"click_text": "Input"},
+    {"expect": "Input"},
+    {"key": "Escape"},
+    {"click_text": "Host"},
+    {"expect": "Host"},
+    {"key": "Escape"},
+    {"click_text": "Experimental"},
+    {"expect": "Experimental"},
+    {"key": "Escape"},
+    {"key": "Escape"},
+    {"action": "add_host"},
+    {"expect": "IP address"},
+    {"key": "Escape"},
+    {"absent": "IP address"},
+    {"action": "exit"},
+    {"expect": "Quit Aurora?"},
+    {"click_text": "Cancel"},
+    {"absent": "Quit Aurora?"},
+    {"action": "exit"},
+    {"expect": "Quit Aurora?"},
+    {"key": "Escape"},
+    {"absent": "Quit Aurora?"}
+  ]
+}

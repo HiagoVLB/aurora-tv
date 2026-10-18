@@ -17,6 +17,7 @@ typedef struct {
     GS_CLIENT gs_client;
     const SERVER_DATA *server;
     int initial_bitrate;
+    int decoder_max_bitrate; /* 0 means no advertised limit. */
     abr_mode_t mode;
     /** When true, only honor adaptive_bitrate_request_drop (no loss-based ramp). */
     bool recovery_only;

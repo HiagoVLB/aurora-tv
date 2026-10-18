@@ -28,6 +28,7 @@ struct session_t {
     /* SERVER_DATA and CONFIGURATION is cloned rather than referenced */
     SERVER_DATA *server;
     int app_id;
+    char app_uuid[37];
     char *app_name;
     bool interrupted;
     bool quitapp;

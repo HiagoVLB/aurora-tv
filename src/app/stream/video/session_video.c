@@ -151,6 +151,7 @@ int vdec_delegate_setup(int videoFormat, int width, int height, int redrawRate, 
         return CALLBACKS_SESSION_ERROR_VDEC_ERROR;
     }
     memset(&vdec_temp_stats, 0, sizeof(vdec_temp_stats));
+    vdec_stat_submit(&vdec_temp_stats, 0);
     memset(&vdec_stream_info, 0, sizeof(vdec_stream_info));
     vdec_stream_format = videoFormat;
     vdec_stream_info.format = video_format_name(videoFormat);

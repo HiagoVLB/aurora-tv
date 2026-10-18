@@ -36,6 +36,7 @@ typedef struct discovery_throttle_t {
 typedef struct discovery_t {
     SDL_mutex *lock;
     struct discovery_task_t *task;
+    struct discovery_task_t *tasks; /* Owned until the worker has been joined. */
     discovery_throttle_t throttle;
 } discovery_t;
 

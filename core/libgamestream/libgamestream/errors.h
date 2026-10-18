@@ -20,6 +20,8 @@
 #pragma once
 
 #define GS_OK 0
+/* A host catalogue action completed without creating an RTSP stream. */
+#define GS_HOST_ACTION_COMPLETE 1
 #define GS_FAILED -1
 #define GS_OUT_OF_MEMORY -2
 #define GS_INVALID -3

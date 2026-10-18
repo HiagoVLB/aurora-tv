@@ -99,7 +99,8 @@ static bool abr_set_bitrate(adaptive_bitrate_service_t *service, int kbps, const
         return false;
     }
     int from = service->current_bitrate;
-    int ret = gs_set_bitrate(service->gs_client, &service->server_copy, kbps);
+    int applied = kbps;
+    int ret = gs_set_bitrate_ex(service->gs_client, &service->server_copy, kbps, &applied);
     if (ret != GS_OK) {
         if (service->set_fail_streak < 5) {
             service->set_fail_streak++;
@@ -114,8 +115,12 @@ static bool abr_set_bitrate(adaptive_bitrate_service_t *service, int kbps, const
     }
     service->set_fail_streak = 0;
     service->set_backoff_until = 0;
-    service->current_bitrate = kbps;
-    commons_log_info("ABR", "[%s] %d kbps -> %d kbps", source, from, kbps);
+    service->current_bitrate = applied;
+    if (applied < kbps && service->max_bitrate > applied) {
+        service->max_bitrate = applied;
+        if (service->min_bitrate > applied) service->min_bitrate = applied;
+    }
+    commons_log_info("ABR", "[%s] %d kbps -> %d kbps (requested=%d)", source, from, applied, kbps);
     return true;
 }
 
@@ -311,6 +316,12 @@ adaptive_bitrate_service_t *adaptive_bitrate_start(const adaptive_bitrate_config
     service->mode = config->mode;
     service->recovery_only = config->recovery_only;
     abr_apply_mode_preset(service);
+    if (config->decoder_max_bitrate > 0 && service->max_bitrate > config->decoder_max_bitrate) {
+        service->max_bitrate = config->decoder_max_bitrate;
+    }
+    if (service->min_bitrate > service->max_bitrate) {
+        service->min_bitrate = service->max_bitrate;
+    }
     /* The GS_CLIENT only has a connect timeout; cap whole transfers too so an
      * in-flight ABR tick can never stall stop's SDL_WaitThread for long (a
      * half-open host would otherwise hang a request indefinitely). */
@@ -351,8 +362,7 @@ void adaptive_bitrate_stop(adaptive_bitrate_service_t *service, bool restore) {
     if (!service) {
         return;
     }
-    commons_log_info("ABR", "Stop begin restore=%d current=%d initial=%d",
-                     restore, service->current_bitrate, service->initial_bitrate);
+    commons_log_info("ABR", "Stop begin restore=%d", restore);
     SDL_AtomicSet(&service->stop, 1);
     if (service->thread) {
         SDL_WaitThread(service->thread, NULL);

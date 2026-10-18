@@ -62,6 +62,7 @@ session_t *session_create(app_t *app, const CONFIGURATION *config, const SERVER_
         session->server->serverInfo.serverCodecModeSupport |= SCM_AV1_MAIN10;
     }
     session->app_id = gs_app->id;
+    memcpy(session->app_uuid, gs_app->uuid, sizeof(session->app_uuid));
     session->app_name = strdup(gs_app->name);
     session->mutex = SDL_CreateMutex();
     session->cond = SDL_CreateCond();
@@ -330,12 +331,10 @@ void session_config_init(app_t *app, session_config_t *config, const SERVER_DATA
         config->stream.bitrate = settings_optimal_bitrate(&video_cap, config->stream.width, config->stream.height,
                                                           config->stream.fps);
     }
-#if !defined(TARGET_WEBOS)
-    /* On webOS, ss4s drivers (e.g. NDL) advertise conservative maxBitrate; capping here undoes high-bitrate forks. */
+    /* Respect the selected decoder on every platform, including webOS. */
     if (video_cap.maxBitrate && config->stream.bitrate > video_cap.maxBitrate) {
         config->stream.bitrate = (int) video_cap.maxBitrate;
     }
-#endif
     if (video_cap.codecs & SS4S_VIDEO_H264) {
         config->stream.supportedVideoFormats |= VIDEO_FORMAT_H264;
     }

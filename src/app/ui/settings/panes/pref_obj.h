@@ -45,7 +45,7 @@ void pref_row_bind_control(lv_obj_t *row, lv_obj_t *control);
 
 lv_obj_t *pref_checkbox(lv_obj_t *parent, const char *title, bool *value, bool reverse);
 
-/** Fixed width on the right of a focus row. Dropdowns also get a matching height. */
+/** Responsive width on the right of a focus row, capped at PREF_CONTROL_WIDTH. */
 void pref_style_inline_control(lv_obj_t *ctrl);
 
 /** Full-width action button with the same height as a settings row. */

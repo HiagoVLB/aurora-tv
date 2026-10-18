@@ -144,6 +144,8 @@ static void on_textarea_defocused(lv_event_t *e);
 
 static void embed_popup_cancel_cb(lv_event_t *e);
 
+static void settings_reveal_focus_after_resize(void *user_data);
+
 static void settings_dropdown_cancel_cb(lv_event_t *e);
 
 static bool settings_close_dropdown_on_back(settings_controller_t *c, lv_obj_t *target);
@@ -153,6 +155,8 @@ static void pane_child_attach_handlers(settings_controller_t *controller, lv_obj
 static void pane_popup_child_added(lv_event_t *e);
 
 #define UI_IS_MINI(width) ((width) < LV_DPX(240))
+/* A pane is visited during construction and again after its controls are bound. */
+#define SETTINGS_NAV_ATTACHED LV_OBJ_FLAG_USER_2
 
 const lv_fragment_class_t settings_controller_cls = {
         .constructor_cb = settings_controller_ctor,
@@ -261,6 +265,7 @@ static void on_view_created(lv_fragment_t *self, lv_obj_t *view) {
 
 static void on_destroy_view(lv_fragment_t *self, lv_obj_t *view) {
     settings_controller_t *controller = (settings_controller_t *) self;
+    lv_async_call_cancel(settings_reveal_focus_after_resize, controller);
     LV_UNUSED(view);
     const char *active_id = profile_manager_active_id();
     if (active_id) {
@@ -308,10 +313,10 @@ static bool on_event(lv_fragment_t *self, int code, void *userdata) {
     app_ui_t *ui = &controller->app->ui;
     switch (code) {
         case USER_SIZE_CHANGED: {
-            lv_obj_set_size(self->obj, ui->width, ui->height);
             if (controller->launcher_host) {
                 break;
             }
+            lv_obj_set_size(self->obj, ui->width, ui->height);
             bool mini = UI_IS_MINI(ui->width);
             if (mini != controller->mini) {
                 controller->pending_mini = mini;
@@ -1062,6 +1067,10 @@ static void pane_child_attach_handlers(settings_controller_t *controller, lv_obj
         }
         return;
     }
+    if (lv_obj_has_flag(child, SETTINGS_NAV_ATTACHED)) {
+        return;
+    }
+    lv_obj_add_flag(child, SETTINGS_NAV_ATTACHED);
     lv_obj_add_flag(child, LV_OBJ_FLAG_EVENT_BUBBLE);
     lv_obj_add_flag(child, LV_OBJ_FLAG_SCROLL_ON_FOCUS);
     lv_obj_add_event_cb(child, settings_item_nav_preprocess, LV_EVENT_KEY | LV_EVENT_PREPROCESS, controller);
@@ -1498,6 +1507,22 @@ static void settings_style_popup_scrollbar(lv_obj_t *scroll) {
     lv_obj_set_style_pad_right(scroll, LV_DPX(4), LV_PART_SCROLLBAR);
 }
 
+static void settings_reveal_focus_after_resize(void *user_data) {
+    settings_controller_t *c = user_data;
+    lv_group_t *group = c->pane_popup_group ? c->pane_popup_group : c->detail_group;
+    lv_obj_t *focused = group ? lv_group_get_focused(group) : NULL;
+    if (focused != NULL) {
+        lv_obj_scroll_to_view_recursive(focused, LV_ANIM_OFF);
+    }
+}
+
+static void settings_viewport_resized(lv_event_t *e) {
+    settings_controller_t *c = lv_event_get_user_data(e);
+    /* Wait until percentage/grid geometry has settled before revealing focus. */
+    lv_async_call_cancel(settings_reveal_focus_after_resize, c);
+    lv_async_call(settings_reveal_focus_after_resize, c);
+}
+
 static void settings_show_pane_popup(settings_controller_t *c, const lv_fragment_class_t *cls) {
     settings_close_pane_popup(c);
 
@@ -1513,26 +1538,24 @@ static void settings_show_pane_popup(settings_controller_t *c, const lv_fragment
     lv_obj_add_flag(mbox, LV_OBJ_FLAG_USER_4);
     settings_style_pane_msgbox_amoled(mbox);
     embed_style_msgbox_close_red(mbox);
-    lv_disp_t *disp = lv_obj_get_disp(mbox);
-    const lv_coord_t hor = lv_disp_get_hor_res(disp);
-    const lv_coord_t ver = lv_disp_get_ver_res(disp);
-    /* punktfunk modal card ≈ 62% wide with edge margin, not full-bleed. */
-    lv_coord_t card_h = ver - LV_DPX(120);
-    if (card_h < ver * 50 / 100) {
-        card_h = ver * 70 / 100;
-    }
-    lv_obj_set_size(mbox, hor * 62 / 100, card_h);
+    lv_obj_add_event_cb(lv_obj_get_parent(mbox), settings_viewport_resized, LV_EVENT_SIZE_CHANGED, c);
+    /* Share the available height between the header and the scrolling body.
+     * Percentage bounds follow live resizes; the width cap keeps text readable. */
+    lv_obj_set_size(mbox, LV_PCT(92), LV_PCT(92));
+    lv_obj_set_style_min_width(mbox, 0, 0);
+    lv_obj_set_style_max_width(mbox, LV_DPX(860), 0);
+    lv_obj_clear_flag(mbox, LV_OBJ_FLAG_SCROLLABLE);
+    static const lv_coord_t cols[] = {LV_GRID_FR(1), LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST};
+    static const lv_coord_t rows[] = {LV_GRID_CONTENT, LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST};
+    lv_obj_set_grid_dsc_array(mbox, cols, rows);
+    lv_obj_set_grid_cell(lv_msgbox_get_title(mbox), LV_GRID_ALIGN_STRETCH, 0, 1,
+                        LV_GRID_ALIGN_CENTER, 0, 1);
+    lv_obj_set_grid_cell(lv_msgbox_get_close_btn(mbox), LV_GRID_ALIGN_CENTER, 1, 1,
+                        LV_GRID_ALIGN_CENTER, 0, 1);
 
     lv_obj_t *content = lv_msgbox_get_content(mbox);
     lv_obj_add_flag(content, LV_OBJ_FLAG_EVENT_BUBBLE);
-    lv_obj_set_width(content, LV_PCT(100));
-    /* Constrain height so the pane scrolls; otherwise focus never moves the view. */
-    lv_coord_t content_h = card_h - LV_DPX(72);
-    if (content_h < LV_DPX(200)) {
-        content_h = LV_DPX(200);
-    }
-    lv_obj_set_height(content, content_h);
-    lv_obj_set_style_max_height(content, content_h, 0);
+    lv_obj_set_grid_cell(content, LV_GRID_ALIGN_STRETCH, 0, 2, LV_GRID_ALIGN_STRETCH, 1, 1);
     lv_obj_set_style_pad_all(content, lv_dpx(16), 0);
     lv_obj_set_style_pad_row(content, lv_dpx(4), 0);
     lv_obj_clear_flag(content, LV_OBJ_FLAG_SCROLL_WITH_ARROW);
@@ -1661,10 +1684,14 @@ static lv_obj_t *embed_add_submenu_row(lv_obj_t *parent, settings_controller_t *
     lv_obj_set_height(btn, PREF_ROW_HEIGHT);
     lv_obj_set_style_pad_hor(btn, LV_DPX(16), 0);
     lv_obj_set_style_pad_ver(btn, 0, 0);
-    lv_obj_set_style_bg_opa(btn, LV_OPA_TRANSP, 0);
-    lv_obj_set_style_bg_opa(btn, LV_OPA_20, LV_STATE_FOCUS_KEY);
+    lv_obj_set_style_bg_color(btn, ml_color_hex(ML_COLOR_SURFACE_ALT), 0);
+    lv_obj_set_style_bg_opa(btn, LV_OPA_COVER, 0);
+    lv_obj_set_style_bg_color(btn, ml_color_hex(ML_COLOR_SURFACE_HI), LV_STATE_PRESSED);
+    lv_obj_set_style_bg_color(btn, ml_color_hex(ML_COLOR_SURFACE_HI), LV_STATE_FOCUS_KEY);
     lv_obj_set_style_shadow_width(btn, 0, 0);
-    lv_obj_set_style_border_width(btn, 0, 0);
+    lv_obj_set_style_border_width(btn, LV_DPX(1), 0);
+    lv_obj_set_style_border_color(btn, ml_color_hex(ML_COLOR_BORDER), 0);
+    lv_obj_set_style_border_opa(btn, LV_OPA_COVER, 0);
     lv_obj_set_style_border_width(btn, LV_DPX(2), LV_STATE_FOCUS_KEY);
     lv_obj_set_style_border_color(btn, ml_color_hex(ML_COLOR_FOCUS), LV_STATE_FOCUS_KEY);
     lv_obj_set_style_border_opa(btn, LV_OPA_COVER, LV_STATE_FOCUS_KEY);
@@ -1686,13 +1713,18 @@ static lv_obj_t *embed_add_submenu_row(lv_obj_t *parent, settings_controller_t *
 
     lv_obj_t *lab = lv_label_create(btn);
     lv_label_set_text(lab, title);
+    lv_obj_set_width(lab, LV_PCT(80));
+    lv_label_set_long_mode(lab, LV_LABEL_LONG_DOT);
     lv_obj_set_style_text_font(lab, lv_theme_get_font_normal(btn), 0);
+    lv_obj_set_style_text_color(lab, ml_color_hex(ML_COLOR_TEXT), 0);
     lv_obj_align(lab, LV_ALIGN_LEFT_MID, text_x, 0);
 
+    /* A text chevron uses the normal font, avoiding private icon code points. */
     lv_obj_t *chev = lv_label_create(btn);
-    lv_label_set_text_static(chev, LV_SYMBOL_RIGHT);
+    lv_label_set_text_static(chev, "›");
+    lv_obj_set_style_text_font(chev, lv_theme_get_font_large(btn), 0);
     lv_obj_set_style_text_color(chev, ml_color_hex(ML_COLOR_TEXT_MUTED), 0);
-    lv_obj_align(chev, LV_ALIGN_RIGHT_MID, 0, 0);
+    lv_obj_align(chev, LV_ALIGN_RIGHT_MID, -LV_DPX(4), 0);
     return btn;
 }
 
@@ -1722,7 +1754,16 @@ static void on_launcher_embedded_view_created(settings_controller_t *controller)
     embed_popup_attach_key_handlers(section, controller);
     embed_popup_add_objs_recursive(section, controller->detail_group);
 
-    /* punktfunk-style action rows (no "More" chrome) — Input / Host / Experimental */
+    lv_obj_t *submenu_heading = lv_label_create(controller->detail);
+    lv_label_set_text(submenu_heading, locstr("More settings"));
+    lv_obj_set_width(submenu_heading, LV_PCT(100));
+    lv_obj_set_style_text_font(submenu_heading, lv_theme_get_font_small(submenu_heading), 0);
+    lv_obj_set_style_text_color(submenu_heading, ml_color_hex(ML_COLOR_TEXT_MUTED), 0);
+    lv_obj_set_style_pad_top(submenu_heading, LV_DPX(20), 0);
+    lv_obj_set_style_pad_bottom(submenu_heading, LV_DPX(8), 0);
+    lv_obj_set_style_pad_left(submenu_heading, LV_DPX(16), 0);
+
+    /* Navigation cards open secondary settings panels. */
     for (int i = 1; i < entries_len; i++) {
         lv_obj_t *row = embed_add_submenu_row(controller->detail, controller,
                                               entries[i].icon, locstr(entries[i].name),
@@ -1738,14 +1779,6 @@ static void on_launcher_embedded_view_created(settings_controller_t *controller)
 lv_obj_t *settings_launcher_embedded_create(lv_fragment_t *self, lv_obj_t *parent) {
     settings_controller_t *c = (settings_controller_t *) self;
 
-    lv_coord_t hor = lv_obj_get_width(parent);
-    lv_coord_t ver = lv_obj_get_height(parent);
-    if (hor <= 0 || ver <= 0) {
-        lv_disp_t *disp = lv_disp_get_default();
-        hor = lv_disp_get_hor_res(disp);
-        ver = lv_disp_get_ver_res(disp);
-    }
-
     lv_obj_t *backdrop = lv_obj_create(parent);
     c->embed_root = backdrop;
     lv_obj_remove_style_all(backdrop);
@@ -1756,16 +1789,12 @@ lv_obj_t *settings_launcher_embedded_create(lv_fragment_t *self, lv_obj_t *paren
     lv_obj_add_event_cb(backdrop, embed_backdrop_cb, LV_EVENT_CLICKED, c);
     lv_obj_add_event_cb(backdrop, embed_cancel_cb, LV_EVENT_CANCEL, c);
     lv_obj_add_event_cb(backdrop, embed_backdrop_key_cb, LV_EVENT_KEY, c);
+    lv_obj_add_event_cb(backdrop, settings_viewport_resized, LV_EVENT_SIZE_CHANGED, c);
 
     lv_obj_t *panel = lv_obj_create(backdrop);
     lv_obj_remove_style_all(panel);
-    /* Match punktfunk settings card: ~62% width, edge margin top/bottom. */
-    lv_coord_t card_w = hor * 62 / 100;
-    lv_coord_t card_h = ver - LV_DPX(120);
-    if (card_h < ver * 50 / 100) {
-        card_h = ver * 70 / 100;
-    }
-    lv_obj_set_size(panel, card_w, card_h);
+    lv_obj_set_size(panel, LV_PCT(92), LV_PCT(92));
+    lv_obj_set_style_max_width(panel, LV_DPX(860), 0);
     lv_obj_center(panel);
     lv_obj_set_layout(panel, LV_LAYOUT_FLEX);
     lv_obj_set_flex_flow(panel, LV_FLEX_FLOW_COLUMN);

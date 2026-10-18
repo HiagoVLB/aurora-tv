@@ -129,7 +129,7 @@ lv_obj_t *streaming_scene_create(lv_fragment_t *self, lv_obj_t *parent) {
     lv_obj_set_style_bg_color(exit_btn, lv_palette_main(LV_PALETTE_RED), 0);
     lv_obj_t *exit_lbl = lv_label_create(exit_btn);
     lv_obj_add_style(exit_lbl, &controller->overlay_button_label_style, 0);
-    lv_label_set_text(exit_lbl, locstr("Quit game"));
+    lv_label_set_text(exit_lbl, locstr("End session"));
 
     lv_obj_t *stats = lv_obj_create(overlay);
     lv_obj_remove_style_all(stats);

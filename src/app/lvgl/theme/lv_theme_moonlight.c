@@ -138,12 +138,27 @@ static void apply_cb(lv_theme_t *theme, lv_obj_t *obj) {
     } else if (lv_obj_check_type(obj, &lv_dropdown_class)) {
         lv_obj_set_style_text_font(obj, lv_theme_moonlight_get_iconfont_large(obj), LV_PART_INDICATOR);
         lv_dropdown_set_symbol(obj, MAT_SYMBOL_ARROW_DROP_DOWN);
+        /* Compact fields with a single focus border, rather than nested pills. */
+        lv_obj_set_style_radius(obj, LV_DPX(4), 0);
+        lv_obj_set_style_shadow_width(obj, 0, 0);
         lv_obj_set_style_bg_color(obj, ml_color_hex(ML_COLOR_SURFACE_ALT), 0);
         lv_obj_set_style_bg_opa(obj, LV_OPA_COVER, 0);
+        lv_obj_set_style_bg_color(obj, ml_color_hex(ML_COLOR_SURFACE_HI), LV_STATE_PRESSED);
         lv_obj_set_style_text_color(obj, ml_color_hex(ML_COLOR_TEXT), 0);
         lv_obj_set_style_border_color(obj, ml_color_hex(ML_COLOR_BORDER), 0);
         lv_obj_set_style_border_width(obj, LV_DPX(1), 0);
+        const lv_state_t focus_states[] = {LV_STATE_FOCUS_KEY, LV_STATE_EDITED};
+        for (size_t i = 0; i < sizeof(focus_states) / sizeof(focus_states[0]); i++) {
+            lv_obj_set_style_outline_width(obj, 0, focus_states[i]);
+            lv_obj_set_style_border_width(obj, LV_DPX(2), focus_states[i]);
+            lv_obj_set_style_border_color(obj, ml_color_hex(ML_COLOR_FOCUS), focus_states[i]);
+            lv_obj_set_style_border_opa(obj, LV_OPA_COVER, focus_states[i]);
+        }
     } else if (lv_obj_check_type(obj, &lv_dropdownlist_class)) {
+        lv_obj_set_style_radius(obj, LV_DPX(4), 0);
+        lv_obj_set_style_shadow_width(obj, 0, 0);
+        lv_obj_set_style_pad_ver(obj, LV_DPX(8), 0);
+        lv_obj_set_style_text_line_space(obj, LV_DPX(16), 0);
         lv_obj_set_style_bg_color(obj, ml_color_hex(ML_COLOR_SURFACE), 0);
         lv_obj_set_style_bg_opa(obj, LV_OPA_COVER, 0);
         lv_obj_set_style_border_color(obj, ml_color_hex(ML_COLOR_BORDER), 0);
@@ -151,6 +166,12 @@ static void apply_cb(lv_theme_t *theme, lv_obj_t *obj) {
         lv_obj_set_style_text_color(obj, ml_color_hex(ML_COLOR_TEXT), 0);
         lv_obj_set_style_bg_color(obj, ml_color_hex(ML_COLOR_SURFACE_HI), LV_PART_SELECTED);
         lv_obj_set_style_text_color(obj, ml_color_hex(ML_COLOR_TEXT), LV_PART_SELECTED);
+        lv_obj_set_style_radius(obj, 0, LV_PART_SELECTED);
+        lv_color_t selected = lv_color_mix(ml_color_hex(ML_COLOR_FOCUS),
+                                           ml_color_hex(ML_COLOR_SURFACE), LV_OPA_30);
+        lv_obj_set_style_bg_color(obj, selected, LV_PART_SELECTED | LV_STATE_CHECKED);
+        lv_obj_set_style_text_color(obj, ml_color_hex(ML_COLOR_TEXT), LV_PART_SELECTED | LV_STATE_CHECKED);
+        lv_obj_set_style_bg_color(obj, ml_color_hex(ML_COLOR_SURFACE_HI), LV_PART_SELECTED | LV_STATE_PRESSED);
     } else if (lv_obj_check_type(obj, &lv_checkbox_class)) {
         lv_obj_set_style_text_font(obj, lv_theme_moonlight_get_iconfont_large(obj),
                                    LV_PART_INDICATOR | LV_STATE_CHECKED);

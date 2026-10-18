@@ -505,6 +505,11 @@ static void append_launch_mode_param(char *url, size_t url_len, int width, int h
 
 int gs_start_app(GS_CLIENT hnd, PSERVER_DATA server, STREAM_CONFIGURATION *config, int appId, bool is_gfe, bool sops,
                  bool localaudio, int gamepad_mask, const char* surround_params) {
+    return gs_start_app_ex(hnd, server, config, appId, is_gfe, sops, localaudio, gamepad_mask, surround_params, NULL);
+}
+
+int gs_start_app_ex(GS_CLIENT hnd, PSERVER_DATA server, STREAM_CONFIGURATION *config, int appId, bool is_gfe,
+                    bool sops, bool localaudio, int gamepad_mask, const char *surround_params, const char *app_uuid) {
     int ret = GS_OK;
     char *result = NULL;
     HTTP_DATA *data = NULL;
@@ -554,15 +559,6 @@ int gs_start_app(GS_CLIENT hnd, PSERVER_DATA server, STREAM_CONFIGURATION *confi
     /* Resume only when reconnecting to the same app already running on the host.
      * Switching apps (e.g. game -> Desktop) must use launch, not resume. */
     bool reconnect_same_app = server->currentGame != 0 && server->currentGame == appId;
-    /* Sunshine forks (Vibepollo/Apollo): use launch when HDR is requested so the host
-     * reconfigures virtual display and HDR profile. Resume can leave stale state after
-     * Desktop <-> game switches or RTX HDR profile changes. */
-    if (!is_gfe && (config->supportedVideoFormats & VIDEO_FORMAT_MASK_10BIT)) {
-        if (reconnect_same_app) {
-            commons_log_info("GameStream", "Forcing launch (not resume) for HDR stream on Sunshine host");
-        }
-        reconnect_same_app = false;
-    }
 
     if (reconnect_same_app) {
         gs_set_timeout(hnd, 120);
@@ -597,6 +593,11 @@ int gs_start_app(GS_CLIENT hnd, PSERVER_DATA server, STREAM_CONFIGURATION *confi
     }
     construct_url(hnd, url, sizeof(url), true, server->serverInfo.address, server_port(server, true), action,
                   "appid=%d", appId);
+    /* Only canonical UUID characters may enter a query without URL encoding. */
+    if (!is_gfe && app_uuid && strlen(app_uuid) == 36 &&
+        strspn(app_uuid, "0123456789abcdefABCDEF-") == 36) {
+        append_param(url, sizeof(url), "appuuid", "%s", app_uuid);
+    }
 
     append_launch_mode_param(url, sizeof(url), config->width, config->height, fps,
                              config->clientRefreshRateX100, is_gfe);
@@ -652,13 +653,27 @@ int gs_start_app(GS_CLIENT hnd, PSERVER_DATA server, STREAM_CONFIGURATION *confi
         commons_log_info("GameStream", "Launch URL: %s", log_url);
     }
 
-    if ((ret = http_request(hnd->http, url, data)) == GS_OK) {
-        server->currentGame = appId;
-    } else {
+    if ((ret = http_request(hnd->http, url, data)) != GS_OK) {
         goto cleanup;
     }
 
-    if ((ret = xml_status(data->memory, data->size) != GS_OK)) {
+    int status_code = 0;
+    char status_message[1024] = {0};
+    ret = xml_status_ex(data->memory, data->size, &status_code, status_message, sizeof(status_message));
+    if (ret != GS_OK) {
+        /* VibeShine/Apollo use 410 for completed controls AND confirmation
+         * prompts. Accept only the documented completion messages, never retry
+         * or confirm a destructive action automatically. */
+        if (status_code == 410 && app_uuid &&
+            ((strcmp(app_uuid, "9a1c5a25-58fe-40e0-b9aa-7d3f00000002") == 0 &&
+              strcmp(status_message, "Remote Monitor disconnected successfully.") == 0) ||
+             (strcmp(app_uuid, "9a1c5a25-58fe-40e0-b9aa-7d3f00000003") == 0 &&
+              strcmp(status_message, "Remote Input disconnected successfully.") == 0) ||
+             (strcmp(app_uuid, "9a1c5a25-58fe-40e0-b9aa-7d3f00000004") == 0 &&
+              strcmp(status_message, "Active stream terminated. Remote Monitor and Remote Input remain connected.") == 0))) {
+            ret = GS_HOST_ACTION_COMPLETE;
+            goto cleanup;
+        }
         if (data->memory != NULL && data->size > 0) {
             size_t snippet_len = data->size < 512 ? data->size : 512;
             commons_log_error("GameStream", "Launch failed, XML response (first %zu bytes): %.*s", snippet_len,
@@ -676,6 +691,9 @@ int gs_start_app(GS_CLIENT hnd, PSERVER_DATA server, STREAM_CONFIGURATION *confi
         goto cleanup;
     }
 
+    server->currentGame = appId;
+    free(result);
+    result = NULL;
     if (xml_search_ex(data->memory, data->size, "sessionUrl0", true, &result) == GS_OK) {
         server->serverInfo.rtspSessionUrl = result;
         result = NULL;
@@ -708,7 +726,7 @@ int gs_quit_app(GS_CLIENT hnd, PSERVER_DATA server) {
         goto cleanup;
     }
 
-    if ((ret = xml_status(data->memory, data->size) != GS_OK)) {
+    if ((ret = xml_status(data->memory, data->size)) != GS_OK) {
         goto cleanup;
     }
     if ((ret = xml_search(data->memory, data->size, "cancel", &result)) != GS_OK) {
@@ -1098,6 +1116,10 @@ static int json_int_field(const char *json, const char *field, int fallback) {
 }
 
 int gs_set_bitrate(GS_CLIENT hnd, const SERVER_DATA *server, int bitrate_kbps) {
+    return gs_set_bitrate_ex(hnd, server, bitrate_kbps, NULL);
+}
+
+int gs_set_bitrate_ex(GS_CLIENT hnd, const SERVER_DATA *server, int bitrate_kbps, int *applied_kbps) {
     char url[4096];
     HTTP_DATA *data = http_data_alloc();
     if (!data) {
@@ -1107,6 +1129,23 @@ int gs_set_bitrate(GS_CLIENT hnd, const SERVER_DATA *server, int bitrate_kbps) {
     snprintf(args, sizeof(args), "bitrate=%d", bitrate_kbps);
     construct_url(hnd, url, sizeof(url), true, server->serverInfo.address, server_port(server, true), "bitrate", args);
     int ret = http_request(hnd->http, url, data);
+    char *value = NULL;
+    if (ret == GS_OK) {
+        ret = xml_status(data->memory, data->size);
+    }
+    if (ret == GS_OK) {
+        ret = xml_search_ex(data->memory, data->size, "bitrate", true, &value);
+    }
+    if (ret == GS_OK) {
+        char *end = NULL;
+        long applied = strtol(value, &end, 10);
+        if (end == value || *end != '\0' || applied <= 0 || applied > 500000) {
+            ret = gs_set_error(GS_INVALID, "Invalid runtime bitrate response");
+        } else if (applied_kbps) {
+            *applied_kbps = (int) applied;
+        }
+    }
+    free(value);
     http_data_free(data);
     return ret;
 }

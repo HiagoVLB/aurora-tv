@@ -37,9 +37,9 @@ pcmanager_t *pcmanager_new(app_t *app, executor_t *executor) {
 
 void pcmanager_destroy(pcmanager_t *manager) {
     pcmanager_auto_discovery_stop(manager);
+    discovery_deinit(&manager->discovery);
     pcmanager_save_known_hosts(manager);
     pclist_free(manager);
-    discovery_deinit(&manager->discovery);
     SDL_DestroyMutex(manager->lock);
     SDL_free(manager);
 }
