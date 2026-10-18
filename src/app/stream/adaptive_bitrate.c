@@ -99,7 +99,8 @@ static bool abr_set_bitrate(adaptive_bitrate_service_t *service, int kbps, const
         return false;
     }
     int from = service->current_bitrate;
-    if (gs_set_bitrate(service->gs_client, &service->server_copy, kbps) != GS_OK) {
+    int ret = gs_set_bitrate(service->gs_client, &service->server_copy, kbps);
+    if (ret != GS_OK) {
         if (service->set_fail_streak < 5) {
             service->set_fail_streak++;
         }
@@ -108,7 +109,7 @@ static bool abr_set_bitrate(adaptive_bitrate_service_t *service, int kbps, const
             delay = 30000u;
         }
         service->set_backoff_until = now + delay;
-        commons_log_warn("ABR", "[%s] set %d kbps failed; backing off %u ms", source, kbps, delay);
+        commons_log_warn("ABR", "[%s] set %d kbps failed ret=%d; backing off %u ms", source, kbps, ret, delay);
         return false;
     }
     service->set_fail_streak = 0;
@@ -160,6 +161,10 @@ static void abr_tick_local(adaptive_bitrate_service_t *service, float packet_los
     }
     if (target > service->max_bitrate) {
         target = service->max_bitrate;
+    }
+    if (target != service->current_bitrate) {
+        commons_log_info("ABR", "Decision frame_gap_loss=%.2f%% current=%d target=%d min=%d max=%d",
+                         packet_loss, service->current_bitrate, target, service->min_bitrate, service->max_bitrate);
     }
     if (abr_set_bitrate(service, target, "local")) {
         service->last_adjust_ticks = now;
@@ -232,7 +237,12 @@ static int abr_thread(void *userdata) {
             ? (float) stats->networkDroppedFrames / (float) stats->totalFrames * 100.0f
             : 0.0f;
         unsigned int rtt = 0;
-        LiGetEstimatedRttInfo(&rtt, NULL);
+        bool have_rtt = LiGetEstimatedRttInfo(&rtt, NULL);
+        if ((service->tick_count % 2) == 0) {
+            commons_log_info("ABR", "Sample=%lu frame_gap_loss=%.2f%% rtt_ms=%u rtt_valid=%d current=%d",
+                             stats->measurementEndTimestamp, packet_loss, rtt, have_rtt,
+                             service->current_bitrate);
+        }
 
         if (service->server_supported && service->server_enable_retries > 0) {
             GS_ABR_CONFIG config = {
@@ -341,6 +351,8 @@ void adaptive_bitrate_stop(adaptive_bitrate_service_t *service, bool restore) {
     if (!service) {
         return;
     }
+    commons_log_info("ABR", "Stop begin restore=%d current=%d initial=%d",
+                     restore, service->current_bitrate, service->initial_bitrate);
     SDL_AtomicSet(&service->stop, 1);
     if (service->thread) {
         SDL_WaitThread(service->thread, NULL);
@@ -361,6 +373,7 @@ void adaptive_bitrate_stop(adaptive_bitrate_service_t *service, bool restore) {
             gs_set_abr_mode(service->gs_client, &service->server_copy, &config);
         }
     }
+    commons_log_info("ABR", "Stop complete");
     free((void *) service->server_copy.uuid);
     free((void *) service->server_copy.mac);
     free((void *) service->server_copy.hostname);

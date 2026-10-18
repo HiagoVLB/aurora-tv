@@ -94,3 +94,64 @@ This project is licensed under the [GNU General Public License v3.0](LICENSE) (G
 Copyright and attribution details are in [COPYRIGHT](COPYRIGHT).
 
 Aurora is a fork of [moonlight-tv](https://github.com/mariotaku/moonlight-tv), which is also licensed under GPL-3.0.
+
+
+### Diagnostic log on the TV
+
+Aurora automatically appends INFO, warning and error messages to **`aurora.log`**
+in its configuration directory, even when **Show logs** is off. On webOS this is
+`$HOME/conf/aurora.log`, where `$HOME` is the application's runtime home (not the
+SSH account's home). It is the same `conf` directory as Aurora's settings. For a
+standard Developer Mode installation, look in
+`/media/developer/apps/usr/palm/applications/com.aurora.gamestream/conf/aurora.log`
+using webOS Dev Manager's file browser. The startup `FileLog` message reports the
+actual path and whether storage is persistent. If that directory or the log file is not writable,
+the existing configuration-path fallback is `/tmp/moonlight-tv/conf/aurora.log`;
+that fallback does not survive a TV reboot.
+
+The single file is capped at **2 MiB (2,097,152 bytes)**. At the limit, Aurora keeps
+approximately the newest 1 MiB of complete lines in place, then continues writing
+to the same file. It does not create dated files or `.1` backups, and restarting
+Aurora preserves recent history. Download the file after reproducing the issue,
+preferably after leaving the stream so pending records have time to be written.
+
+Records include UTC timestamps for comparison with host logs and monotonic
+timestamps for comparison with the on-screen overlay. Diagnostics cover:
+
+- Version, stream configuration, codec/backend and existing application errors.
+- Video samples every two seconds: receive/submit FPS, frame-number gaps, maximum
+  time inside the player feed call, NOT_READY/error counts and sample age. A
+  repeated sample with growing `age_ms` means no new statistics were published;
+  `feed_active=1` with growing `feed_elapsed_ms` points to a player feed call that
+  has not returned. `have_submit=1` with growing `last_submit_age_ms` means the
+  video submit callback has not been entered recently. `sample_valid=0` means
+  the statistics publisher was busy; the diagnostic skips waiting on the UI thread;
+  repeated FPS values alone do not prove the stream is still receiving frames.
+- ABR loss estimates, RTT, target/allowed bitrates and request failures.
+- Interruption origin (`user`, `host`, `network`, `decoder`, `watchdog`, etc.) and
+  progress/timing through connection stop, app quit and cleanup.
+
+`player_latency_est_ms` is the player's estimate, not a measured decoder execution
+time. `frame_gaps` can include frames lost before submission and should not be
+interpreted as a definitive count of packets lost on the network.
+
+Disk writes and trimming run on a separate thread with a bounded queue. If the
+queue fills, records are dropped and a counter is written; video reception does
+not wait for disk I/O. DEBUG/VERBOSE records (which can contain request URLs and
+credentials) are excluded. The worker has a 128 KiB stack and its file descriptor
+is closed on exec. Normal shutdown drains the queue; abrupt termination
+can lose queued records. This log does not replace a native crash stack trace.
+
+The writer has a standalone test registered as `test_file_log` in CTest. It can
+also be checked without the complete app dependencies:
+
+```sh
+cc -std=c11 -D_POSIX_C_SOURCE=200809L -DFILE_LOG_MAX_BYTES=4096 \
+  -Wall -Wextra -Werror -pthread -fsanitize=address,undefined \
+  -Isrc/app -Ithird_party/commons/util/logging \
+  tests/app/test_file_log.c src/app/util/file_log.c -o /tmp/aurora-test-file-log
+/tmp/aurora-test-file-log
+```
+
+The webOS compatibility audit and upstream comparison are recorded in
+[Diagnostic log review](docs/DIAGNOSTIC_LOG_REVIEW.md).

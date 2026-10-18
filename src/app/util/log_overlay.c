@@ -356,7 +356,6 @@ void log_overlay_init(void) {
     last_repeat = 0;
     last_idr_ms = 0;
     last_heartbeat_ms = 0;
-    commons_log_set_listener(log_overlay_on_log);
     ensure_ui();
     if (refresh_timer == NULL) {
         refresh_timer = lv_timer_create(refresh_timer_cb, LOG_OVERLAY_REFRESH_MS, NULL);
@@ -368,7 +367,6 @@ void log_overlay_init(void) {
 }
 
 void log_overlay_deinit(void) {
-    commons_log_set_listener(NULL);
     destroy_ui();
     if (ring_lock != NULL) {
         SDL_DestroyMutex(ring_lock);

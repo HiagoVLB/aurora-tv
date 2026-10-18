@@ -31,6 +31,10 @@ typedef struct VIDEO_STATS {
     uint32_t submittedFrames;
     uint32_t totalReassemblyTime;
     uint32_t totalSubmitTime;
+    uint32_t maxFeedTimeUs;
+    uint32_t feedNotReady;
+    uint32_t feedErrors;
+    unsigned long measurementEndTimestamp;
     unsigned long measurementStartTimestamp;
     uint32_t totalCaptureLatency;
     float totalFps;

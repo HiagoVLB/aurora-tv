@@ -65,6 +65,11 @@ int session_worker(session_t *session) {
                          session->config.stream.width, session->config.stream.height,
                          session->config.stream.fps, session->config.stream.bitrate);
     }
+    commons_log_info("Session", "Decoder limits max_kbps=%u suggested_kbps=%u max_fps=%u "
+                     "requested_kbps=%d auto_bitrate=%d abr_mode=%d",
+                     app->ss4s.video_cap.maxBitrate, app->ss4s.video_cap.suggestedBitrate,
+                     app->ss4s.video_cap.maxFps, session->config.stream.bitrate,
+                     session->config.auto_adjust_bitrate, session->config.abr_mode);
     GS_CLIENT client = app_gs_client_new(app);
     /* moonlight-tv + Sunshine PR #2424: webOS NDL Opus only accepts 6ch / 4
      * streams / 2 coupled with mapping [0,1,4,5,2,3] (FL FR SL SR FC LFE).
@@ -187,18 +192,27 @@ int session_worker(session_t *session) {
     bus_pushevent(USER_STREAM_CLOSE, NULL, NULL);
 
     session_set_state(session, STREAMING_DISCONNECTING);
+    Uint32 teardown_started = SDL_GetTicks();
+    commons_log_info("Session", "Teardown connection stop begin");
     LiStopConnection();
+    commons_log_info("Session", "Teardown connection stop complete elapsed_ms=%u",
+                     (unsigned) (SDL_GetTicks() - teardown_started));
 
     if (session->quitapp) {
         commons_log_info("Session", "Sending app quit request ...");
-        gs_quit_app(client, server);
+        Uint32 quit_started = SDL_GetTicks();
+        int quit_ret = gs_quit_app(client, server);
+        commons_log_info("Session", "App quit request complete ret=%d elapsed_ms=%u",
+                         quit_ret, (unsigned) (SDL_GetTicks() - quit_started));
     }
     worker_context_t update_ctx = {
             .app = app,
             .manager = pcmanager,
     };
     uuidstr_fromstr(&update_ctx.uuid, server->uuid);
+    commons_log_info("Session", "Teardown host status refresh begin");
     pcmanager_update_by_host(&update_ctx, server->serverInfo.address, server->extPort, true);
+    commons_log_info("Session", "Teardown host status refresh complete");
 
     // Don't always reset status as error state should be kept
     session_set_state(session, STREAMING_NONE);
@@ -213,12 +227,14 @@ int session_worker(session_t *session) {
     /* Restore only on a clean exit: streaming_errno != GS_OK means the session
      * ended in error/disconnect and the host is likely unreachable -- the
      * restore round-trips would just block teardown on timeouts. */
+    commons_log_info("Session", "Cleanup begin streaming_errno=%d", streaming_errno);
     adaptive_bitrate_stop(session->abr, streaming_errno == GS_OK);
     session->abr = NULL;
     session_connection_callbacks_reset(session);
     if (session->player != NULL) {
         SS4S_PlayerClose(session->player);
     }
+    commons_log_info("Session", "Cleanup complete");
     gs_destroy(client);
     bus_pushevent(USER_STREAM_FINISHED, NULL, NULL);
     app_bus_post(app, (bus_actionfunc) app_session_destroy, app);

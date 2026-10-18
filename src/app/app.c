@@ -1,4 +1,6 @@
 #include <stdbool.h>
+#include <stdlib.h>
+#include <string.h>
 #include <SDL.h>
 #include <assert.h>
 #include "lvgl/lv_sdl_drv_input.h"
@@ -27,6 +29,9 @@
 #include "stream/embed_wrapper.h"
 #include "profile/profile_manager.h"
 #include "util/log_overlay.h"
+#include "util/file_log.h"
+#include "util/path.h"
+#include "stream/video/session_video.h"
 
 PCONFIGURATION app_configuration = NULL;
 
@@ -36,6 +41,11 @@ static void libs_init(app_t *app, int argc, char *argv[]);
 
 app_t *global = NULL;
 
+static void app_log_listener(commons_log_level level, const char *tag, const char *message) {
+    file_log_on_log(level, tag, message);
+    log_overlay_on_log(level, tag, message);
+}
+
 
 int app_init(app_t *app, app_settings_loader *settings_loader, int argc, char *argv[]) {
     assert(settings_loader != NULL);
@@ -44,7 +54,28 @@ int app_init(app_t *app, app_settings_loader *settings_loader, int argc, char *a
     SDL_LogSetOutputFunction(commons_sdl_log, NULL);
     SDL_SetAssertionHandler(app_assertion_handler_abort, NULL);
     SDL_Init(0);
+    bool log_persistent = false;
+    char *log_dir = path_pref(&log_persistent);
+    char *log_path = log_dir ? path_join(log_dir, "aurora.log") : NULL;
+    bool log_ok = log_path && file_log_init(log_path);
+#if TARGET_WEBOS
+    if (!log_ok) {
+        free(log_path);
+        log_path = strdup("/tmp/moonlight-tv/conf/aurora.log");
+        log_persistent = false;
+        log_ok = path_dir_ensure("/tmp/moonlight-tv/conf") == 0 && log_path && file_log_init(log_path);
+    }
+#endif
+    commons_log_set_listener(app_log_listener);
     commons_log_info("APP", "Start Aurora. Version %s", APP_VERSION);
+    if (log_ok) {
+        commons_log_info("FileLog", "path=%s max=2097152 bytes persistent=%d; UTC and monotonic timestamps",
+                         log_path, log_persistent);
+    } else {
+        commons_log_warn("FileLog", "Unable to open diagnostic log");
+    }
+    free(log_path);
+    free(log_dir);
     settings_loader(&app->settings);
     profile_manager_init(app->settings.conf_dir, &app->settings);
     app->main_thread_id = SDL_ThreadID();
@@ -147,12 +178,21 @@ void app_deinit(app_t *app) {
 
     SDL_Quit();
 
+    commons_log_info("APP", "Shutdown complete");
+    commons_log_set_listener(NULL);
     log_overlay_deinit();
+    file_log_deinit();
     commons_logging_deinit();
 }
 
 void app_run_loop(app_t *app) {
     app_process_events(app);
+    static Uint32 last_diag = 0;
+    Uint32 diag_now = SDL_GetTicks();
+    if (diag_now - last_diag >= 2000u) {
+        last_diag = diag_now;
+        if (session_is_streaming(app->session)) session_video_log_diagnostics();
+    }
     lv_task_handler();
     SDL_Delay(1);
 }

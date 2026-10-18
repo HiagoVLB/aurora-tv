@@ -72,6 +72,9 @@ static bool vdec_warned_near_buffer_limit;
 VIDEO_STATS vdec_summary_stats;
 /* Seqlock for vdec_summary_stats: odd while vdec_stat_submit is mid-write. */
 static unsigned vdec_stats_seq;
+/* Separate live markers remain observable even when a feed never returns. */
+static Uint32 diag_last_submit, diag_feed_started;
+static unsigned diag_feed_active;
 VIDEO_INFO vdec_stream_info;
 
 static int vdec_delegate_setup(int videoFormat, int width, int height, int redrawRate, void *context, int drFlags);
@@ -158,6 +161,9 @@ int vdec_delegate_setup(int videoFormat, int width, int height, int redrawRate, 
     frames_since_idr = 0;
     vdec_stream_target_fps = redrawRate > 0 ? redrawRate : 60;
     vdec_warned_near_buffer_limit = false;
+    __atomic_store_n(&diag_last_submit, 0, __ATOMIC_RELAXED);
+    __atomic_store_n(&diag_feed_started, 0, __ATOMIC_RELAXED);
+    __atomic_store_n(&diag_feed_active, 0, __ATOMIC_RELEASE);
     session_pacing_diag_reset();
 
     if (videoFormat & VIDEO_FORMAT_MASK_AV1) {
@@ -230,6 +236,9 @@ void vdec_delegate_cleanup(void) {
     buffer_size = 0;
     buffer_initial_size = 0;
     SS4S_PlayerVideoClose(player);
+    __atomic_store_n(&diag_last_submit, 0, __ATOMIC_RELAXED);
+    __atomic_store_n(&diag_feed_started, 0, __ATOMIC_RELAXED);
+    __atomic_store_n(&diag_feed_active, 0, __ATOMIC_RELEASE);
     session_pacing_diag_reset();
     session = NULL;
 }
@@ -293,6 +302,7 @@ static int vdec_finish_feed(SS4S_VideoFeedResult result, PDECODE_UNIT decodeUnit
 }
 
 int vdec_delegate_submit(PDECODE_UNIT decodeUnit) {
+    __atomic_store_n(&diag_last_submit, SDL_GetTicks(), __ATOMIC_RELAXED);
     if ((size_t) decodeUnit->fullLength > buffer_size) {
         if ((size_t) decodeUnit->fullLength > DECODER_BUFFER_MAX_SIZE) {
             commons_log_error("Session", "Decode unit %d bytes exceeds %zu byte cap, dropping",
@@ -360,7 +370,17 @@ int vdec_delegate_submit(PDECODE_UNIT decodeUnit) {
     if (decodeUnit->frameType == FRAME_TYPE_IDR) {
         flags |= SS4S_VIDEO_FEED_DATA_KEYFRAME;
     }
+    __atomic_store_n(&diag_feed_started, SDL_GetTicks(), __ATOMIC_RELAXED);
+    __atomic_store_n(&diag_feed_active, 1, __ATOMIC_RELEASE);
+    uint64_t feed_started_us = LiGetMicroseconds();
     SS4S_VideoFeedResult result = SS4S_PlayerVideoFeed(player, buffer, length, flags);
+    uint64_t feed_us = LiGetMicroseconds() - feed_started_us;
+    __atomic_store_n(&diag_feed_active, 0, __ATOMIC_RELEASE);
+    if (feed_us > vdec_temp_stats.maxFeedTimeUs) {
+        vdec_temp_stats.maxFeedTimeUs = feed_us > UINT32_MAX ? UINT32_MAX : (uint32_t) feed_us;
+    }
+    if (result == SS4S_VIDEO_FEED_NOT_READY) vdec_temp_stats.feedNotReady++;
+    if (result == SS4S_VIDEO_FEED_ERROR) vdec_temp_stats.feedErrors++;
     return vdec_finish_feed(result, decodeUnit);
 }
 
@@ -374,20 +394,27 @@ static inline void vdec_stats_write_end(void) {
     vdec_stats_seq++; /* even: consistent */
 }
 
-void vdec_stats_snapshot(struct VIDEO_STATS *out) {
-    unsigned s1, s2;
-    do {
-        s1 = __atomic_load_n(&vdec_stats_seq, __ATOMIC_ACQUIRE);
+static bool vdec_stats_try_snapshot(struct VIDEO_STATS *out) {
+    for (unsigned attempt = 0; attempt < 3; attempt++) {
+        unsigned s1 = __atomic_load_n(&vdec_stats_seq, __ATOMIC_ACQUIRE);
+        if (s1 & 1u) continue;
         memcpy(out, &vdec_summary_stats, sizeof(*out));
         __atomic_thread_fence(__ATOMIC_ACQUIRE);
-        s2 = __atomic_load_n(&vdec_stats_seq, __ATOMIC_RELAXED);
-    } while ((s1 & 1u) != 0 || s1 != s2);
+        unsigned s2 = __atomic_load_n(&vdec_stats_seq, __ATOMIC_RELAXED);
+        if (s1 == s2 && !(s2 & 1u)) return true;
+    }
+    return false;
+}
+
+void vdec_stats_snapshot(struct VIDEO_STATS *out) {
+    while (!vdec_stats_try_snapshot(out)) { }
 }
 
 void vdec_stat_submit(const struct VIDEO_STATS *src, unsigned long now) {
     struct VIDEO_STATS *dst = &vdec_summary_stats;
     vdec_stats_write_begin();
     memcpy(dst, src, sizeof(struct VIDEO_STATS));
+    dst->measurementEndTimestamp = now;
     unsigned long delta = now - dst->measurementStartTimestamp;
     if (delta <= 0) {
         vdec_stats_write_end();
@@ -444,4 +471,29 @@ void stream_info_parse_size(PDECODE_UNIT decodeUnit, struct VIDEO_INFO *info) {
         info->height = dimension.height;
         return;
     }
+}
+
+void session_video_log_diagnostics(void) {
+    struct VIDEO_STATS st;
+    /* Diagnostics must not spin on the UI thread if the publisher stalls. */
+    bool valid = vdec_stats_try_snapshot(&st);
+    if (!valid) memset(&st, 0, sizeof(st));
+    unsigned active = __atomic_load_n(&diag_feed_active, __ATOMIC_ACQUIRE);
+    Uint32 feed_start = __atomic_load_n(&diag_feed_started, __ATOMIC_RELAXED);
+    Uint32 last_submit = __atomic_load_n(&diag_last_submit, __ATOMIC_RELAXED);
+    Uint32 now = SDL_GetTicks();
+    Uint32 age = st.measurementEndTimestamp
+        ? now - (Uint32) st.measurementEndTimestamp : 0;
+    commons_log_info("VideoDiag",
+                     "sample_valid=%d sample=%lu age_ms=%u rx_fps=%.1f submit_fps=%.1f received=%u submitted=%u "
+                     "frame_gaps=%u total=%u feed_max_ms=%.2f not_ready=%u errors=%u "
+                     "player_latency_est_ms=%.2f rq=%d actual_kbps=%.0f "
+                     "feed_active=%u feed_elapsed_ms=%u have_submit=%d last_submit_age_ms=%u",
+                     valid, st.measurementEndTimestamp, (unsigned) age,
+                     st.receivedFps, st.decodedFps, st.receivedFrames, st.submittedFrames,
+                     st.networkDroppedFrames, st.totalFrames, st.maxFeedTimeUs / 1000.0,
+                     st.feedNotReady, st.feedErrors, st.avgDecoderLatency, st.videoRenderQueue,
+                     st.currentBitrateKbps / 1000.0, active,
+                     (unsigned) (active ? now - feed_start : 0), last_submit != 0,
+                     (unsigned) (last_submit ? now - last_submit : 0));
 }

@@ -14,3 +14,6 @@ void vdec_stats_snapshot(struct VIDEO_STATS *out);
 /** Call before LiStartConnection. Sets decoder capabilities from settings (RFI; optional slices). */
 void session_video_prepare_stream(void);
 
+
+/** Periodic file diagnostics, called on the UI thread even with overlay off. */
+void session_video_log_diagnostics(void);

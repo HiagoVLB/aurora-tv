@@ -118,6 +118,19 @@ void session_interrupt(session_t *session, bool quitapp, streaming_interrupt_rea
         SDL_UnlockMutex(session->mutex);
         return;
     }
+    const char *source = "unknown";
+    switch (reason) {
+        case STREAMING_INTERRUPT_USER: source = "user"; break;
+        case STREAMING_INTERRUPT_BACKGROUND: source = "background"; break;
+        case STREAMING_INTERRUPT_QUIT: source = "app_quit"; break;
+        case STREAMING_INTERRUPT_HOST: source = "host"; break;
+        case STREAMING_INTERRUPT_WATCHDOG: source = "watchdog"; break;
+        case STREAMING_INTERRUPT_NETWORK: source = "network"; break;
+        case STREAMING_INTERRUPT_DECODER: source = "decoder"; break;
+        default: break;
+    }
+    commons_log_info("Session", "Interrupt source=%s reason=%d quit_app=%d state=%d",
+                     source, reason, quitapp, session->state);
     session_input_interrupt(&session->input);
     session->quitapp = quitapp;
     session->interrupted = true;
