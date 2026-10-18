@@ -137,3 +137,24 @@ SS4S classifies machine names `o22` and later as high-end and then advertises
 identification is captured; do not infer it solely from the commercial model name.
 The failing 107658 kbps ABR request exceeds both possible NDL ceilings. Existing
 C5-specific findings in AGENTS.md must not be presented as hardware tests on C2.
+
+
+## Download permission repair
+
+The initial writer created `aurora.log` with mode `0600`. After installation, the
+user reported permission denied specifically when downloading the file. Different
+native-app and SSH identities are a plausible cause; the actual owner and mode
+on the TV have not been inspected because remote access was unavailable.
+
+The writer now explicitly applies `0644` to the opened diagnostic file, including
+existing logs, so a restrictive umask does not defeat export. Group/other write
+permissions remain disabled. Symlinks and multiply-linked files are rejected
+before changing permissions, preventing a log path from altering another file's
+mode. Tests exercise creation with umask `0077`, repair of an existing `0600` log,
+and unchanged target permissions when links are refused. DEBUG/VERBOSE exclusion,
+single-file retention and the 2 MiB cap remain in place. Other local TV users can
+read this diagnostic output; configuration and authentication files are not changed.
+
+A complete ARM webOS build of the initial diagnostics subsequently succeeded,
+and the resulting IPK's metadata, ELF architecture and embedded diagnostic markers
+were checked. Validation on the actual C2 remains pending.

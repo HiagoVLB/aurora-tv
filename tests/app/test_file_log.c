@@ -39,14 +39,19 @@ int main(void) {
     require(mkdtemp(dir) != NULL, "temporary directory");
     snprintf(path, sizeof(path), "%s/aurora.log", dir);
     require(!file_log_init("/nonexistent-aurora-directory/aurora.log"), "invalid directory fails safely");
+    mode_t old_umask = umask(0077);
     require(file_log_init(path), "initialize");
+    umask(old_umask);
     file_log_on_log(COMMONS_LOG_LEVEL_INFO, "APP", "first session");
     file_log_on_log(COMMONS_LOG_LEVEL_DEBUG, "HTTP", "SECRET_REQUEST_URL");
     file_log_deinit();
     struct stat initial, current;
     require(stat(path, &initial) == 0, "stat");
-    require((initial.st_mode & 0777) == 0600, "private file permissions");
+    require((initial.st_mode & 0777) == 0644, "readable diagnostic log despite restrictive umask");
+    require(chmod(path, 0600) == 0, "simulate previous build permissions");
     require(file_log_init(path), "restart");
+    require(stat(path, &current) == 0 && (current.st_mode & 0777) == 0644,
+            "repair existing log permissions");
     file_log_on_log(COMMONS_LOG_LEVEL_WARN, "APP", "second session\nmultiline");
     file_log_deinit();
     char *text = read_log(path);
@@ -96,6 +101,24 @@ int main(void) {
     snprintf(extra, sizeof(extra), "%s/aurora.log.1", dir);
     require(access(extra, F_OK) != 0, "no rotated backup");
     unlink(path);
+    char private_path[256];
+    snprintf(private_path, sizeof(private_path), "%s/private", dir);
+    f = fopen(private_path, "wb");
+    require(f != NULL, "create private target");
+    fputs("private data", f);
+    fclose(f);
+    require(chmod(private_path, 0600) == 0, "private target permissions");
+    require(symlink(private_path, path) == 0, "create symlink");
+    require(!file_log_init(path), "refuse symlink target");
+    require(stat(private_path, &current) == 0 && (current.st_mode & 0777) == 0600,
+            "symlink target permissions untouched");
+    unlink(path);
+    require(link(private_path, path) == 0, "create hardlink");
+    require(!file_log_init(path), "refuse shared inode");
+    require(stat(private_path, &current) == 0 && (current.st_mode & 0777) == 0600,
+            "hardlink target permissions untouched");
+    unlink(path);
+    unlink(private_path);
     require(rmdir(dir) == 0, "no other log files created");
     puts("file_log: size, rollover, restart, concurrency, overflow recovery and privacy checks passed");
     return 0;

@@ -104,7 +104,11 @@ in its configuration directory, even when **Show logs** is off. On webOS this is
 SSH account's home). It is the same `conf` directory as Aurora's settings. For a
 standard Developer Mode installation, look in
 `/media/developer/apps/usr/palm/applications/com.aurora.gamestream/conf/aurora.log`
-using webOS Dev Manager's file browser. The startup `FileLog` message reports the
+using webOS Dev Manager's file browser. Only the diagnostic file is created with
+read permissions for other TV users (`0644`), because Dev Manager's SSH account
+may differ from the native application's account. Existing logs from the initial
+`0600` implementation have their mode repaired when Aurora starts; open the app
+once after installing the updated package, then download the log again. The startup `FileLog` message reports the
 actual path and whether storage is persistent. If that directory or the log file is not writable,
 the existing configuration-path fallback is `/tmp/moonlight-tv/conf/aurora.log`;
 that fallback does not survive a TV reboot.

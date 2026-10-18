@@ -1,3 +1,7 @@
+#if defined(__APPLE__) && !defined(_DARWIN_C_SOURCE)
+#define _DARWIN_C_SOURCE 1
+#endif
+
 #include "file_log.h"
 
 #include <fcntl.h>
@@ -85,10 +89,19 @@ static void *write_loop(void *unused) {
 
 bool file_log_init(const char *path) {
     if (running) return true;
-    int fd = open(path, O_RDWR | O_CREAT, 0600);
+    int flags = O_RDWR | O_CREAT;
+#ifdef O_NOFOLLOW
+    flags |= O_NOFOLLOW;
+#endif
+    int fd = open(path, flags, 0644);
     if (fd < 0) return false;
     struct stat info;
-    if (fstat(fd, &info) != 0 || !S_ISREG(info.st_mode) ||
+    /* Dev Manager's SSH user may differ from the native app's owner. Only
+     * this diagnostic file is readable by others; no group/other write access.
+     * Apply to existing files too, so installing this build repairs mode 0600.
+     * Refuse links before changing permissions on the opened descriptor. */
+    if (fstat(fd, &info) != 0 || !S_ISREG(info.st_mode) || info.st_nlink != 1 ||
+        fchmod(fd, 0644) != 0 ||
         fcntl(fd, F_SETFD, FD_CLOEXEC) != 0) {
         close(fd);
         return false;
