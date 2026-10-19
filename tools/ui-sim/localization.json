@@ -1,0 +1,215 @@
+{
+  "name": "localization-1080p-720p",
+  "steps": [
+    {
+      "resize": "1920 1080"
+    },
+    {
+      "action": "help"
+    },
+    {
+      "expect": "Controls & shortcuts"
+    },
+    {
+      "key": "Down"
+    },
+    {
+      "scroll_text": "About Aurora"
+    },
+    {
+      "expect": "About Aurora"
+    },
+    {
+      "key": "Escape"
+    },
+    {
+      "action": "settings"
+    },
+    {
+      "expect": "Resolution"
+    },
+    {
+      "key": "Return"
+    },
+    {
+      "key": "Escape"
+    },
+    {
+      "expect": "Resolution"
+    },
+    {
+      "click_text": "Input"
+    },
+    {
+      "expect": "Mouse"
+    },
+    {
+      "scroll_text": "Gamepad test"
+    },
+    {
+      "expect": "Gamepad test"
+    },
+    {
+      "key": "Escape"
+    },
+    {
+      "click_text": "Host"
+    },
+    {
+      "expect": "Optimize for streaming (SOPS)"
+    },
+    {
+      "key": "Down"
+    },
+    {
+      "key": "Escape"
+    },
+    {
+      "click_text": "Experimental"
+    },
+    {
+      "expect": "Show logs"
+    },
+    {
+      "click_text": "Reset all settings to defaults"
+    },
+    {
+      "expect": "Restore all settings to defaults? Pairing is kept. You must reconnect the stream."
+    },
+    {
+      "click_text": "Cancel"
+    },
+    {
+      "key": "Escape"
+    },
+    {
+      "key": "Escape"
+    },
+    {
+      "action": "add_host"
+    },
+    {
+      "expect": "IP address"
+    },
+    {
+      "key": "Escape"
+    },
+    {
+      "action": "exit"
+    },
+    {
+      "expect": "Quit Aurora?"
+    },
+    {
+      "click_text": "Cancel"
+    },
+    {
+      "absent": "Quit Aurora?"
+    },
+    {
+      "resize": "1280 720"
+    },
+    {
+      "action": "help"
+    },
+    {
+      "expect": "Controls & shortcuts"
+    },
+    {
+      "key": "Down"
+    },
+    {
+      "scroll_text": "About Aurora"
+    },
+    {
+      "expect": "About Aurora"
+    },
+    {
+      "key": "Escape"
+    },
+    {
+      "action": "settings"
+    },
+    {
+      "expect": "Resolution"
+    },
+    {
+      "key": "Return"
+    },
+    {
+      "key": "Escape"
+    },
+    {
+      "expect": "Resolution"
+    },
+    {
+      "click_text": "Input"
+    },
+    {
+      "expect": "Mouse"
+    },
+    {
+      "scroll_text": "Gamepad test"
+    },
+    {
+      "expect": "Gamepad test"
+    },
+    {
+      "key": "Escape"
+    },
+    {
+      "click_text": "Host"
+    },
+    {
+      "expect": "Optimize for streaming (SOPS)"
+    },
+    {
+      "key": "Down"
+    },
+    {
+      "key": "Escape"
+    },
+    {
+      "click_text": "Experimental"
+    },
+    {
+      "expect": "Show logs"
+    },
+    {
+      "click_text": "Reset all settings to defaults"
+    },
+    {
+      "expect": "Restore all settings to defaults? Pairing is kept. You must reconnect the stream."
+    },
+    {
+      "click_text": "Cancel"
+    },
+    {
+      "key": "Escape"
+    },
+    {
+      "key": "Escape"
+    },
+    {
+      "action": "add_host"
+    },
+    {
+      "expect": "IP address"
+    },
+    {
+      "key": "Escape"
+    },
+    {
+      "action": "exit"
+    },
+    {
+      "expect": "Quit Aurora?"
+    },
+    {
+      "click_text": "Cancel"
+    },
+    {
+      "absent": "Quit Aurora?"
+    }
+  ]
+}

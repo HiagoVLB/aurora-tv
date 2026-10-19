@@ -97,6 +97,21 @@ docker run --rm --network none --volume "$PWD:/source:ro" --workdir /source auro
 
 ### webOS
 
+Para gerar o instalador local, usar a skill
+[aurora-build-ipk](.agents/skills/aurora-build-ipk/SKILL.md) ou:
+
+```sh
+python3 scripts/webos/build_ipk.py
+```
+
+A entrega fixa é **`aurora.ipk` na raiz deste repositório**, substituída apenas
+após build/validação bem-sucedidos. Logs e recibo ficam em `.cache/ipk/`.
+O build não incrementa a versão. Para aumentar a versão, usar a skill
+[aurora-bump-version](.agents/skills/aurora-bump-version/SKILL.md): patch por
+padrão, ou a versão/tipo solicitado. `MOONLIGHT_VERSION` é a fonte única; appinfo,
+UI e marca do ELF devem derivar dela. Não confundir um IPK anterior com a versão
+nova das fontes antes de recompilar.
+
 Consulte [BUILD_WEBOS.md](docs/BUILD_WEBOS.md), os scripts em `scripts/webos/` e a
 [action de CI](.github/actions/build-webos/action.yml). O SDK usado é buildroot-nc4
 `webos-a38c582`, host x86_64, destino ARM. Em Mac ARM, ele exige ambiente Linux
@@ -140,6 +155,10 @@ automática de uma tarefa de documentação, revisão ou build.
 - Textos de UI usam `locstr`/`translatable` e catálogos `src/i18n/`. Atualize as
   traduções afetadas, especialmente pt-BR, preservando placeholders e o fluxo
   gettext desktop / cstrings webOS.
+  Para atualização/revisão dos idiomas existentes, usar a skill
+  [aurora-update-languages](.agents/skills/aurora-update-languages/SKILL.md):
+  adaptar ao contexto de cada língua, validar os dois formatos e inspecionar
+  a UI com o idioma efetivamente carregado, incluindo fontes e cortes de texto.
 
 ## Invariantes de sessão e latência
 

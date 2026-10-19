@@ -25,7 +25,8 @@ static int load_settings(app_settings_t *settings) {
     free(settings->audio_backend);
     settings->audio_backend = strdup("dummy");
     free(settings->language);
-    settings->language = strdup("en");
+    const char *locale = getenv("AURORA_UI_SIM_LOCALE");
+    settings->language = strdup(locale && locale[0] ? locale : "en");
     settings->fullscreen = false;
     settings->window_state = (window_state_t){.w = 1920, .h = 1080};
     const char *size = getenv("AURORA_UI_SIM_SIZE");
@@ -244,13 +245,14 @@ static bool command(char *line) {
         click_at(x, y);
         return true;
     }
-    if (strcmp(line, "click_text") == 0) {
+    if (strcmp(line, "click_text") == 0 || strcmp(line, "scroll_text") == 0) {
         lv_obj_t *obj = find_text(lv_layer_top(), argument, false);
         if (!obj) obj = find_text(lv_scr_act(), argument, false);
         if (!obj) return false;
         lv_obj_scroll_to_view_recursive(obj, LV_ANIM_OFF);
         wait_ui(100);
         if (!lv_obj_is_visible(obj)) return false;
+        if (strcmp(line, "scroll_text") == 0) return true;
         if (lv_obj_check_type(obj, &lv_btnmatrix_class)) {
             lv_btnmatrix_t *matrix = (lv_btnmatrix_t *) obj;
             lv_area_t bounds; lv_obj_get_coords(obj, &bounds);

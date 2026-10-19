@@ -1,0 +1,4 @@
+interface:
+  display_name: "Aurora: gerar IPK"
+  short_description: "Gera e valida aurora.ipk na raiz do projeto"
+  default_prompt: "Use $aurora-build-ipk para compilar o Aurora atual e entregar aurora.ipk na raiz do projeto, verificando versão e arquitetura."

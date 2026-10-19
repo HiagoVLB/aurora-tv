@@ -1,161 +1,176 @@
 # Aurora
 
-Unofficial fork of [Moonlight TV](https://github.com/mariotaku/moonlight-tv) for **LG webOS** (C1–C5 and compatible sets), focused on high-quality streaming on OLED TVs with a remote- and gamepad-friendly UI.
+Aurora is an unofficial [Moonlight TV](https://github.com/mariotaku/moonlight-tv) fork for **LG webOS**, built for PC game streaming with a TV remote or gamepad. It connects to a GameStream-compatible host, including Sunshine and VibeShine.
 
-> Rights to the original project belong to [mariotaku/moonlight-tv](https://github.com/mariotaku/moonlight-tv) and the Moonlight community. Provided without warranty.
+The app uses a black OLED-friendly interface, an in-stream menu, a full on-screen keyboard, a virtual mouse, and performance diagnostics. **LG C2 is the current target for validation.** Results from other TVs, including earlier C5 experiments, do not establish compatibility with every model or streaming mode.
 
-## Highlights
+## Features
 
-- **AMOLED layout** — pure black background, dark surfaces, violet accent.
-- **3.6K (3584×2016)** recommended on LG C5 (stable quality without native-4K cumulative delay); **4K** when the set handles it.
-- **HDR10 (PQ)** over HEVC Main10 (when supported).
-- Bitrate slider up to **300 Mbps**; above **250 Mbps** there is usually no visible gain and packet loss becomes more likely as the link becomes less stable.
-- **Performance stats overlay**, **full on-screen keyboard**, and **virtual mouse** during streaming.
-- **Redesigned settings** — row-based D-pad navigation, fixed combobox/checkbox remote handling, modal Host/Input/Experimental panes.
-- **On-screen log overlay** (Experimental) — punktfunk-style live log tail; Magic Remote **Yellow** cycles Live → Frozen → Off.
-- **Rooted game mode** (Experimental, rooted TVs) — TV picture/sound and motion/energy pack tuned for streaming; restored on exit.
-- **Select server** popup uses home-screen style app tiles instead of a plain list.
+- **TV navigation:** D-pad and gamepad navigation, app tiles, and Stream, Input, Host, and Experimental settings.
+- **Video options:** resolution and frame-rate selection, HEVC, AV1 when advertised by the decoder, and HDR when supported by the full host/TV path.
+- **Bitrate control:** manual selection up to 400 Mbps in the UI and adaptive bitrate control. The selected decoder and host can apply a lower limit.
+- **Streaming tools:** pinned performance stats, a full on-screen keyboard, virtual mouse, and configurable gamepad touchpad behavior.
+- **Session controls:** resume a running application, disconnect while leaving it running, or request that the host end the session.
+- **Diagnostics:** an on-screen log overlay and a bounded persistent `aurora.log` file.
+- **Experimental webOS integration:** picture/sound and performance adjustments for rooted TVs, with session cleanup and restoration.
+
+Available settings describe client capabilities; they do not guarantee that every codec, HDR mode, resolution, or frame rate will work on a particular TV. Physical VRR on the TV is not an implemented or validated feature.
 
 ## Screenshots
 
 | Home | Settings |
 |:---:|:---:|
-| ![Home screen](docs/images/home.png) | ![Basic settings](docs/images/settings.png) |
+| ![Home screen](docs/images/home.png) | ![Stream settings](docs/images/settings.png) |
 
 | Performance stats | On-screen keyboard |
 |:---:|:---:|
 | ![Performance stats](docs/images/performance-stats.png) | ![On-screen keyboard](docs/images/keyboard.png) |
 
-![Streaming with keyboard and stats](docs/images/keyboard-streaming.png)
+Screenshots illustrate the interface and may differ from the current build.
 
-## Quick start
+## Get started
 
-| Setting | Suggestion |
-|---------|------------|
-| Resolution | **3.6K** (3584×2016) on LG C5; **4K** if your set is stable at native 4K |
-| FPS | 60 or 120 |
-| Codec | HEVC (H.265) |
-| Bitrate | Start at **120–180 Mbps**; stay at or below **250 Mbps** for a stable link. Higher values rarely help and can increase packet loss. |
+1. Set up a GameStream-compatible host on your PC and expose the games or desktop you want to stream.
+2. Install Aurora on the TV using one of the methods below.
+3. Open Aurora, select a discovered PC or add its IP address, then complete pairing on the host.
+4. Open Settings and choose a resolution, frame rate, codec, and bitrate that your TV and network can sustain.
+5. Select an application to start streaming. Open the **?** button on the home screen for the built-in controls guide.
 
-## Streaming controls
-
-**Open overlay:** Magic Remote **RED** / **EXIT**, or gamepad **LB + RB + Back + Start** (hold, then release).
-
-| Gesture | Action |
-|---------|--------|
-| **Hold Select/Back 4s** | Toggle pinned performance stats |
-| **Y / Triangle** (virtual mouse on) | Open on-screen keyboard |
-
-Full keyboard: stream overlay, Magic Remote **BLUE**, or gamepad **Y** while virtual mouse is active. With the keyboard open: **Y** = Space, **LT** = abc/`&123`, **LB/RB** = Left/Right. Virtual mouse: stream overlay button (or enable in Settings → Input to start enabled); right stick = cursor, left stick = scroll, LT/RT = mouse buttons.
-
-Details, hotkey layout, and stats field reference: [webOS build guide](docs/BUILD_WEBOS.md).
+Start with **60 FPS** and a moderate bitrate, then increase one setting at a time. Higher bitrate is useful only when the network, host, and decoder can sustain it. Compare 60 and 120 FPS where supported; a high-refresh panel alone does not establish support for decoding every stream at 120 FPS. The older 3584 × 2016 recommendation came from C5 experiments and is not a universal C2 preset.
 
 ## Install
 
-- [webOS Homebrew Channel](https://github.com/webosbrew/webos-homebrew-channel) — repo: `https://raw.githubusercontent.com/GuiDev1994/aurora-tv/main/repo.json`
-- [Device Manager](https://github.com/webosbrew/dev-manager-desktop) — install the latest `.ipk` from [Releases](https://github.com/GuiDev1994/aurora-tv/releases)
-- [webOS TV CLI](https://webostv.developer.lge.com/develop/tools/cli-installation) — `ares-install com.aurora.gamestream_*_arm.ipk` ([build guide](docs/BUILD_WEBOS.md))
+- **Homebrew Channel:** add `https://raw.githubusercontent.com/GuiDev1994/aurora-tv/main/repo.json` to [webOS Homebrew Channel](https://github.com/webosbrew/webos-homebrew-channel).
+- **Device Manager:** install an IPK from [Releases](https://github.com/GuiDev1994/aurora-tv/releases) with [webOS Dev Manager](https://github.com/webosbrew/dev-manager-desktop).
+- **webOS CLI:** install a locally built package with `ares-install aurora.ipk`. Release downloads may use a versioned filename; pass that filename instead.
 
-## Build from source (developers)
+Building a package and installing it on the TV are separate steps. See the [webOS build guide](docs/BUILD_WEBOS.md) for additional setup and troubleshooting.
 
-Cross-compile Aurora for webOS using Docker. **Prerequisites:** Docker Desktop (Windows/macOS) or Docker Engine (Linux).
+## Controls and shortcuts
 
-**Windows (PowerShell):**
+The **?** button opens a scrollable guide inside Aurora, with controls first and version, decoder, audio backend, and system information at the bottom. Use **Up/Down** or the mouse wheel to scroll, and **Back / B / Escape** to close it.
 
-```powershell
-.\scripts\webos\build_with_docker.ps1
-```
+### TV remote during streaming
 
-**Linux / macOS (Docker):**
+| Control | Action |
+| --- | --- |
+| **Hold Back** on the Magic Remote, or press **Red / Exit** | Open the stream menu. Holding Back sends the remote's Exit action. |
+| **Back**, short press | Send Escape to the PC. Close the on-screen keyboard when it is open. |
+| **Blue** | Open the on-screen keyboard. |
+| **OK**, short press | Send Enter to the PC. |
+| **Hold OK for at least 0.6 seconds**, then release | Right-click on the PC. |
+| **Channel Up / Down** | Send Page Up / Page Down to the PC. |
+| **Yellow** | Cycle the diagnostic log overlay: Off → Live → Frozen → Off. |
 
-```bash
-docker run --rm \
-  --dns 8.8.8.8 --dns 1.1.1.1 \
-  -v "$(pwd):/build" \
-  -v "$(pwd)/scripts/webos/docker_build_inner.sh:/docker_build.sh" \
-  -w /build -e CI=1 -e DOCKER_SKIP_SUBMODULES=1 \
-  ubuntu:22.04 \
-  bash -c "sed 's/\r$//' /docker_build.sh | bash"
-```
+### Gamepad during streaming
 
-The `.ipk` is written to `dist/com.aurora.gamestream_<version>_arm.ipk`. To generate a Homebrew manifest locally (optional), install `webosbrew-gen-manifest` once; official [releases](https://github.com/GuiDev1994/aurora-tv/releases) build and publish the manifest via GitHub Actions.
+| Control | Action |
+| --- | --- |
+| **LB + RB + Back + Start**, then release all buttons | Open the stream menu. On PlayStation layouts, use L1 + R1 and the corresponding Select/Share and Start/Options buttons. |
+| **Hold Select / Back alone for 4 seconds** | Toggle pinned performance stats. This button is also forwarded to the PC; pressing another button cancels the pending shortcut. |
+| **Y / Triangle** while virtual mouse is enabled | Open the on-screen keyboard. |
 
-Full build, install, and troubleshooting guide: [docs/BUILD_WEBOS.md](docs/BUILD_WEBOS.md).
+**TV remote Back and gamepad Select/Back have different shortcuts:** holding remote Back opens the menu; holding gamepad Select/Back toggles stats.
 
-## Credits
+### Virtual mouse and on-screen keyboard
 
-- Base: [mariotaku/moonlight-tv](https://github.com/mariotaku/moonlight-tv)
-- Components: [moonlight-embedded](https://github.com/irtimmer/moonlight-embedded), [moonlight-common-c](https://github.com/moonlight-stream/moonlight-common-c)
+Enable **Virtual Mouse** from the stream menu, or enable **Settings → Input → Virtual mouse** to start streams with it enabled.
 
-## License
+| Mode | Control | Action |
+| --- | --- | --- |
+| Virtual mouse | Right stick | Move the pointer. |
+| Virtual mouse | Left stick | Scroll vertically or horizontally. |
+| Virtual mouse | LT / RT | Left-click / right-click. |
+| On-screen keyboard | D-pad + A / remote OK | Navigate and press a key. |
+| On-screen keyboard | Y / X / Start | Space / Backspace / Enter. |
+| On-screen keyboard | LT | Switch between letters and symbols. |
+| On-screen keyboard | LB / RB | Move the text cursor left / right. |
+| On-screen keyboard | B / remote Back | Close the keyboard. Gamepad B also sends Escape to the PC. |
 
-This project is licensed under the [GNU General Public License v3.0](LICENSE) (GPL-3.0-or-later).
+Gamepad keyboard labels above use the standard ABXY layout; the button-swap setting affects navigation mappings. The stream menu's **Full keyboard** button also opens the keyboard.
 
-Copyright and attribution details are in [COPYRIGHT](COPYRIGHT).
+### Leave or end a session
 
-Aurora is a fork of [moonlight-tv](https://github.com/mariotaku/moonlight-tv), which is also licensed under GPL-3.0.
+- **Disconnect:** return to Aurora while leaving the application running on the PC for a later resume.
+- **End session:** ask the host to close the application or desktop session, after confirmation. This action is unavailable when connected directly through Remote Monitor or Remote Input.
 
+## Build from source
 
-### Diagnostic log on the TV
+Aurora uses **C11, CMake, LVGL v8, and SS4S**. The webOS build uses SDL3 through sdl2-compat; the Linux development build uses SDL2.
 
-Aurora automatically appends INFO, warning and error messages to **`aurora.log`**
-in its configuration directory, even when **Show logs** is off. On webOS this is
-`$HOME/conf/aurora.log`, where `$HOME` is the application's runtime home (not the
-SSH account's home). It is the same `conf` directory as Aurora's settings. For a
-standard Developer Mode installation, look in
-`/media/developer/apps/usr/palm/applications/com.aurora.gamestream/conf/aurora.log`
-using webOS Dev Manager's file browser. Only the diagnostic file is created with
-read permissions for other TV users (`0644`), because Dev Manager's SSH account
-may differ from the native application's account. Existing logs from the initial
-`0600` implementation have their mode repaired when Aurora starts; open the app
-once after installing the updated package, then download the log again. The startup `FileLog` message reports the
-actual path and whether storage is persistent. If that directory or the log file is not writable,
-the existing configuration-path fallback is `/tmp/moonlight-tv/conf/aurora.log`;
-that fallback does not survive a TV reboot.
-
-The single file is capped at **2 MiB (2,097,152 bytes)**. At the limit, Aurora keeps
-approximately the newest 1 MiB of complete lines in place, then continues writing
-to the same file. It does not create dated files or `.1` backups, and restarting
-Aurora preserves recent history. Download the file after reproducing the issue,
-preferably after leaving the stream so pending records have time to be written.
-
-Records include UTC timestamps for comparison with host logs and monotonic
-timestamps for comparison with the on-screen overlay. Diagnostics cover:
-
-- Version, stream configuration, codec/backend and existing application errors.
-- Video samples every two seconds: receive/submit FPS, frame-number gaps, maximum
-  time inside the player feed call, NOT_READY/error counts and sample age. A
-  repeated sample with growing `age_ms` means no new statistics were published;
-  `feed_active=1` with growing `feed_elapsed_ms` points to a player feed call that
-  has not returned. `have_submit=1` with growing `last_submit_age_ms` means the
-  video submit callback has not been entered recently. `sample_valid=0` means
-  the statistics publisher was busy; the diagnostic skips waiting on the UI thread;
-  repeated FPS values alone do not prove the stream is still receiving frames.
-- ABR loss estimates, RTT, target/allowed bitrates and request failures.
-- Interruption origin (`user`, `host`, `network`, `decoder`, `watchdog`, etc.) and
-  progress/timing through connection stop, app quit and cleanup.
-
-`player_latency_est_ms` is the player's estimate, not a measured decoder execution
-time. `frame_gaps` can include frames lost before submission and should not be
-interpreted as a definitive count of packets lost on the network.
-
-Disk writes and trimming run on a separate thread with a bounded queue. If the
-queue fills, records are dropped and a counter is written; video reception does
-not wait for disk I/O. DEBUG/VERBOSE records (which can contain request URLs and
-credentials) are excluded. The worker has a 128 KiB stack and its file descriptor
-is closed on exec. Normal shutdown drains the queue; abrupt termination
-can lose queued records. This log does not replace a native crash stack trace.
-
-The writer has a standalone test registered as `test_file_log` in CTest. It can
-also be checked without the complete app dependencies:
+Initialize a fresh checkout with its nested submodules:
 
 ```sh
-cc -std=c11 -D_POSIX_C_SOURCE=200809L -DFILE_LOG_MAX_BYTES=4096 \
-  -Wall -Wextra -Werror -pthread -fsanitize=address,undefined \
-  -Isrc/app -Ithird_party/commons/util/logging \
-  tests/app/test_file_log.c src/app/util/file_log.c -o /tmp/aurora-test-file-log
-/tmp/aurora-test-file-log
+git clone --recurse-submodules https://github.com/GuiDev1994/aurora-tv.git
+cd aurora-tv
 ```
 
-The webOS compatibility audit and upstream comparison are recorded in
-[Diagnostic log review](docs/DIAGNOSTIC_LOG_REVIEW.md).
+For an existing checkout, inspect local changes before running `git submodule update --init --recursive`.
+
+### webOS ARM package
+
+With Docker Desktop on macOS/Windows or Docker Engine on Linux running, use:
+
+```sh
+python3 scripts/webos/build_ipk.py
+```
+
+The helper builds and validates the webOS ARM package and delivers **`aurora.ipk` at the repository root**. It preserves the previous package if the build or validation fails. Logs and receipts are stored under `.cache/ipk/`, with the latest receipt in `.cache/ipk/latest.json`.
+
+The cross-build uses Linux/amd64 tools, including on Apple Silicon. It does not increment the version or install anything on the TV. `MOONLIGHT_VERSION` in `CMakeLists.txt` is the version source for package metadata, the UI, and the ELF version marker.
+
+### Linux desktop
+
+Install the dependencies listed in [desktop CI](.github/workflows/build-desktop.yml), including gettext, then run:
+
+```sh
+cmake -B build -DCMAKE_BUILD_TYPE=Debug -DTARGET_DESKTOP=ON
+cmake --build build
+xvfb-run ctest --test-dir build --output-on-failure
+```
+
+### UI simulator on macOS/Linux
+
+With Docker running:
+
+```sh
+./tools/ui-sim/run.sh
+```
+
+This builds and exercises the real SDL/LVGL interface with dummy audio/video backends and isolated preferences. Reports, screenshots, and logs are written to `.cache/ui-sim-run-*/artifacts/`. The runtime has no network access. It validates UI behavior, not LG firmware, hardware decoding, HDR, or real streaming. See the [simulator guide](tools/ui-sim/README.md) for custom scenarios.
+
+## Diagnostics
+
+Aurora records INFO, warning, and error messages to **`aurora.log`**, even when the on-screen log overlay is off. The startup `FileLog` message reports the actual path and whether storage is persistent.
+
+On webOS, the usual location is the app's own `$HOME/conf/aurora.log`, alongside its settings. For a standard Developer Mode installation, look in:
+
+```text
+/media/developer/apps/usr/palm/applications/com.aurora.gamestream/conf/aurora.log
+```
+
+Use Dev Manager's file browser to download it after reproducing an issue, preferably after leaving the stream. If persistent storage is unavailable, the fallback is `/tmp/moonlight-tv/conf/aurora.log`, which does not survive a TV reboot.
+
+The file is capped at **2 MiB**. At the limit, Aurora retains approximately the newest 1 MiB of complete lines and continues in the same file. Restarting the app preserves recent history. Disk writes run on a separate thread with a bounded queue; DEBUG/VERBOSE records are excluded.
+
+Logs include UTC and monotonic timestamps, version/configuration, video receive/submit samples, adaptive bitrate decisions, and session interruption/cleanup progress. When reporting a problem, include the TV model, firmware, decoder backend, codec, resolution, FPS, HDR state, requested bitrate, network connection, and host version.
+
+The performance overlay measures submission to the video backend, not physical display scanout. Player latency estimates and frame gaps are diagnostic signals, not direct measurements of decoder execution time or network packet loss. Persistent logs do not replace a native crash stack trace.
+
+Implementation details and the compatibility audit are recorded in the [diagnostic log review](docs/DIAGNOSTIC_LOG_REVIEW.md).
+
+## Project documentation
+
+Some internal engineering documents are currently written in Portuguese.
+
+- [Current implementation and validation status](docs/CURRENT_STATE.md)
+- [webOS build and troubleshooting guide](docs/BUILD_WEBOS.md)
+- [VibeShine integration and session contracts](docs/VIBESHINE_INTEGRATION.md)
+- [Nonary Moonlight / webOS comparison](docs/NONARY_MOONLIGHT_WEBOS_REVIEW.md)
+- [Historical streaming experiments](docs/WEBOS_STREAMING_HISTORY.md)
+
+## Credits and license
+
+Aurora is based on [mariotaku/moonlight-tv](https://github.com/mariotaku/moonlight-tv) and uses [moonlight-embedded](https://github.com/irtimmer/moonlight-embedded), [moonlight-common-c](https://github.com/moonlight-stream/moonlight-common-c), and other open-source components. Rights and attribution remain with their respective authors.
+
+Licensed under [GNU GPL v3.0 or later](LICENSE). See [COPYRIGHT](COPYRIGHT) for attribution details. Provided without warranty.

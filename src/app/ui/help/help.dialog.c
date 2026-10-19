@@ -3,6 +3,7 @@
 
 #include "util/i18n.h"
 #include "os_info.h"
+#include "lvgl/theme/lv_theme_moonlight_colors.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -18,38 +19,78 @@ static void menu_cancel_cb(lv_event_t *e);
 
 static void help_dialog_resize_cb(lv_event_t *e);
 
-static void help_open_url_cb(lv_event_t *e);
+static lv_obj_t *add_help_text(lv_obj_t *list, const char *text);
 
-static void add_url_button(lv_obj_t *list, const char *title, const char *url);
+static void add_section(lv_obj_t *list, const char *title);
+
+static void add_shortcut(lv_obj_t *list, const char *keys, const char *action);
 
 static void add_about_line(lv_obj_t *list, const char *title, const char *value);
 
 static const char *module_id(const SS4S_ModuleInfo *info);
 
 lv_obj_t *help_dialog_create(app_t *app) {
-    lv_obj_t *msgbox = lv_msgbox_create(NULL, locstr("Help"), NULL, NULL, true);
+    lv_obj_t *msgbox = lv_msgbox_create(NULL, locstr("Controls & shortcuts"), NULL, NULL, true);
     lv_obj_clear_flag(msgbox, LV_OBJ_FLAG_SCROLLABLE);
     lv_obj_clear_flag(lv_obj_get_parent(msgbox), LV_OBJ_FLAG_SCROLLABLE);
     lv_obj_add_event_cb(msgbox, help_dialog_resize_cb, LV_EVENT_SIZE_CHANGED, NULL);
     lv_obj_set_size(msgbox, LV_PCT(80), LV_PCT(90));
+    lv_obj_set_style_max_width(msgbox, LV_PCT(90), 0);
 
     lv_obj_t *close = lv_msgbox_get_close_btn(msgbox);
+    lv_group_t *group = lv_obj_get_group(close);
     lv_group_remove_obj(close);
 
     lv_obj_t *content = lv_msgbox_get_content(msgbox);
+    lv_obj_clear_flag(content, LV_OBJ_FLAG_SCROLLABLE);
     lv_obj_set_flex_flow(content, LV_FLEX_FLOW_COLUMN);
     lv_obj_add_flag(content, LV_OBJ_FLAG_EVENT_BUBBLE);
     lv_obj_t *list = lv_list_create(content);
     lv_obj_add_event_cb(list, menu_cancel_cb, LV_EVENT_CANCEL, msgbox);
     lv_obj_set_size(list, LV_PCT(100), LV_PCT(100));
     lv_obj_add_flag(list, LV_OBJ_FLAG_EVENT_BUBBLE);
+    lv_obj_add_flag(list, LV_OBJ_FLAG_SCROLL_WITH_ARROW);
+    lv_obj_set_scroll_dir(list, LV_DIR_VER);
     lv_obj_set_style_border_side(list, LV_BORDER_SIDE_NONE, 0);
     lv_obj_set_style_radius(list, 0, 0);
-    lv_obj_set_style_pad_all(list, 0, 0);
+    lv_obj_set_style_pad_all(list, LV_DPX(8), 0);
+    lv_obj_set_style_pad_row(list, LV_DPX(6), 0);
+    lv_obj_set_style_bg_opa(list, LV_OPA_TRANSP, 0);
 
-    lv_list_add_text(list, locstr("About"));
+    add_help_text(list, locstr("During streaming, use these shortcuts to control Aurora. Scroll with Up/Down or the mouse wheel. Press Back/B/Escape to close this guide."));
+
+    add_section(list, locstr("TV remote"));
+    add_shortcut(list, locstr("Hold Back / press Red or Exit"),
+                 locstr("Open the stream menu. A short Back press sends Escape to the PC; holding Back on a Magic Remote sends Exit."));
+    add_shortcut(list, locstr("Blue"), locstr("Open the on-screen keyboard. Press Back to close it."));
+    add_shortcut(list, locstr("Hold OK (0.6 s), then release"), locstr("Right-click on the PC. A short OK press sends Enter."));
+    add_shortcut(list, locstr("Channel Up / Down"), locstr("Send Page Up / Page Down to the PC."));
+    add_shortcut(list, locstr("Yellow"), locstr("Cycle the diagnostic log overlay: Off, Live, Frozen."));
+
+    add_section(list, locstr("Gamepad"));
+    add_shortcut(list, locstr("LB + RB + Back + Start, then release all"), locstr("Open the stream menu."));
+    add_shortcut(list, locstr("Hold Select / Back (4 s)"),
+                 locstr("Show or hide pinned performance stats. Hold this button alone; it is also sent to the PC."));
+    add_shortcut(list, locstr("Y / Triangle with virtual mouse enabled"), locstr("Open the on-screen keyboard."));
+
+    add_section(list, locstr("Virtual mouse"));
+    add_help_text(list, locstr("Enable Virtual mouse in the stream menu, or enable it in Settings > Input to start each stream with it."));
+    add_shortcut(list, locstr("Right stick / Left stick"), locstr("Move the pointer / scroll."));
+    add_shortcut(list, locstr("LT / RT"), locstr("Left-click / right-click."));
+
+    add_section(list, locstr("On-screen keyboard"));
+    add_shortcut(list, locstr("D-pad + A / OK"), locstr("Move between keys and press the selected key."));
+    add_shortcut(list, locstr("Y / X / Start"), locstr("Space / Backspace / Enter (standard gamepad layout)."));
+    add_shortcut(list, locstr("LT / LB / RB"), locstr("Switch letters and symbols / move the text cursor left / right."));
+    add_shortcut(list, locstr("B / Back"), locstr("Close the keyboard. Gamepad B also sends Escape to the PC."));
+
+    add_section(list, locstr("Leaving a stream"));
+    add_shortcut(list, locstr("Disconnect"), locstr("Return to Aurora and leave the application running on the PC so you can resume later."));
+    add_shortcut(list, locstr("End session"), locstr("Ask the host to close the application after confirmation. Not available for Remote Monitor / Remote Input streams."));
+
+    add_section(list, locstr("About Aurora"));
     if (app != NULL) {
-        add_about_line(list, locstr("Product"), locstr("NVIDIA GameStream Client, for LG webOS TV."));
+        add_about_line(list, locstr("Product"), locstr("Aurora - Moonlight streaming client for LG webOS"));
         add_about_line(list, locstr("Version"), APP_VERSION);
         add_about_line(list, locstr("Video decoder"), module_id(app->ss4s.selection.video_module));
         add_about_line(list, locstr("Audio backend"), module_id(app->ss4s.selection.audio_module));
@@ -68,34 +109,23 @@ lv_obj_t *help_dialog_create(app_t *app) {
         int panel_fps = 0;
         if (SDL_webOSGetRefreshRate(&panel_fps) && panel_fps > 0) {
             char fps_text[32];
-            if (panel_fps > 120) {
-                snprintf(fps_text, sizeof(fps_text), "120 Hz (VRR max %d)", panel_fps);
-            } else {
-                snprintf(fps_text, sizeof(fps_text), "%d FPS", panel_fps);
-            }
+            snprintf(fps_text, sizeof(fps_text), "%d Hz", panel_fps);
             add_about_line(list, locstr("Refresh rate"), fps_text);
         }
 #endif
     }
 
-    lv_list_add_text(list, locstr("Input"));
-    add_url_button(list, locstr("Gamepad hotkeys"),
-                   "https://github.com/mariotaku/moonlight-tv/wiki/Input-Shortcuts#gamepad");
-    add_url_button(list, locstr("Remote controller keys"),
-                   "https://github.com/mariotaku/moonlight-tv/wiki/Input-Shortcuts#webos-remote-controller");
-    lv_list_add_text(list, locstr("More help"));
-    add_url_button(list, locstr("Open moonlight-tv Wiki"),
-                   "https://github.com/mariotaku/moonlight-tv/wiki");
-    add_url_button(list, locstr("Open moonlight-stream Wiki"),
-                   "https://github.com/moonlight-stream/moonlight-docs/wiki");
-
+    if (group != NULL) {
+        lv_group_add_obj(group, list);
+        lv_group_focus_obj(list);
+    }
     lv_obj_center(msgbox);
     return msgbox;
 }
 
 static void menu_cancel_cb(lv_event_t *e) {
     lv_obj_t *target = lv_event_get_target(e);
-    if (target->parent != lv_event_get_current_target(e)) return;
+    if (target != lv_event_get_current_target(e)) return;
     lv_msgbox_close(lv_event_get_user_data(e));
 }
 
@@ -109,23 +139,36 @@ static void help_dialog_resize_cb(lv_event_t *e) {
     lv_obj_set_height(content, height - title_height);
 }
 
-static void help_open_url_cb(lv_event_t *e) {
-    app_open_url(lv_event_get_user_data(e));
+static lv_obj_t *add_help_text(lv_obj_t *list, const char *text) {
+    lv_obj_t *label = lv_label_create(list);
+    lv_label_set_text(label, text);
+    lv_label_set_long_mode(label, LV_LABEL_LONG_WRAP);
+    lv_obj_set_width(label, LV_PCT(100));
+    lv_obj_set_style_text_font(label, lv_theme_get_font_small(list), 0);
+    lv_obj_set_style_text_color(label, ml_color_hex(ML_COLOR_TEXT_MUTED), 0);
+    return label;
 }
 
-static void add_url_button(lv_obj_t *list, const char *title, const char *url) {
-    lv_obj_t *item = lv_list_add_btn(list, NULL, locstr(title));
-    lv_obj_add_flag(item, LV_OBJ_FLAG_EVENT_BUBBLE);
-    lv_obj_add_event_cb(item, help_open_url_cb, LV_EVENT_CLICKED, (void *) url);
+static void add_section(lv_obj_t *list, const char *title) {
+    lv_obj_t *label = add_help_text(list, title);
+    lv_obj_set_style_text_font(label, lv_theme_get_font_normal(list), 0);
+    lv_obj_set_style_text_color(label, ml_color_hex(ML_COLOR_PRIMARY), 0);
+    lv_obj_set_style_pad_top(label, LV_DPX(16), 0);
+}
+
+static void add_shortcut(lv_obj_t *list, const char *keys, const char *action) {
+    lv_obj_t *label = add_help_text(list, keys);
+    lv_obj_set_style_text_color(label, ml_color_hex(ML_COLOR_TEXT), 0);
+    lv_obj_set_style_pad_top(label, LV_DPX(8), 0);
+    add_help_text(list, action);
 }
 
 static void add_about_line(lv_obj_t *list, const char *title, const char *value) {
-    char line[192];
-    snprintf(line, sizeof(line), "%s: %s", title, value != NULL ? value : "(null)");
-    lv_list_add_text(list, line);
+    lv_obj_t *label = add_help_text(list, "");
+    lv_label_set_text_fmt(label, "%s: %s", title, value != NULL ? value : locstr("not available"));
 }
 
 static const char *module_id(const SS4S_ModuleInfo *info) {
     const char *id = SS4S_ModuleInfoGetId(info);
-    return id != NULL ? id : "Not available";
+    return id != NULL ? id : locstr("not available");
 }

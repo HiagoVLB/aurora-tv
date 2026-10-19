@@ -1,12 +1,29 @@
-Aurora (Moonlight TV for LG webOS)
+Aurora - Moonlight streaming client for LG webOS
+https://github.com/GuiDev1994/aurora-tv/
+
+Aurora-specific contributions:
 Copyright (C) 2024-2026 GuiDev1994 and contributors
 
-Based on moonlight-tv (C) mariotaku and contributors.
+Aurora is based on Moonlight TV (moonlight-tv).
+Original Moonlight TV code: Copyright (C) mariotaku and contributors.
 https://github.com/mariotaku/moonlight-tv
+
+Original copyright notices and attribution remain applicable to the
+corresponding code. This notice does not transfer ownership of upstream
+code or third-party components to the Aurora contributors.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details.
+
 See the LICENSE file for the full license text.
+
+Third-party components and bundled dependencies retain their respective
+copyright holders and licenses. See the license and copyright notices
+in their source directories, including core/ and third_party/.

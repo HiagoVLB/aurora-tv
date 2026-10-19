@@ -7,7 +7,7 @@
 static const char *hints_list[HINTS_LEN] = {
         translatable(
                 "Long press BACK (or press EXIT for traditional TV remote) while streaming, to open status overlay."),
-        translatable("Frequent lagging on 5GHz Wi-Fi? Try changing to another channel, check Help for details."),
+        translatable("Hold Select/Back alone for 4 seconds during streaming to show or hide performance stats."),
         translatable("Xbox One/Series controller can't be directly connected via cable or official adapter."),
         translatable(
                 "If you have ultra-wide monitor, you may need to change its resolution to fit 16:9 for streaming."),

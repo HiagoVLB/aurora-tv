@@ -15,8 +15,8 @@ static const i18n_entry_t i18n_locales[] = {
 #if DEBUG
         {"ja", "日本語"},
 #endif
-        {"ko", "조선말"},
-        {"nl", "Dutch"},
+        {"ko", "한국어"},
+        {"nl", "Nederlands"},
         {"pl", "Polski"},
         {"pt-BR", "Português (Brasil)"},
         {"ro", "Română"},

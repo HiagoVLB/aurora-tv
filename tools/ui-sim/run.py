@@ -6,6 +6,7 @@ This is an original Aurora adapter, not an LG firmware emulator.
 """
 from __future__ import annotations
 import argparse
+import gettext
 import html
 import json
 import os
@@ -122,6 +123,9 @@ def main():
     if any(output.iterdir()):
         parser.error("Output directory must be empty to avoid mixing runs")
     scenario = json.loads(args.scenario.read_text())
+    language = os.environ.get("AURORA_UI_SIM_LANGUAGE", "en-US")
+    catalog = gettext.translation("moonlight-tv", os.environ.get("TEXTDOMAINDIR"),
+                                  fallback=language == "en-US")
     report = {"status": "running", "scenario": scenario["name"], "hardware_emulated": False, "steps": []}
     sim = None
     try:
@@ -131,7 +135,9 @@ def main():
             if len(step) != 1:
                 raise ValueError("Each scenario step must have one command")
             action, argument = next(iter(step.items()))
-            if action not in {"wait", "key", "click", "click_text", "text", "expect", "absent", "action", "wheel", "resize"}:
+            if action in {"click_text", "scroll_text", "expect", "absent"}:
+                argument = catalog.gettext(str(argument))
+            if action not in {"wait", "key", "click", "click_text", "scroll_text", "text", "expect", "absent", "action", "wheel", "resize"}:
                 raise ValueError(f"Unknown action: {action}")
             command = action + " " + str(argument)
             entry = {"index": index, "command": command, "status": "running"}

@@ -1,9 +1,21 @@
 # Project specific
+# Base rules: https://github.com/mariotaku/moonlight-tv/blob/main/.gitignore
 /build
+/build-*/
+/build_*/
 /cmake-build-*
 /temp
 /dist
 /node_modules
+
+# Locally generated webOS packages, SDK downloads, and diagnostic/build logs
+/*.ipk
+/*.deb
+/arm-webos-linux-gnueabi_sdk-buildroot*/
+/arm-webos-linux-gnueabi_sdk-buildroot*.tar.gz
+/aurora.log
+/build*.log
+/build*_log.txt
 
 # Let third party libraries handle by themselves
 !/third_party/**
@@ -22,6 +34,13 @@ install_manifest.txt
 compile_commands.json
 CTestTestfile.cmake
 _deps
+build.ninja
+.ninja_deps
+.ninja_log
+_CPack_Packages/
+CPackConfig.cmake
+CPackSourceConfig.cmake
+DartConfiguration.tcl
 
 # Prerequisites
 *.d
@@ -86,6 +105,9 @@ dkms.conf
 # Local History for Visual Studio Code
 .history/
 
+# Visual Studio local workspace and index databases
+.vs/
+
 # IDEA
 .idea/
 .run/
@@ -121,6 +143,16 @@ Temporary Items
 
 .virtualenv.smbdelete*
 .smbdelete*
+
+# Python environments and bytecode
+.virtualenv
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+
+# Machine-local MCP server config (also ignored by upstream)
+.mcp.json
 
 # Local Cursor skills / project agent config (do not push)
 .cursor/
