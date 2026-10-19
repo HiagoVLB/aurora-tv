@@ -3,8 +3,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: moonlight-tv\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-19 00:03+0000\n"
-"PO-Revision-Date: 2025-03-08 09:18\n"
+"POT-Creation-Date: 2026-10-19 04:22+0000\n"
+"PO-Revision-Date: 2026-10-19 01:15-0300\n"
 "Last-Translator: \n"
 "Language-Team: Romanian\n"
 "Language: ro\n"
@@ -293,6 +293,12 @@ msgstr "Rezoluția ecranului"
 msgid "Refresh rate"
 msgstr "Rată de reîmprospătare"
 
+#: src/app/ui/help/help.dialog.c:168 src/app/ui/help/help.dialog.c:173
+#: src/app/ui/streaming/streaming.controller.c:363
+#: src/app/ui/streaming/streaming.controller.c:370
+msgid "not available"
+msgstr "indisponibil"
+
 #: src/app/ui/launcher/add.dialog.c:58
 msgid "IP address"
 msgstr "Adresă IP"
@@ -411,8 +417,9 @@ msgstr "Ascunde"
 msgid "Info"
 msgstr "Informații"
 
+#. LVGL's DOT mode edits its buffer; gettext strings are read-only.
 #: src/app/ui/launcher/launcher.controller.c:157
-#: src/app/ui/launcher/launcher.view.c:164
+#: src/app/ui/launcher/launcher.view.c:177
 #: src/app/ui/launcher/server.popup.c:363
 msgid "Select server"
 msgstr "Selectează serverul"
@@ -828,6 +835,12 @@ msgstr "%d FPS (personalizat)"
 msgid "Enter a custom framerate (%d-%d FPS):"
 msgstr "Introdu o frecvență de cadre (%d–%d FPS):"
 
+#: src/app/ui/settings/panes/pref_res.c:91
+#: src/app/ui/settings/panes/pref_res.c:108
+#, c-format
+msgid "%d * %d (Native)"
+msgstr "%d * %d (nativă)"
+
 #: src/app/ui/settings/panes/pref_res.c:119
 #: src/app/ui/settings/panes/pref_res.c:175
 msgid "Custom Resolution"
@@ -882,13 +895,13 @@ msgstr ""
 "Setările se aplică la următoarea sesiune. Reconectezi acum pentru a le "
 "folosi imediat?"
 
-#: src/app/ui/settings/settings.controller.c:1529
-#: src/app/ui/settings/settings.controller.c:1826
+#: src/app/ui/settings/settings.controller.c:1531
+#: src/app/ui/settings/settings.controller.c:1828
 #: src/app/ui/settings/settings.view.c:36
 msgid "Settings"
 msgstr "Setări"
 
-#: src/app/ui/settings/settings.controller.c:1758
+#: src/app/ui/settings/settings.controller.c:1760
 msgid "More settings"
 msgstr "Mai multe setări"
 
@@ -927,11 +940,6 @@ msgstr ""
 #: src/app/ui/streaming/streaming.controller.c:330
 msgid "total"
 msgstr "total"
-
-#: src/app/ui/streaming/streaming.controller.c:363
-#: src/app/ui/streaming/streaming.controller.c:370
-msgid "not available"
-msgstr "indisponibil"
 
 #: src/app/ui/streaming/streaming.controller.c:422
 msgid "Connecting..."

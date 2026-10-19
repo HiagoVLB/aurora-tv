@@ -19,6 +19,23 @@ Com o Docker Desktop em execução, a partir da raiz do repositório:
 ./tools/ui-sim/run.sh
 ```
 
+Para conferir traduções em 1920×1080 e 1280×720, usar o roteiro de localização:
+
+```sh
+AURORA_UI_SIM_LANGUAGE=pt-BR ./tools/ui-sim/run.sh tools/ui-sim/localization.json
+```
+
+O wrapper aceita os códigos dos catálogos existentes, prepara o locale UTF-8
+correspondente e usa os MO compilados em `/build/mo`. A imagem inclui fontes CJK
+para a inspeção de japonês, coreano e chinês. Os textos de `expect`, `absent`,
+`click_text` e `scroll_text` são traduzidos pelo catálogo real do teste; um idioma
+sem MO faz a execução falhar. O relatório registra idioma/locale, e o log do app
+mostra o catálogo carregado. Os catálogos inativos `uk` e `zh-TW` também podem ser
+examinados no simulador; isso não os habilita no seletor nem no pacote webOS.
+
+As fontes Linux não comprovam os glifos disponíveis na TV. Abrir as capturas
+para conferir cortes e glifos; expectativas de texto sozinhas não validam layout.
+
 A primeira execução cria a imagem Ubuntu 24.04 e compila o aplicativo. As seguintes
 reutilizam a imagem e um volume de compilação por arquitetura. Ubuntu 24.04 fornece
 SDL 2.30; a versão de SDL do Ubuntu 22.04 não contém todos os tipos de controle
@@ -75,6 +92,7 @@ Comandos de roteiro:
 | --- | --- |
 | `action` | `settings`, `add_host`, `help` ou `exit`; clica no botão real da barra |
 | `click_text` | Texto exato, em inglês; rola até o item e clica, inclusive em botões de diálogos |
+| `scroll_text` | Rola até o texto sem clicar; útil para inspecionar seções e mensagens |
 | `click` | Coordenadas, por exemplo `"100 200"` |
 | `key` | Nome SDL: `Down`, `Up`, `Return`, `Escape`, etc. |
 | `text` | Evento SDL de texto curto, até 31 bytes UTF-8, para o campo em foco |

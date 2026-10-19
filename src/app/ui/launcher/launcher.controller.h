@@ -30,6 +30,8 @@ typedef struct launcher_fragment_t {
     /* Detail area below the top bar; full width, hosts the apps fragment (game rail). */
     lv_obj_t *detail;
     lv_obj_t *profile_dropdown;
+    lv_obj_t *brand_label;
+    lv_coord_t topbar_layout_width;
     /** Profile combobox list open; blocks arrow-key focus changes until closed. */
     lv_obj_t *active_dropdown;
 

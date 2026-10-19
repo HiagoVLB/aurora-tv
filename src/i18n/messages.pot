@@ -1,14 +1,14 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
+# This file is distributed under the same license as the Aurora package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: Aurora 1.3.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-19 00:03+0000\n"
+"POT-Creation-Date: 2026-10-19 04:22+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -278,6 +278,12 @@ msgstr ""
 msgid "Refresh rate"
 msgstr ""
 
+#: src/app/ui/help/help.dialog.c:168 src/app/ui/help/help.dialog.c:173
+#: src/app/ui/streaming/streaming.controller.c:363
+#: src/app/ui/streaming/streaming.controller.c:370
+msgid "not available"
+msgstr ""
+
 #: src/app/ui/launcher/add.dialog.c:58
 msgid "IP address"
 msgstr ""
@@ -391,8 +397,9 @@ msgstr ""
 msgid "Info"
 msgstr ""
 
+#. LVGL's DOT mode edits its buffer; gettext strings are read-only.
 #: src/app/ui/launcher/launcher.controller.c:157
-#: src/app/ui/launcher/launcher.view.c:164
+#: src/app/ui/launcher/launcher.view.c:177
 #: src/app/ui/launcher/server.popup.c:363
 msgid "Select server"
 msgstr ""
@@ -794,6 +801,12 @@ msgstr ""
 msgid "Enter a custom framerate (%d-%d FPS):"
 msgstr ""
 
+#: src/app/ui/settings/panes/pref_res.c:91
+#: src/app/ui/settings/panes/pref_res.c:108
+#, c-format
+msgid "%d * %d (Native)"
+msgstr ""
+
 #: src/app/ui/settings/panes/pref_res.c:119
 #: src/app/ui/settings/panes/pref_res.c:175
 msgid "Custom Resolution"
@@ -846,13 +859,13 @@ msgid ""
 "right away?"
 msgstr ""
 
-#: src/app/ui/settings/settings.controller.c:1529
-#: src/app/ui/settings/settings.controller.c:1826
+#: src/app/ui/settings/settings.controller.c:1531
+#: src/app/ui/settings/settings.controller.c:1828
 #: src/app/ui/settings/settings.view.c:36
 msgid "Settings"
 msgstr ""
 
-#: src/app/ui/settings/settings.controller.c:1758
+#: src/app/ui/settings/settings.controller.c:1760
 msgid "More settings"
 msgstr ""
 
@@ -882,11 +895,6 @@ msgstr ""
 
 #: src/app/ui/streaming/streaming.controller.c:330
 msgid "total"
-msgstr ""
-
-#: src/app/ui/streaming/streaming.controller.c:363
-#: src/app/ui/streaming/streaming.controller.c:370
-msgid "not available"
 msgstr ""
 
 #: src/app/ui/streaming/streaming.controller.c:422

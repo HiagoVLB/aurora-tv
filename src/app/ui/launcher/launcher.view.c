@@ -40,6 +40,16 @@ static void launcher_layout_settings_layer(launcher_fragment_t *controller, lv_o
     }
     lv_coord_t w = lv_obj_get_width(shell);
     lv_coord_t h = lv_obj_get_height(shell);
+    if (w > 0 && w != controller->topbar_layout_width && controller->brand_label &&
+        controller->profile_dropdown && controller->server_btn) {
+        controller->topbar_layout_width = w;
+        /* Localized selectors must not push Settings/Exit outside a 720p window.
+         * Keep the logo, and reclaim the wordmark's space on compact displays. */
+        if (w < LV_DPX(800)) lv_obj_add_flag(controller->brand_label, LV_OBJ_FLAG_HIDDEN);
+        else lv_obj_clear_flag(controller->brand_label, LV_OBJ_FLAG_HIDDEN);
+        lv_obj_set_width(controller->profile_dropdown, LV_MIN(LV_DPX(160), w / 6));
+        lv_obj_set_width(controller->server_btn, LV_MIN(LV_DPX(240), w * 35 / 100));
+    }
     lv_coord_t bar_h = LV_DPX(TOPBAR_HEIGHT);
     if (w <= 0 || h <= bar_h) {
         return;
@@ -161,7 +171,10 @@ lv_obj_t *launcher_win_create(lv_fragment_t *self, lv_obj_t *parent) {
     lv_obj_set_style_text_font(server_label, lv_theme_get_font_small(server_btn), 0);
     lv_label_set_long_mode(server_label, LV_LABEL_LONG_DOT);
     lv_obj_set_style_max_width(server_label, LV_DPX(180), 0);
-    lv_label_set_text_static(server_label, locstr("Select server"));
+    lv_obj_set_width(server_label, 0);
+    lv_obj_set_flex_grow(server_label, 1);
+    /* LVGL's DOT mode edits its buffer; gettext strings are read-only. */
+    lv_label_set_text(server_label, locstr("Select server"));
     lv_obj_clear_flag(server_label, LV_OBJ_FLAG_CLICKABLE);
 
     lv_obj_t *srv_chevron = lv_label_create(server_btn);
@@ -201,6 +214,7 @@ lv_obj_t *launcher_win_create(lv_fragment_t *self, lv_obj_t *parent) {
     lv_obj_add_event_cb(shell, launcher_shell_resized, LV_EVENT_SIZE_CHANGED, controller);
 
     controller->nav = topbar;
+    controller->brand_label = title_label;
     controller->detail = detail;
     controller->settings_layer = settings_layer;
     controller->server_btn = server_btn;

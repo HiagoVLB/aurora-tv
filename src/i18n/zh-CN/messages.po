@@ -3,8 +3,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: moonlight-tv\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-19 00:03+0000\n"
-"PO-Revision-Date: 2025-03-08 09:18\n"
+"POT-Creation-Date: 2026-10-19 04:22+0000\n"
+"PO-Revision-Date: 2026-10-19 01:15-0300\n"
 "Last-Translator: \n"
 "Language-Team: Chinese Simplified\n"
 "Language: zh_CN\n"
@@ -279,6 +279,12 @@ msgstr "屏幕分辨率"
 msgid "Refresh rate"
 msgstr "刷新率"
 
+#: src/app/ui/help/help.dialog.c:168 src/app/ui/help/help.dialog.c:173
+#: src/app/ui/streaming/streaming.controller.c:363
+#: src/app/ui/streaming/streaming.controller.c:370
+msgid "not available"
+msgstr "不可用"
+
 #: src/app/ui/launcher/add.dialog.c:58
 msgid "IP address"
 msgstr "IP地址"
@@ -397,8 +403,9 @@ msgstr "隐藏"
 msgid "Info"
 msgstr "详情"
 
+#. LVGL's DOT mode edits its buffer; gettext strings are read-only.
 #: src/app/ui/launcher/launcher.controller.c:157
-#: src/app/ui/launcher/launcher.view.c:164
+#: src/app/ui/launcher/launcher.view.c:177
 #: src/app/ui/launcher/server.popup.c:363
 msgid "Select server"
 msgstr "选择服务器"
@@ -808,6 +815,12 @@ msgstr "%d FPS（自定义）"
 msgid "Enter a custom framerate (%d-%d FPS):"
 msgstr "输入自定义帧率（%d–%d FPS）："
 
+#: src/app/ui/settings/panes/pref_res.c:91
+#: src/app/ui/settings/panes/pref_res.c:108
+#, c-format
+msgid "%d * %d (Native)"
+msgstr "%d * %d (原生)"
+
 #: src/app/ui/settings/panes/pref_res.c:119
 #: src/app/ui/settings/panes/pref_res.c:175
 msgid "Custom Resolution"
@@ -860,13 +873,13 @@ msgid ""
 "right away?"
 msgstr "设置将在下次串流会话生效。立即重新连接以应用设置？"
 
-#: src/app/ui/settings/settings.controller.c:1529
-#: src/app/ui/settings/settings.controller.c:1826
+#: src/app/ui/settings/settings.controller.c:1531
+#: src/app/ui/settings/settings.controller.c:1828
 #: src/app/ui/settings/settings.view.c:36
 msgid "Settings"
 msgstr "设置"
 
-#: src/app/ui/settings/settings.controller.c:1758
+#: src/app/ui/settings/settings.controller.c:1760
 msgid "More settings"
 msgstr "更多设置"
 
@@ -897,11 +910,6 @@ msgstr "使用超宽屏显示器时，可能需要将分辨率调整为 16:9 才
 #: src/app/ui/streaming/streaming.controller.c:330
 msgid "total"
 msgstr "总计"
-
-#: src/app/ui/streaming/streaming.controller.c:363
-#: src/app/ui/streaming/streaming.controller.c:370
-msgid "not available"
-msgstr "不可用"
 
 #: src/app/ui/streaming/streaming.controller.c:422
 msgid "Connecting..."

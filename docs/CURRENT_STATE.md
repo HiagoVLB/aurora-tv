@@ -1,6 +1,6 @@
 # Estado atual do Aurora
 
-Linha de base revisada em **18/10/2026**, horário de São Paulo. Este é o ponto de
+Linha de base revisada em **19/10/2026**, horário de São Paulo. Este é o ponto de
 entrada mantido para saber onde estamos e comparar futuras versões. Os relatórios
 detalhados continuam em [integração VibeShine](VIBESHINE_INTEGRATION.md),
 [comparação Nonary/webOS](NONARY_MOONLIGHT_WEBOS_REVIEW.md) e
@@ -78,6 +78,35 @@ release. As revisões comparativas anteriores não alteraram o streaming.
   passaram usando gettext e o conversor AWK real, incluindo erro de placeholder,
   fuzzy, duplicatas, contextos/plurais sem suporte, acentos e linhas longas.
 
+## Atualização dos idiomas e revisão visual (19/10/2026)
+
+- Os 16 catálogos existentes têm as **211 mensagens atuais traduzidas**, sem
+  entradas vazias ou fuzzy. O POT foi extraído novamente do código; comentários,
+  créditos e traduções antigas fora de uso foram preservados. A revisão inclui
+  ajuda/atalhos, configurações, erros, estatísticas e a distinção entre
+  desconectar e encerrar a sessão no PC. O indicador de resolução nativa também
+  passou a usar localização.
+- Coreano foi incluído no empacotamento, pois já era selecionável. Os nomes
+  próprios do coreano e neerlandês foram corrigidos no seletor. Ucraniano e chinês
+  tradicional continuam sem opção no seletor/pacote; japonês mantém a condição
+  DEBUG. Atualizar os catálogos não alterou essas condições.
+- O simulador aceita `AURORA_UI_SIM_LANGUAGE`, compila MO dos 16 catálogos e
+  prepara locales/fontes CJK. O roteiro `tools/ui-sim/localization.json` usa os
+  textos traduzidos reais e percorre duas resoluções. Textos de checkbox e valores
+  de dropdown podem ser verificados; `scroll_text` inspeciona sem clicar.
+- Foram corrigidos o overflow da barra superior em 720p, que escondia botões em
+  idiomas com textos longos, e um estado de dropdown que consumia o próximo
+  Voltar. O seletor de servidor usa cópia de texto, pois o modo de reticências do
+  LVGL modifica o buffer e não pode escrever na memória read-only do gettext.
+- Validação: gettext e JSON webOS aprovados nos 16 idiomas; **16 × 80 etapas**
+  da UI aprovadas em 1080p/720p, mais **16 × 8 etapas** para a resolução nativa
+  localizada. Capturas foram abertas para conferir layout e glifos. Oito testes
+  dos helpers de release passaram. Detalhes, cobertura inicial e limites em
+  [I18N_REVIEW.md](I18N_REVIEW.md).
+- Não houve instalação na C2, geração de IPK ou incremento de versão. Fontes e
+  carregamento de bundles na TV, seletor de idioma específico de webOS e overlay
+  durante streaming real continuam dependentes de validação física.
+
 ## Implementado no cliente atual
 
 | Área | Comportamento presente | Evidência |
@@ -103,8 +132,9 @@ release. As revisões comparativas anteriores não alteraram o streaming.
 - The guide wraps long text and supports D-pad scrolling, mouse wheel, and
   Back/B/Escape dismissal. In particular, remote Hold Back opens the stream menu;
   gamepad Select/Back held alone for four seconds toggles pinned stats.
-- New help catalog entries retain English fallback; the app's language default
-  and existing user language preferences are unchanged. A streaming hint now
+- New help catalog entries initially retained English fallback; all existing
+  catalogs were completed in the 19/10 language review above. The app's language
+  default and existing user language preferences are unchanged. A streaming hint now
   advertises the stats shortcut instead of pointing to removed wiki content.
 - Validation: the Docker SDL/LVGL simulator built successfully; 33 steps passed,
   covering opening the guide, D-pad and wheel scrolling, reaching About, resizing from

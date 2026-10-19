@@ -75,6 +75,13 @@ static void click_at(int x, int y) {
 static lv_obj_t *find_text(lv_obj_t *root, const char *text, bool only_visible) {
     if (lv_obj_has_flag(root, LV_OBJ_FLAG_HIDDEN) || (only_visible && !lv_obj_is_visible(root))) return NULL;
     if (lv_obj_check_type(root, &lv_label_class) && strcmp(lv_label_get_text(root), text) == 0) return root;
+    if (lv_obj_check_type(root, &lv_checkbox_class) && strcmp(lv_checkbox_get_text(root), text) == 0) return root;
+    if (lv_obj_check_type(root, &lv_dropdown_class)) {
+        char selected[256];
+        lv_dropdown_get_selected_str(root, selected, sizeof(selected));
+        const char *display = lv_dropdown_get_text(root);
+        if (strcmp(display ? display : selected, text) == 0) return root;
+    }
     if (lv_obj_check_type(root, &lv_btnmatrix_class)) {
         lv_btnmatrix_t *matrix = (lv_btnmatrix_t *) root;
         for (uint16_t i = 0; i < matrix->btn_cnt; i++) {
@@ -149,6 +156,7 @@ static void dump_tree(FILE *file, lv_obj_t *obj, bool *first, int depth) {
     fprintf(file, ",\"scroll_y\":%d,\"scroll_bottom\":%d", lv_obj_get_scroll_y(obj), lv_obj_get_scroll_bottom(obj));
     const char *role = "object";
     if (lv_obj_check_type(obj, &lv_label_class)) role = "label";
+    else if (lv_obj_check_type(obj, &lv_checkbox_class)) role = "checkbox";
     else if (lv_obj_check_type(obj, &lv_btn_class)) role = "button";
     else if (lv_obj_check_type(obj, &lv_btnmatrix_class)) role = "buttonmatrix";
     else if (lv_obj_check_type(obj, &lv_textarea_class)) role = "textbox";
@@ -167,6 +175,10 @@ static void dump_tree(FILE *file, lv_obj_t *obj, bool *first, int depth) {
     if (lv_obj_check_type(obj, &lv_label_class)) {
         fputs(",\"text\":", file);
         json_string(file, lv_label_get_text(obj));
+    }
+    if (lv_obj_check_type(obj, &lv_checkbox_class)) {
+        fputs(",\"text\":", file);
+        json_string(file, lv_checkbox_get_text(obj));
     }
     if (lv_obj_check_type(obj, &lv_btnmatrix_class)) {
         uint16_t selected = lv_btnmatrix_get_selected_btn(obj);

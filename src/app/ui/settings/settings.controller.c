@@ -1137,7 +1137,9 @@ static bool settings_close_dropdown_on_back(settings_controller_t *c, lv_obj_t *
         return false;
     }
     c->active_dropdown = NULL;
-    c->suppress_pane_back = true;
+    /* A dropdown in the main settings has no pane to protect. Carrying this
+     * guard into the next popup would swallow its first Back press. */
+    c->suppress_pane_back = c->pane_mbox != NULL;
     if (lv_dropdown_is_open(dropdown)) {
         lv_dropdown_close(dropdown);
     }

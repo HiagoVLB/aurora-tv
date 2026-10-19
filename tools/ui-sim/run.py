@@ -126,7 +126,8 @@ def main():
     language = os.environ.get("AURORA_UI_SIM_LANGUAGE", "en-US")
     catalog = gettext.translation("moonlight-tv", os.environ.get("TEXTDOMAINDIR"),
                                   fallback=language == "en-US")
-    report = {"status": "running", "scenario": scenario["name"], "hardware_emulated": False, "steps": []}
+    report = {"status": "running", "scenario": scenario["name"], "language": language,
+              "locale": os.environ.get("LC_ALL"), "hardware_emulated": False, "steps": []}
     sim = None
     try:
         sim = Simulator(args.binary, output)
