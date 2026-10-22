@@ -26,19 +26,21 @@ def tar_bytes(entries):
     return output.getvalue()
 
 
-def fixture_ipk(path, version="1.3.1", app_version=None, machine=40, tag_version=None):
+def fixture_ipk(path, version="1.3.1", app_version=None, machine=40, tag_version=None, reset_marker=b"aurora-log-reset-v1\n"):
     app = {"id": BUILD["APP_ID"], "version": app_version or version, "main": "bin/aurora"}
     elf = bytearray(52)
     elf[:6] = b"\x7fELF\x01\x01"
     elf[18:20] = machine.to_bytes(2, "little")
     elf.extend(f"aurora-v{tag_version or version}\0".encode())
     prefix = f'./usr/palm/applications/{BUILD["APP_ID"]}/'
+    data_entries = {prefix + "appinfo.json": json.dumps(app).encode(), prefix + "bin/aurora": bytes(elf)}
+    if reset_marker is not None:
+        data_entries[prefix + "aurora-logs-reset.pending"] = reset_marker
     members = {
         "debian-binary": b"2.0\n",
         "control.tar.gz": tar_bytes({"./control":
             f'Package: {BUILD["APP_ID"]}\nVersion: {version}\nArchitecture: arm\n'.encode()}),
-        "data.tar.gz": tar_bytes({prefix + "appinfo.json": json.dumps(app).encode(),
-                                  prefix + "bin/aurora": bytes(elf)}),
+        "data.tar.gz": tar_bytes(data_entries),
     }
     with path.open("wb") as output:
         output.write(b"!<arch>\n")
@@ -103,6 +105,7 @@ class ReleaseHelpers(unittest.TestCase):
         fixture_ipk(package)
         metadata = BUILD["verify_ipk"](package, "1.3.1")
         self.assertTrue(metadata["arm_elf_verified"])
+        self.assertTrue(metadata["installation_log_reset_verified"])
         self.assertEqual(metadata["architecture"], "arm")
 
     def test_reject_wrong_package_version_metadata_architecture_and_tag(self):
@@ -122,6 +125,17 @@ class ReleaseHelpers(unittest.TestCase):
         with self.assertRaises(ValueError):
             BUILD["publish"](package, self.root, "1.3.1")
         self.assertEqual(previous.read_bytes(), b"previous verified installer")
+
+    def test_missing_or_invalid_reset_marker_preserves_last_installer(self):
+        previous = self.root / "aurora.ipk"
+        previous.write_bytes(b"previous verified installer")
+        package = self.root / "fixture.ipk"
+        for marker in (None, b"bad-marker\n"):
+            with self.subTest(marker=marker):
+                fixture_ipk(package, reset_marker=marker)
+                with self.assertRaises(ValueError):
+                    BUILD["publish"](package, self.root, "1.3.1")
+                self.assertEqual(previous.read_bytes(), b"previous verified installer")
 
     def test_success_replaces_same_filename_and_truncated_archive_is_rejected(self):
         package = self.root / "fixture.ipk"

@@ -1,6 +1,6 @@
 # Estado atual do Aurora
 
-Linha de base revisada em **19/10/2026**, horário de São Paulo. Este é o ponto de
+Linha de base revisada em **22/10/2026**, horário de São Paulo. Este é o ponto de
 entrada mantido para saber onde estamos e comparar futuras versões. Os relatórios
 detalhados continuam em [integração VibeShine](VIBESHINE_INTEGRATION.md),
 [comparação Nonary/webOS](NONARY_MOONLIGHT_WEBOS_REVIEW.md) e
@@ -16,7 +16,7 @@ detalhados continuam em [integração VibeShine](VIBESHINE_INTEGRATION.md),
 
 Os SHAs das referências identificam o código lido. Não houve nova verificação de
 HEAD remoto nesta criação de skills; não interpretá-los como versões mais recentes
-garantidas. O `CMakeLists.txt` declara versão **1.3.1**; isso não prova qual IPK
+garantidas. O `CMakeLists.txt` declara versão **1.3.2**; isso não prova qual IPK
 está instalado na TV. O alvo de interesse do usuário é **LG C2**; evidências
 históricas de **C5 + eARC** no [histórico de streaming](WEBOS_STREAMING_HISTORY.md)
 não são validação da C2.
@@ -38,6 +38,10 @@ release. As revisões comparativas anteriores não alteraram o streaming.
 
 ## Geração de IPK e versionamento
 
+- Em **22/10/2026**, versão central incrementada por solicitação de **1.3.1**
+  para **1.3.2**. Contrato de derivação appinfo/APP_VERSION/marca do ELF conferido
+  pelo helper. Esta operação não recompilou o IPK: o último instalador validado
+  abaixo continua **1.3.1** até um novo build; nenhuma instalação foi realizada.
 - Skills: `aurora-build-ipk` e `aurora-bump-version`, referenciadas no AGENTS.md.
 - Comando de build: `python3 scripts/webos/build_ipk.py`. Saída única de entrega:
   **`aurora.ipk` na raiz do Aurora**, ignorada pelo Git. O pacote anterior só é
@@ -50,12 +54,86 @@ release. As revisões comparativas anteriores não alteraram o streaming.
   Sem `--apply`, apenas simula. Criar estas skills não incrementou a versão: a
   versão declarada continua **1.3.1**. Build e incremento são operações separadas.
 - Gerar um pacote não instala na TV nem comprova funcionamento na C2.
-- Validação em 18/10/2026: build real Linux/amd64 via Docker, destino ARM,
+- Validação em 19/10/2026: build real Linux/amd64 via Docker, destino ARM,
   RelWithDebInfo, concluído pelo helper. `aurora.ipk` entregue com versão
   **1.3.1**, metadados/ELF/marca de versão conferidos. SHA-256:
-  `b6d6db1199b70fc989fd47ae03bf03a799823afbd6219c5a2456d9084037c101`.
+  `b34761ff1ec175094bfa8976b8f42517b317728e3be933c3dd70f2c2462df9b4`.
   O recibo local de cada build fica em `.cache/ipk/latest.json`; o pacote não
   foi instalado na TV nesta tarefa.
+- Novo build em **22/10/2026**, RelWithDebInfo ARM via Docker, com a captura fatal
+  textual descrita abaixo: `aurora.ipk` **1.3.1**, metadados/ELF/marca de versão e
+  strings da captura conferidos. SHA-256:
+  `33c0f87dbfb376ff59134e9f92fe580a331b5b2cc34381aa13690664dc62e1d4`.
+  Recibo e símbolos completos de `bin/aurora` preservados em
+  `.cache/ipk/run-nsvt2f47/` (arquivo `_dbgsym.tar.gz` em `packages/`).
+  Build identifica fontes locais alteradas; não houve incremento nem instalação.
+- IPK regenerado em **22/10/2026** com limpeza de logs por instalação, mesma
+  versão **1.3.1**, ARM/RelWithDebInfo. Marcador e código de reset conferidos no
+  pacote; recibo inclui `installation_log_reset_verified=true`. SHA-256 atual:
+  `23a867609d39371718cad6532b445a51f14fe6805a7f6c530af71100f9efa1a1`.
+  Recibo/log/símbolos em `.cache/ipk/run-eu54hyum/`; não instalado na TV.
+
+## Limpeza de logs a cada instalação (22/10/2026)
+
+- Preferência permanente do usuário registrada no AGENTS.md: cada instalação
+  deve começar com os três arquivos de diagnóstico limpos, incluindo reinstalar
+  exatamente o mesmo IPK/versão. Reabrir a mesma instalação preserva o histórico.
+- Todo IPK contém `aurora-logs-reset.pending` na raiz do app. A primeira abertura
+  remove somente `aurora.log`, `aurora-crash.log` e `aurora-run.state` de
+  `$HOME/conf` e do fallback `/tmp/moonlight-tv/conf`, antes dos writers, e
+  consome o marcador. Não usa versão/data do build como único gatilho.
+  Registra sucesso/erro; em falha mantém o marcador para repetir a limpeza.
+- Configurações, perfis, pareamentos e outros arquivos ficam preservados.
+  A limpeza usa nomes exatos, sem seguir symlinks de logs/diretórios ou truncar
+  inodes compartilhados. O verificador do IPK exige o marcador válido; os
+  fixtures de publicação cobrem rejeição sem substituir o instalador anterior.
+- Validação: fixture de reset passou em macOS/Linux com warnings tratados como
+  erros; nove testes Python de release/publicação passaram. Integração CTest
+  aprovou `test_diagnostic_reset`, `test_crash_log` e `test_file_log`; alvo
+  `aurora-ui-sim` compilou. Build ARM e IPK validados, incluindo marcador e código
+  de reset no executável do pacote. Limpeza real na C2 ainda não executada;
+  a instalação do novo pacote não é automática.
+
+## Diagnóstico de fechamento na C2 (22/10/2026)
+
+- O log fornecido identifica Aurora **1.3.1**, webOS **10.3.1**, NDL,
+  AV1 8-bit 2560×1440@90, HDR desligado e ABR com teto 95000 kbps. A interrupção
+  abrupta às **21:27 de 21/10**, seguida de reinicialização e `/resume`, é distinta
+  da falha explícita de feed AV1 às **22:46**, com teardown e `quit_app=0`.
+  A causa do primeiro fechamento continua indeterminada. Evidências detalhadas
+  em [DIAGNOSTIC_LOG_REVIEW.md](DIAGNOSTIC_LOG_REVIEW.md).
+- O processo instalado chama-se `aurora`; seus limites soft/hard de core foram
+  conferidos na TV como **0/0**. As pastas temporárias não continham relatórios
+  acessíveis na inspeção após uma reinicialização da TV. Isso não exclui crash.
+- Nova captura textual em `aurora-crash.log` (**64 KiB**, último fatal preservado
+  ao reabrir) e marcador `aurora-run.state` (**511 bytes**) ao lado de `aurora.log`.
+  Registra sinais fatais, horários, versão/PID/boot ID, PC/SP/LR ARM e mapas
+  executáveis. O próximo startup alerta se o anterior não concluiu o shutdown.
+  A captura usa descritores abertos previamente, buffers fixos e I/O seguro em
+  signal handler; não usa logger, malloc, unwind ou mutex no handler.
+- Arquivos exportáveis por Dev Manager, links/arquivos não regulares recusados,
+  conteúdo limitado. Captura independente de root e da lista Crash Reports;
+  usa o mesmo diretório/fallback do log e informa persistência no startup.
+  Core completo continua desativado fora de Debug: a entrega é texto de falha,
+  não dump de memória nem stack trace completo. Não recupera o incidente anterior.
+- Registros de ciclo SDL, origem do pedido de saída e início/fim do shutdown
+  ajudam a distinguir saída normal, falha capturada e execução incompleta.
+  SIGKILL/energia/armazenamento e corrupção severa podem impedir o relatório;
+  o marcador sozinho não identifica OOM nem causa da queda. Só a thread principal
+  recebe stack alternativo; overflow de stack de outras threads não é garantido.
+- Testes isolados passaram em macOS e Linux, incluindo sinais fatais reais,
+  falhas de memória na principal e em worker, término pelo sinal original,
+  SIGKILL sem relatório inventado, marcadores entre processos, preservação do
+  último fatal, limites, permissões e recusa de links. Linux também passou com
+  AddressSanitizer + UndefinedBehaviorSanitizer (interceptação de sinais fatais
+  dos sanitizers desabilitada para exercitar o handler real).
+- Integração CMake Linux aprovada: `test_file_log` e `test_crash_log` passaram por
+  CTest e o alvo `aurora-ui-sim` compilou. Build webOS ARM RelWithDebInfo e
+  validação do IPK concluídos; executável empacotado contém os novos marcadores e
+  arquivo de símbolos correspondente foi preservado (recibo na seção de build).
+  Versão central preservada em **1.3.1**; nenhuma instalação ou validação física
+  desta captura foi realizada na TV. A causa da queda original não foi corrigida
+  nem reproduzida: a entrega prepara o diagnóstico da próxima ocorrência.
 
 ## Skill de atualização dos idiomas (18/10/2026)
 

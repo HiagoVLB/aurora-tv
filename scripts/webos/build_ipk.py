@@ -104,12 +104,15 @@ def verify_ipk(path, version):
         app = json.loads(tar_entry(archive, base + "appinfo.json"))
         if (app.get("id"), app.get("version"), app.get("main")) != (APP_ID, version, "bin/aurora"):
             raise ValueError("appinfo identity, version or entrypoint does not match the build")
+        if tar_entry(archive, base + "aurora-logs-reset.pending") != b"aurora-log-reset-v1\n":
+            raise ValueError("Package is missing the valid installation log-reset marker")
         binary = tar_entry(archive, base + "bin/aurora")
         if binary[:6] != b"\x7fELF\x01\x01" or len(binary) < 52 or int.from_bytes(binary[18:20], "little") != 40:
             raise ValueError("Package entrypoint is not a 32-bit little-endian ARM ELF")
         if f"aurora-v{version}".encode() + b"\0" not in binary:
             raise ValueError("ELF build tag differs from the central version")
     return {"id": APP_ID, "version": version, "architecture": "arm", "arm_elf_verified": True,
+            "installation_log_reset_verified": True,
             "sha256": hashlib.sha256(path.read_bytes()).hexdigest(), "size_bytes": path.stat().st_size}
 
 

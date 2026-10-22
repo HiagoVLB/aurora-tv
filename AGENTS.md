@@ -207,6 +207,14 @@ credenciais ou URLs completas de launch com segredos. Preferências/log ficam em
 confirme o caminho emitido no startup. Logs não substituem stack trace nem provam,
 sozinhos, a causa de um host ter ficado offline.
 
+Por preferência do usuário, **cada instalação deve começar com logs limpos**.
+Todo IPK inclui `aurora-logs-reset.pending`, consumido na primeira abertura antes
+dos writers: limpa somente `aurora.log`, `aurora-crash.log` e `aurora-run.state`
+nos diretórios de diagnóstico persistente e temporário. Isso inclui reinstalar
+o mesmo IPK/versão. Reabrir o app depois preserva os logs da instalação atual,
+inclusive o último crash. Não usar mudança de versão como único gatilho e não
+apagar configurações, perfis ou pareamentos. O helper de IPK valida o marcador.
+
 ## Dependências e comparação com outros projetos
 
 LVGL é o fork v8 de mariotaku; atualizar para v9 não é manutenção rotineira.

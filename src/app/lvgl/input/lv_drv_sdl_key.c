@@ -488,7 +488,7 @@ static bool read_webos_key(app_ui_input_t *input, const SDL_KeyboardEvent *event
             return true;
         case SDL_SCANCODE_WEBOS_EXIT: {
             if (app->session == NULL) {
-                app_request_exit();
+                app_request_exit_reason("remote_exit_key");
             }
             return false;
         }

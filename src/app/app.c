@@ -1,4 +1,5 @@
 #include <stdbool.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <SDL.h>
@@ -30,6 +31,8 @@
 #include "profile/profile_manager.h"
 #include "util/log_overlay.h"
 #include "util/file_log.h"
+#include "util/crash_log.h"
+#include "util/diagnostic_reset.h"
 #include "util/path.h"
 #include "stream/video/session_video.h"
 
@@ -56,11 +59,22 @@ int app_init(app_t *app, app_settings_loader *settings_loader, int argc, char *a
     SDL_Init(0);
     bool log_persistent = false;
     char *log_dir = path_pref(&log_persistent);
+#if TARGET_WEBOS
+    const char *app_home = SDL_getenv("HOME");
+    char *reset_marker = app_home ? path_join(app_home, "aurora-logs-reset.pending") : NULL;
+    char *persistent_log_dir = app_home ? path_join(app_home, "conf") : NULL;
+    diagnostic_reset_result_t reset_result = diagnostic_reset_apply(reset_marker, persistent_log_dir,
+                                                                   "/tmp/moonlight-tv/conf");
+    free(reset_marker);
+    free(persistent_log_dir);
+#endif
     char *log_path = log_dir ? path_join(log_dir, "aurora.log") : NULL;
     bool log_ok = log_path && file_log_init(log_path);
 #if TARGET_WEBOS
     if (!log_ok) {
         free(log_path);
+        free(log_dir);
+        log_dir = strdup("/tmp/moonlight-tv/conf");
         log_path = strdup("/tmp/moonlight-tv/conf/aurora.log");
         log_persistent = false;
         log_ok = path_dir_ensure("/tmp/moonlight-tv/conf") == 0 && log_path && file_log_init(log_path);
@@ -68,12 +82,34 @@ int app_init(app_t *app, app_settings_loader *settings_loader, int argc, char *a
 #endif
     commons_log_set_listener(app_log_listener);
     commons_log_info("APP", "Start Aurora. Version %s", APP_VERSION);
+#if TARGET_WEBOS
+    if (reset_result == DIAGNOSTIC_RESET_DONE) {
+        commons_log_info("FileLog", "Diagnostic logs reset after installation");
+    } else if (reset_result == DIAGNOSTIC_RESET_FAILED) {
+        commons_log_warn("FileLog", "Installation log reset incomplete; pending marker retained for retry");
+    }
+#endif
     if (log_ok) {
         commons_log_info("FileLog", "path=%s max=2097152 bytes persistent=%d; UTC and monotonic timestamps",
                          log_path, log_persistent);
     } else {
         commons_log_warn("FileLog", "Unable to open diagnostic log");
     }
+#if TARGET_WEBOS
+    if (log_dir && crash_log_init(log_dir, APP_VERSION)) {
+        commons_log_info("CrashLog", "v1 armed path=%s/aurora-crash.log max=65536 persistent=%d; text registers/maps, not a core dump",
+                         log_dir, log_persistent);
+        const char *previous = crash_log_previous_run();
+        if (*previous && strncmp(previous, "clean  ", 7) != 0) {
+            commons_log_warn("CrashLog", "Previous run did not complete clean shutdown: %.511s; cause unknown unless a matching fatal report exists",
+                             previous);
+        } else {
+            commons_log_info("CrashLog", "Previous run: %s", *previous ? previous : "no marker (first diagnostic launch)");
+        }
+    } else {
+        commons_log_warn("CrashLog", "Unable to arm persistent fatal diagnostics");
+    }
+#endif
     free(log_path);
     free(log_dir);
     settings_loader(&app->settings);
@@ -151,6 +187,7 @@ int app_init(app_t *app, app_settings_loader *settings_loader, int argc, char *a
 }
 
 void app_deinit(app_t *app) {
+    commons_log_info("APP", "Shutdown begin");
     app_bus_drain();
     app_session_destroy(app);
     app_ui_close(&app->ui);
@@ -183,6 +220,13 @@ void app_deinit(app_t *app) {
     log_overlay_deinit();
     file_log_deinit();
     commons_logging_deinit();
+#if TARGET_WEBOS
+    /* Only a fully completed teardown is clean. Keep fatal handlers and their
+     * descriptors alive until the process exits, including late libc teardown. */
+    if (!crash_log_mark_clean()) {
+        fprintf(stderr, "Aurora: unable to mark diagnostic run clean\n");
+    }
+#endif
 }
 
 void app_run_loop(app_t *app) {
@@ -201,6 +245,7 @@ static int app_event_filter(void *userdata, SDL_Event *event) {
     app_t *app = userdata;
     switch (event->type) {
         case SDL_APP_WILLENTERBACKGROUND: {
+            commons_log_info("APP", "Lifecycle SDL_APP_WILLENTERBACKGROUND");
             // Interrupt streaming because app will go to background
             if (app_ui_is_opened(&app->ui) && app->session != NULL) {
                 session_interrupt(app->session, false, STREAMING_INTERRUPT_BACKGROUND);
@@ -208,6 +253,7 @@ static int app_event_filter(void *userdata, SDL_Event *event) {
             break;
         }
         case SDL_APP_DIDENTERFOREGROUND: {
+            commons_log_info("APP", "Lifecycle SDL_APP_DIDENTERFOREGROUND");
             lv_obj_invalidate(lv_scr_act());
             /* Re-arm auto-resume on a genuine background->foreground transition. The
              * cold-start auto-resume is one-shot; switching away and back to Aurora on
@@ -250,8 +296,9 @@ static int app_event_filter(void *userdata, SDL_Event *event) {
                     break;
                 }
                 case SDL_WINDOWEVENT_CLOSE: {
+                    commons_log_info("APP", "Lifecycle SDL_WINDOWEVENT_CLOSE");
                     if (app_ui_is_opened(&app->ui)) {
-                        app_request_exit();
+                        app_request_exit_reason("SDL_WINDOWEVENT_CLOSE");
                     }
                     break;
                 }
@@ -282,7 +329,8 @@ static int app_event_filter(void *userdata, SDL_Event *event) {
             break;
         }
         case SDL_QUIT: {
-            app_request_exit();
+            commons_log_info("APP", "Lifecycle SDL_QUIT");
+            app_request_exit_reason("SDL_QUIT");
             break;
         }
         case SDL_JOYDEVICEREMOVED:
@@ -363,6 +411,11 @@ void app_quit_confirm() {
 }
 
 void app_request_exit() {
+    app_request_exit_reason("unspecified");
+}
+
+void app_request_exit_reason(const char *reason) {
+    if (global->running) commons_log_info("APP", "Exit requested source=%s", reason ? reason : "unspecified");
     global->running = false;
 }
 
@@ -429,7 +482,7 @@ static void libs_init(app_t *app, int argc, char *argv[]) {
 static void quit_confirm_cb(lv_event_t *e) {
     lv_obj_t *mbox = lv_event_get_current_target(e);
     if (lv_msgbox_get_active_btn(mbox) == 1) {
-        app_request_exit();
+        app_request_exit_reason("quit_confirmation");
     } else {
         lv_msgbox_close_async(mbox);
     }

@@ -66,6 +66,7 @@ void app_run_loop(app_t *app);
 void app_process_events(app_t *app);
 
 void app_request_exit();
+void app_request_exit_reason(const char *reason);
 
 bool app_is_running();
 

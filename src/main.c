@@ -20,7 +20,8 @@ int main(int argc, char *argv[]) {
         setenv("XDG_RUNTIME_DIR", "/tmp/xdg", 0);
     }
 #ifndef DEBUG
-    // Don't generate core dumps in release builds
+    // Bounded persistent text diagnostics are armed in app_init. Keep full
+    // process memory dumps disabled; aurora-crash.log does not need them.
     struct rlimit rlim = {0, 0};
     setrlimit(RLIMIT_CORE, &rlim);
 #endif

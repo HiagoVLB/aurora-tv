@@ -1044,7 +1044,7 @@ static void locale_restart_confirm_cb(lv_event_t *e) {
     i18n_setlocale(app_configuration->language);
     settings_finish_close(fragment);
     if (restart) {
-        app_request_exit();
+        app_request_exit_reason("language_restart");
     }
 }
 

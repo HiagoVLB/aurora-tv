@@ -4,4 +4,6 @@ target_sources(moonlight-lib PRIVATE
         nullable.c
         font.c
         log_overlay.c
-        file_log.c)
+        file_log.c
+        diagnostic_reset.c
+        crash_log.c)

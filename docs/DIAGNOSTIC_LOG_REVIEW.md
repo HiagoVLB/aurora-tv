@@ -1,5 +1,88 @@
 # webOS diagnostic log review and upstream comparison
 
+## Log reset on every installation (2026-10-22)
+
+At the user's request, each webOS IPK now ships `aurora-logs-reset.pending` in
+the application root. Before opening diagnostic writers, the first launch
+checks this marker, removes only `aurora.log`, `aurora-crash.log` and
+`aurora-run.state` from `$HOME/conf` and `/tmp/moonlight-tv/conf`, then consumes
+the marker. Installing the same IPK again restores the same marker and causes
+another reset, without relying on version changes or build timestamps.
+Ordinary launches, including reopening after a crash, retain the current
+installation's history. Cleanup errors are logged and leave the marker pending
+for retry. Settings, profiles, pairing keys and unrelated files are excluded.
+Diagnostics are unlinked by exact name through directory descriptors, so log
+symlinks/hard links do not truncate their targets. Symlinked directories and
+invalid/nonregular marker files are refused. The IPK verifier requires the
+marker before publishing an installer. Actual package-manager/permission
+behavior on the C2 still requires validation after installation.
+
+## C2 incident and persistent fatal diagnostics (2026-10-22)
+
+The user supplied an Aurora log spanning 2026-10-22 00:07–01:46 UTC
+(2026-10-21 21:07–22:46 in São Paulo). Two distinct events must not be conflated:
+
+- At 00:27:29.185 UTC logging stops without interruption, teardown or shutdown
+  records. At 00:27:39.470 UTC a new Aurora 1.3.1 process starts, followed by
+  `/resume` with the same current game. The preceding video sample reports no
+  feed errors or frame gaps. This supports an abrupt process interruption but
+  supplies neither a native crash stack nor its cause.
+- At 01:46:52 UTC the receiver reports frame losses/IDR recovery. At
+  01:46:55.575 UTC NDL rejects AV1 feed with `-1`; Aurora interrupts with
+  `source=decoder reason=4099 quit_app=0`, completes connection teardown and
+  records `Shutdown complete`. Temporal proximity does not establish why the
+  decoder failed, nor explain the earlier abrupt interruption.
+
+The restart identifies webOS **10.3.1 (HE_DTV_W22O_AFABATPU)**, NDL video/audio,
+2560×1440 at 90 FPS, AV1 8-bit, HDR disabled, requested bitrate 95000 kbps and
+ABR mode 2. These are incident runtime settings, not new hardware validation.
+The user had both Aurora 1.3.1 and upstream Moonlight 1.6.36 installed; the
+supplied log and `/proc` examination identify Aurora's `bin/aurora` process.
+
+Terminal checks at 13:44 São Paulo on 22/10 show uptime 8h56: the current boot
+followed the incident. `/tmp/faultmanager/crash/` is readable and empty;
+`/tmp/var/log/reports/librdx/` does not exist. `dmesg` is denied to prisoner,
+and traditional messages/syslog files are absent. `/proc/sys/kernel/core_pattern`
+contains `core`. The live Aurora process's `/proc/<pid>/limits` confirms both
+core-size limits are zero. Current empty temporary directories cannot establish
+whether a report existed before reboot. The desktop manager also stops at the
+first existing report directory, even if it is empty; that limitation was not
+the explanation in this inspection, because the second directory was absent.
+
+The new webOS diagnostics keep a bounded **64 KiB `aurora-crash.log`** and a
+**511-byte `aurora-run.state`** beside the ordinary log. File descriptors are
+opened before a failure, close-on-exec, readable through Dev Manager (`0644`)
+and checked for symlinks, shared inodes and non-regular files. The last fatal
+report survives clean restarts. A running/clean/crashed marker is synced at
+lifecycle boundaries; the next launch reports an incomplete preceding shutdown
+in `aurora.log`, without assigning a cause. Boot ID/PID identify matching runs.
+
+Fatal SIGSEGV/BUS/ILL/FPE/ABRT/TRAP capture uses fixed buffers and signal-safe
+operations, records timestamps, signal code, hardware fault address when
+available, instruction/stack/link registers and Linux executable mappings, then
+re-raises the original signal. No stdio, normal logger, allocator, unwinder,
+mutex, raw stack or heap contents are used in the handler. Map scanning is
+bounded to 1 MiB input and the report's 64 KiB output cap. The main thread has
+a 64 KiB alternate signal stack; other threads can capture faults using their
+normal stack, but their stack exhaustion is not covered by that alternate stack.
+Full core dumps stay disabled outside Debug. This is intentional text capture,
+not a replacement native stack trace or proof of the original crash cause.
+
+SIGKILL, loss of power, failure before initialization, severe corruption and
+storage errors remain best-effort gaps. An unclean marker may also follow a
+forced stop or reboot; a retained fatal report must match the run identity.
+Fallback `/tmp` storage is explicitly nonpersistent. The app additionally logs
+SDL background/foreground/close/quit events, exit requests and shutdown begin.
+Existing stream/disconnect/cancel behavior is unchanged.
+
+Validation and package receipt for this change are tracked in
+[CURRENT_STATE.md](CURRENT_STATE.md). The signal-safety design follows
+[signal-safety(7)](https://man7.org/linux/man-pages/man7/signal-safety.7.html),
+[sigaction(2)](https://man7.org/linux/man-pages/man2/sigaction.2.html) and
+[sigaltstack(2)](https://man7.org/linux/man-pages/man2/sigaltstack.2.html).
+
+## Historical review (2026-10-18)
+
 Reviewed on 2026-10-18. Reference: mariotaku/moonlight-tv commit
 `cf96ecc72cdab3aae7ba0698f463b89065ae7e3b`, including its pinned SS4S
 `dfba721b85420ccabf91dac65be73984bf1865f9` and commons-c
