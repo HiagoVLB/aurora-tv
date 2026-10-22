@@ -40,8 +40,19 @@ release. As revisões comparativas anteriores não alteraram o streaming.
 
 - Em **22/10/2026**, versão central incrementada por solicitação de **1.3.1**
   para **1.3.2**. Contrato de derivação appinfo/APP_VERSION/marca do ELF conferido
-  pelo helper. Esta operação não recompilou o IPK: o último instalador validado
-  abaixo continua **1.3.1** até um novo build; nenhuma instalação foi realizada.
+  pelo helper. Depois, IPK **1.3.2** recompilado e validado em ARM/RelWithDebInfo,
+  com captura fatal e marcador de limpeza por instalação. Fontes do commit
+  `7a9e9f76b52d362d9ad1ec260863b02f353045cd`, limpas durante o build. SHA-256 desse build:
+  `b4eb9eb6b36c59af0bde4f9faa5ea7b6d42dede6067622df3181a7858b61e3ae`.
+  Recibo/log/símbolos em `.cache/ipk/run-vyajzlsw/`; nenhuma instalação ou
+  validação física na C2 foi realizada. Os builds anteriores seguem abaixo.
+- Novo IPK **1.3.2** com diagnóstico **v2**, gerado em **22/10/2026**, destino
+  ARM/RelWithDebInfo, com fontes locais alteradas. SHA-256 atual:
+  `fd15de7413a23f921b79ea01848dbd5b17225f5de08ea43ac38fe092fc0f2c64`.
+  Metadados/ELF, strings v2, marcador de reset e arquivo de símbolos conferidos;
+  tabelas ARM de unwind presentes e nenhuma dependência obrigatória de libunwind.
+  Recibo/log/símbolos em `.cache/ipk/run-2wcjcrr9/`. Nova captura não instalada
+  nem validada fisicamente na C2 nesta tarefa.
 - Skills: `aurora-build-ipk` e `aurora-bump-version`, referenciadas no AGENTS.md.
 - Comando de build: `python3 scripts/webos/build_ipk.py`. Saída única de entrega:
   **`aurora.ipk` na raiz do Aurora**, ignorada pelo Git. O pacote anterior só é
@@ -51,8 +62,8 @@ release. As revisões comparativas anteriores não alteraram o streaming.
 - Fonte única da versão: `MOONLIGHT_VERSION` em CMakeLists.txt. Manifesto,
   APP_VERSION e marca `aurora-v` do ELF derivam dela.
 - Incremento padrão: `python3 scripts/dev/aurora_version.py --part patch --apply`.
-  Sem `--apply`, apenas simula. Criar estas skills não incrementou a versão: a
-  versão declarada continua **1.3.1**. Build e incremento são operações separadas.
+  Sem `--apply`, apenas simula. Na criação destas skills a versão era **1.3.1**;
+  a versão central atual é **1.3.2**. Build e incremento são operações separadas.
 - Gerar um pacote não instala na TV nem comprova funcionamento na C2.
 - Validação em 19/10/2026: build real Linux/amd64 via Docker, destino ARM,
   RelWithDebInfo, concluído pelo helper. `aurora.ipk` entregue com versão
@@ -69,9 +80,45 @@ release. As revisões comparativas anteriores não alteraram o streaming.
   Build identifica fontes locais alteradas; não houve incremento nem instalação.
 - IPK regenerado em **22/10/2026** com limpeza de logs por instalação, mesma
   versão **1.3.1**, ARM/RelWithDebInfo. Marcador e código de reset conferidos no
-  pacote; recibo inclui `installation_log_reset_verified=true`. SHA-256 atual:
+  pacote; recibo inclui `installation_log_reset_verified=true`. SHA-256 desse build:
   `23a867609d39371718cad6532b445a51f14fe6805a7f6c530af71100f9efa1a1`.
   Recibo/log/símbolos em `.cache/ipk/run-eu54hyum/`; não instalado na TV.
+
+## SIGABRT confirmado na C2 e captura v2 (22/10/2026)
+
+- Nova captura, ainda **v1**, confirma **SIGABRT** às **20:02:58**, PID **9531**,
+  thread **9617**, 95 segundos após abrir. `aurora-run.state` corresponde e está
+  `crashed`. PC/LR relativos à libc repetem **0x21ca6 / 0x5e7c4** do primeiro
+  relatório; a origem do abort continua desconhecida. Último vídeo com zero
+  erros de feed às 20:02:57.197. O log estendido também registra falha NDL e
+  início de shutdown por SDL_QUIT às 20:01 na execução anterior (PID **7483**),
+  seguida de startup indicando `crashed`; o relatório fatal dessa execução foi
+  sobrescrito pelo último crash. São ocorrências separadas. Evidências locais
+  em `.cache/crash-diagnostics/sigabrt-2026-10-22-200258/`; detalhes no relatório.
+- Relatório recebido identifica Aurora **1.3.2**, PID **3474**, thread **5373**,
+  **SIGABRT (6), si_code=-6**, às **19:29:27 de 22/10** em São Paulo. PC/LR
+  pertencem à libc da TV; a v1 não registrou a origem da chamada. Marcador
+  `crashed` foi confirmado no startup seguinte. O estado `running` fornecido
+  pertence à nova execução, PID **7483**. Isso valida captura fatal v1 persistida
+  e identificação de execução anterior nessa C2; não identifica a causa.
+- Captura **v2** acrescenta nome da thread/remetente do sinal, pilha local de
+  até 32 endereços via libunwind opcional e mensagem fatal da glibc quando
+  disponível (512 caracteres). Probing/símbolos resolvidos no startup; handler
+  usa buffers fixos e I/O de sinal. Converte o contexto GP ARM corretamente,
+  retém tabelas de unwind próprias e solicita só metadados DWARF/EXIDX.
+  Pilha pode ficar parcial por ausência de tabelas na libc/firmware.
+- Relatório básico é sincronizado antes do unwind. Falha do próprio unwinder
+  preserva sinal original e evidencia `backtrace_fault_signal`; biblioteca
+  ausente mantém captura básica. Mensagem da libc é lida com segurança via
+  descritor de `/proc/self/mem`, sem dump de memória bruta. A causa original
+  do SIGABRT permanece pendente. Detalhes no relatório de diagnóstico.
+- Testes CMake Linux aprovados: file/crash/reset, unwind disponível/ausente e
+  falha deliberada no unwinder. Fixture ARM32 passou sob QEMU + glibc Ubuntu e
+  libunwind 1.6.2, incluindo abort com pilha parcial e motivo de asserção.
+  Isso não emula o firmware LG. Testes também aprovados em macOS e Linux com
+  ASan/UBSan; o simulador compilou. Build/IPK v2 concluído e validado conforme
+  recibo acima; validação física da v2 ainda pendente. A versão central continua
+  **1.3.2** e a limpeza por instalação está mantida.
 
 ## Limpeza de logs a cada instalação (22/10/2026)
 

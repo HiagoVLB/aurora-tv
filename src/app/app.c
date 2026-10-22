@@ -97,8 +97,11 @@ int app_init(app_t *app, app_settings_loader *settings_loader, int argc, char *a
     }
 #if TARGET_WEBOS
     if (log_dir && crash_log_init(log_dir, APP_VERSION)) {
-        commons_log_info("CrashLog", "v1 armed path=%s/aurora-crash.log max=65536 persistent=%d; text registers/maps, not a core dump",
-                         log_dir, log_persistent);
+        commons_log_info("CrashLog", "v2 armed path=%s/aurora-crash.log max=65536 persistent=%d backtrace=%d; text registers/maps/frames, not a core dump",
+                         log_dir, log_persistent, crash_log_backtrace_available());
+        if (!crash_log_backtrace_available()) {
+            commons_log_warn("CrashLog", "Local backtrace unavailable; signal/register/map capture remains active");
+        }
         const char *previous = crash_log_previous_run();
         if (*previous && strncmp(previous, "clean  ", 7) != 0) {
             commons_log_warn("CrashLog", "Previous run did not complete clean shutdown: %.511s; cause unknown unless a matching fatal report exists",
