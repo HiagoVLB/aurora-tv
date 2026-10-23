@@ -16,7 +16,7 @@ detalhados continuam em [integração VibeShine](VIBESHINE_INTEGRATION.md),
 
 Os SHAs das referências identificam o código lido. Não houve nova verificação de
 HEAD remoto nesta criação de skills; não interpretá-los como versões mais recentes
-garantidas. O `CMakeLists.txt` declara versão **1.3.2**; isso não prova qual IPK
+garantidas. O `CMakeLists.txt` declara versão **1.3.3**; isso não prova qual IPK
 está instalado na TV. O alvo de interesse do usuário é **LG C2**; evidências
 históricas de **C5 + eARC** no [histórico de streaming](WEBOS_STREAMING_HISTORY.md)
 não são validação da C2.
@@ -38,6 +38,24 @@ release. As revisões comparativas anteriores não alteraram o streaming.
 
 ## Geração de IPK e versionamento
 
+- Em **22/10/2026, 21:36 São Paulo**, IPK **1.3.3** recompilado com correção
+  local da concorrência NDL e validação de fragmentos de vídeo, sem incrementar
+  a versão. ARM/RelWithDebInfo, metadados/ELF e reset por instalação aprovados.
+  SHA-256 `7d40301f90207ecab6971cf32c49277e017f9d33509210c628c9a5e326b0de0d`;
+  recibo e símbolos em `.cache/ipk/run-s4iicwal/`. Build desktop completo e os
+  dois testes CTest de segurança de vídeo passaram; fixture ASan/UBSan também.
+  Instalação e validação física deste pacote ainda pendentes.
+
+- Em **22/10/2026**, versão central alterada de **1.3.2** para **1.3.3**,
+  interpretando o pedido `1.333` como o próximo patch no formato `X.Y.Z`.
+  Helper conferiu a derivação de appinfo/APP_VERSION/marca do ELF. Em seguida,
+  IPK **1.3.3**, ARM/RelWithDebInfo via Docker, gerado e validado com diagnóstico
+  v2 e limpeza de logs por instalação. SHA-256:
+  `74129148808e5a3ed2ca9cede0eb408ff4ec2568647fcca56cbca1cc7b382e32`.
+  Fontes do commit `454e6b25888201816fa52ffb4720c67bd92cbdfb` com alterações
+  locais de versão/documentação. Metadados, ELF ARM e marcador de reset
+  aprovados; recibo/log/símbolos em `.cache/ipk/run-wyjwcgps/`.
+  Pacote não instalado nem validado em execução na C2 nesta tarefa.
 - Em **22/10/2026**, versão central incrementada por solicitação de **1.3.1**
   para **1.3.2**. Contrato de derivação appinfo/APP_VERSION/marca do ELF conferido
   pelo helper. Depois, IPK **1.3.2** recompilado e validado em ARM/RelWithDebInfo,
@@ -47,7 +65,7 @@ release. As revisões comparativas anteriores não alteraram o streaming.
   Recibo/log/símbolos em `.cache/ipk/run-vyajzlsw/`; nenhuma instalação ou
   validação física na C2 foi realizada. Os builds anteriores seguem abaixo.
 - Novo IPK **1.3.2** com diagnóstico **v2**, gerado em **22/10/2026**, destino
-  ARM/RelWithDebInfo, com fontes locais alteradas. SHA-256 atual:
+  ARM/RelWithDebInfo, com fontes locais alteradas. SHA-256 desse build:
   `fd15de7413a23f921b79ea01848dbd5b17225f5de08ea43ac38fe092fc0f2c64`.
   Metadados/ELF, strings v2, marcador de reset e arquivo de símbolos conferidos;
   tabelas ARM de unwind presentes e nenhuma dependência obrigatória de libunwind.
@@ -63,7 +81,7 @@ release. As revisões comparativas anteriores não alteraram o streaming.
   APP_VERSION e marca `aurora-v` do ELF derivam dela.
 - Incremento padrão: `python3 scripts/dev/aurora_version.py --part patch --apply`.
   Sem `--apply`, apenas simula. Na criação destas skills a versão era **1.3.1**;
-  a versão central atual é **1.3.2**. Build e incremento são operações separadas.
+  a versão central atual é **1.3.3**. Build e incremento são operações separadas.
 - Gerar um pacote não instala na TV nem comprova funcionamento na C2.
 - Validação em 19/10/2026: build real Linux/amd64 via Docker, destino ARM,
   RelWithDebInfo, concluído pelo helper. `aurora.ipk` entregue com versão
@@ -86,6 +104,35 @@ release. As revisões comparativas anteriores não alteraram o streaming.
 
 ## SIGABRT confirmado na C2 e captura v2 (22/10/2026)
 
+- Nova captura v2, às **21:18:36 de 22/10**, confirma **corrupção do heap**:
+  `corrupted size vs. prev_size`, PID 5052, thread VideoRecv, AV1 1440p90.
+  Bibliotecas exatas lidas da C2 resolvem a pilha em `g_malloc` chamado pelo
+  feed do pipeline LG, via NDL_DirectVideoPlay. Isso localiza a detecção, não a
+  escrita original. Fontes locais agora serializam feed de vídeo/áudio e unload
+  do mesmo player NDL, evitam deadlock em callbacks/estatísticas e protegem a
+  cópia dos fragmentos contra tamanhos inválidos. A sobreposição foi reproduzida
+  no driver anterior; testes de concorrência, callback síncrono, prime tardio,
+  erros e limites de buffers passam com ASan/UBSan. Correção física do crash e
+  efeito sobre latência na C2 ainda pendentes. Evidência detalhada em
+  [DIAGNOSTIC_LOG_REVIEW.md](DIAGNOSTIC_LOG_REVIEW.md). Patches locais em SS4S
+  sobre `49918fc58f0f78fd342ed6e891172a2b401a9a2c`; sem atualização do submódulo.
+  Uma consulta seguinte encontrou outro fatal do módulo antigo ainda instalado,
+  PID 7197 às **21:30:25**, `double free or corruption (out)` em `video-src:src`.
+  A libc exata aponta a detecção ao liberar o tcache na saída da thread; isso
+  não identifica a escrita original nem testa o pacote corrigido. Relatório
+  e hashes antigo/novo registrados no mesmo documento de diagnóstico.
+
+- Log da instalação **1.3.3**, às **20:17:46**, confirma limpeza de logs e
+  `CrashLog v2 ... persistent=1 backtrace=1` na C2. Inicialização da v2 validada;
+  a captura de pilha fatal real seguinte está descrita acima. A ocorrência seguinte tem
+  intervalos/overflow de áudio, perda de novos submits e desconexão de controle
+  às **20:19:43**, com cleanup e app ainda ativo; não registra novo SIGABRT.
+  O usuário esclareceu que o Windows respondia e só a tela do jogo ficou preta.
+  Há defeito independente confirmado no ABR: amostra envelhecida com 0% de perda
+  permite probes de aumento mesmo após o vídeo parar. Correção pendente;
+  não demonstra a causa da tela preta. Falta log do VibeShine instalado.
+  Evidências em [DIAGNOSTIC_LOG_REVIEW.md](DIAGNOSTIC_LOG_REVIEW.md) e comparação
+  local em [VIBESHINE_INTEGRATION.md](VIBESHINE_INTEGRATION.md).
 - Nova captura, ainda **v1**, confirma **SIGABRT** às **20:02:58**, PID **9531**,
   thread **9617**, 95 segundos após abrir. `aurora-run.state` corresponde e está
   `crashed`. PC/LR relativos à libc repetem **0x21ca6 / 0x5e7c4** do primeiro
@@ -118,7 +165,7 @@ release. As revisões comparativas anteriores não alteraram o streaming.
   Isso não emula o firmware LG. Testes também aprovados em macOS e Linux com
   ASan/UBSan; o simulador compilou. Build/IPK v2 concluído e validado conforme
   recibo acima; validação física da v2 ainda pendente. A versão central continua
-  **1.3.2** e a limpeza por instalação está mantida.
+  **1.3.3** após o incremento posterior; a limpeza por instalação está mantida.
 
 ## Limpeza de logs a cada instalação (22/10/2026)
 

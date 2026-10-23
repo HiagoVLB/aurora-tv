@@ -1,5 +1,6 @@
 #include "session_video.h"
 #include "session_pacing_diag.h"
+#include "decode_unit.h"
 
 #include "config.h"
 
@@ -304,6 +305,10 @@ static int vdec_finish_feed(SS4S_VideoFeedResult result, PDECODE_UNIT decodeUnit
 
 int vdec_delegate_submit(PDECODE_UNIT decodeUnit) {
     __atomic_store_n(&diag_last_submit, SDL_GetTicks(), __ATOMIC_RELAXED);
+    if (decodeUnit == NULL || decodeUnit->fullLength <= 0) {
+        commons_log_error("Session", "Invalid empty/negative decode unit, requesting IDR");
+        return DR_NEED_IDR;
+    }
     if ((size_t) decodeUnit->fullLength > buffer_size) {
         if ((size_t) decodeUnit->fullLength > DECODER_BUFFER_MAX_SIZE) {
             commons_log_error("Session", "Decode unit %d bytes exceeds %zu byte cap, dropping",
@@ -356,17 +361,12 @@ int vdec_delegate_submit(PDECODE_UNIT decodeUnit) {
         commons_log_warn("Session", "Video frame size %d is near initial decoder buffer (%zu)",
                          decodeUnit->fullLength, buffer_initial_size);
     }
-    size_t length = 0;
-    PLENTRY entry = decodeUnit->bufferList;
-    if (entry != NULL && entry->next == NULL) {
-        memcpy(buffer, entry->data, entry->length);
-        length = (size_t) entry->length;
-    } else {
-        for (; entry != NULL; entry = entry->next) {
-            memcpy(buffer + length, entry->data, entry->length);
-            length += entry->length;
-        }
+    if (!video_decode_unit_copy(buffer, buffer_size, decodeUnit)) {
+        commons_log_error("Session", "Invalid decode fragments frame=%d expected=%d capacity=%zu; requesting IDR",
+                          decodeUnit->frameNumber, decodeUnit->fullLength, buffer_size);
+        return DR_NEED_IDR;
     }
+    size_t length = (size_t) decodeUnit->fullLength;
     SS4S_VideoFeedFlags flags = SS4S_VIDEO_FEED_DATA_FRAME_START | SS4S_VIDEO_FEED_DATA_FRAME_END;
     if (decodeUnit->frameType == FRAME_TYPE_IDR) {
         flags |= SS4S_VIDEO_FEED_DATA_KEYFRAME;

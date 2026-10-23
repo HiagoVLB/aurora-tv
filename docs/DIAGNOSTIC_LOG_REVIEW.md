@@ -1,5 +1,130 @@
 # webOS diagnostic log review and upstream comparison
 
+## Heap corruption in AV1 feed on 1.3.3 (2026-10-22, 21:18:36 São Paulo)
+
+The new v2 fatal report identifies PID **5052**, thread **VideoRecv** (5996),
+SIGABRT and **`libc_abort_message=corrupted size vs. prev_size`**, at epoch
+1792714716 (**00:18:36 UTC on 23 October**). The process started at 23:51:49 UTC;
+the last session started at 00:06:29 UTC, AV1 8-bit 2560×1440@90, NDL webOS5,
+stereo PCM. At 00:18:35 the last published video sample still reports 90 submit
+FPS and no feed errors. Allocator corruption can predate the allocation that
+detects it; these counters do not establish memory safety.
+
+Original attachments, a separate live log snapshot, the installed NDL module and
+exact firmware libraries obtained read-only over developer SSH are preserved in
+`.cache/crash-diagnostics/sigabrt-2026-10-22-211836/`. The TV remained on firmware
+10.3.1, same boot ID, with a later Aurora 1.3.3 process running. Thumb-normalized
+mapping offsets resolve the fatal call chain to:
+
+| Frame | Library offset | Resolved call |
+| --- | --- | --- |
+| 10 | glib `0x410c0` | `g_malloc` |
+| 11 | libpf `0x139cee` | `mediapipeline::DirectMediaPlayer::feed`; return address immediately after `g_malloc(size)` |
+| 12 | libplayerAPIs `0x3cdf6` | `StarfishMediaAPIs::Feed` |
+| 13–15 | NDL impl `0xb0fc`, `0xd6a6`, `0x932c` | `DVPlayer::Play`, `DMPlayer::VideoFeed`, `NDL_IMPL_DirectVideoPlay` |
+| 16 | installed SS4S module `0x48e0` | AV1 `FeedVideoWithPTS`, immediately after `NDL_DirectVideoPlay` |
+
+The visible firmware feed allocates `size` bytes and copies the submitted data
+before wrapping it for GStreamer. This supports synchronous input consumption;
+it does not identify which earlier write damaged the allocator. The report is
+not evidence of OOM, a host crash, or an exact AV1 frame-count overflow.
+
+Source inspection and regression tests exposed unsafe overlap in the client:
+video released the NDL mutex before Play/queue queries; audio used that mutex,
+and CloseAudio could unload the shared media pipeline while video was inside
+Play. The existing SS4S feed guards are per-stream and cannot serialize this
+shared NDL instance. The local fix holds the media lock across video calls and
+queries, HDR calls, audio access and unload. Presentation callbacks use trylock
+so synchronous callbacks cannot deadlock the caller. Latency reporting happens
+after releasing the media lock, avoiding inversion with the SS4S player lock
+held by OpenAudio during priming. Concurrent prime-thread joiners are serialized.
+PTS formulas, direct submit, codec selection and the surround mapping are unchanged.
+
+Decode-unit copying now checks each fragment's data/positive length against the
+declared remaining size, the destination capacity and the exact final total.
+Invalid chains request IDR without entering SS4S, including negative lengths,
+missing data, overflow and cycles. This closes a buffer-overwrite path; the
+supplied logs do not show that malformed fragments caused this particular abort.
+
+Validation: `tests/app/run_video_safety.sh` compiles the actual driver with mock
+firmware under ASan/UBSan. The old driver failed the forced concurrent-call test;
+the corrected driver passes AV1/HEVC/H264 concurrent audio/video, unload during
+video, synchronous callbacks, delayed load priming and feed failure paths.
+`test_decode_unit` covers valid fragmented/single-buffer frames and invalid
+sizes/chains. Both tests are also registered in desktop CTest. Firmware crash
+elimination and streaming latency still require a run of the corrected build on
+the C2; do not treat the simulated firmware tests as that validation.
+
+A subsequent read-only TV check found a second fatal report from the unchanged
+installed module (`d60ff9ad880634a56bd03534bee01391c50228f287f7af62f5d06cc68169a77c`),
+PID **7197**, at **00:30:25 UTC / 21:30:25 São Paulo**, thread **video-src:src**.
+Its allocator message is **`double free or corruption (out)`**. Exact TV libc
+symbols resolve the bottom frames to `_int_free`, `__libc_free`,
+`tcache_thread_shutdown` / `__malloc_arena_thread_freeres`, then `start_thread`.
+Corruption was detected while the GStreamer source thread released its cached
+allocations on exit; there is no originating application free in that stack.
+At the same time NDL reports error state 0x12/value 600 and UNLOADCOMPLETED,
+followed by SDL_QUIT and the start of ABR shutdown. This is another heap failure,
+not evidence that ABR was stuck for minutes or that the corrected package failed:
+the corrected module in the prepared IPK has hash
+`876d1a6c98fe0e37a49db9b0302940c26a77de9f73c4438edb490e5f782d1cb0`
+and had not been installed. The new fatal report and normalized offsets are saved
+as `live-crash-latest.txt` / `live-crash-latest.frames.json` beside the original
+capture. Physical root-cause validation remains open.
+
+The independent stale-summary ABR issue below remains outside this crash fix.
+The reference [punktfunk NDL implementation](https://github.com/punktfunk/client-webos/blob/main/src/platform/webos/ndl/mod.rs)
+also serializes its singleton NDL entry points; this is a design comparison,
+not proof of the initiating corruption on this C2.
+
+## Black game image and audio gaps on 1.3.3 (2026-10-22, 20:17–20:20 São Paulo)
+
+The two supplied attachments are byte-identical (397 lines, SHA-256
+`80f7201ed2801fd9238f1d62422f83ff05ae05a95cf647cb592ce6203857d13c`).
+The user clarified that only the game image became black: the Windows key still
+worked. This is not evidence of a complete PC hang. The capture contains only
+Aurora output, with no host, game, GPU or Windows event log. Original evidence
+is preserved locally at `.cache/crash-diagnostics/black-game-2026-10-22-2019/`.
+
+- At **23:17:46 UTC**, Aurora **1.3.3** confirms installation log reset and
+  diagnostic **v2**, `persistent=1 backtrace=1`. This validates startup/probing
+  and observed reset on the C2, not a v2 fatal stack capture.
+- A single `/launch` goes to **192.168.0.52** with `currentGame=0`, AV1 8-bit
+  2560×1440@90, HDR off, stereo and 95000 kbps with low-latency ABR. NDL accepts
+  media loading, reports LOADCOMPLETED/PLAYING, and accepts video. Audio open
+  returns success and Limelight receives an initial audio packet. None of this
+  proves audible output or correct game rendering.
+- Audio inter-feed gaps reach **311 ms**. Limelight reports two **audio packet
+  queue overflows** at **23:18:20.504 / 23:18:20.997 UTC**, plus loss/recovery
+  messages. In `AudioStream.c:queuePacketToLbq`, overflow means the receive-to-
+  playback queue filled and was flushed. It can reflect slow consumption or
+  bursts; the adjacent "Network dropped audio" message alone cannot identify
+  physical network loss or which audio stage caused silence. There are no
+  recorded NDL audio feed failures in this trace.
+- All published video windows have **feedErrors=0**, **feedNotReady=0** and
+  maximum feed time at most **8.23 ms**. Near **23:19:27 UTC**, IDR recovery is
+  requested and live submit stops advancing. Through 23:19:42 the last summary
+  is still sample **99583**; its age reaches **16424 ms**, with last-submit age
+  **15487 ms** and `feed_active=0`. Its displayed 64.4 FPS is historical, not
+  current throughput. The evidence cannot distinguish host capture/encoder
+  failure, transport loss or IDR recovery without a corresponding host log.
+- At **23:19:43.882 UTC**, the control connection disconnects unexpectedly;
+  Aurora records `source=network reason=4098 quit_app=0` and completes session
+  cleanup at **23:19:50.210 UTC**. It continues discovery afterward. There is
+  no app restart or fatal signal in this capture. Status updates from
+  **192.168.0.88** afterward are not proof that the session host **.52** recovered.
+
+One independent ABR defect is demonstrated: the worker reuses summary **99583**
+with zero frame-gap loss as time passes without new video, counts it toward
+stability and requests upward bitrate probes. The 23023→24174 kbps request
+succeeds at **23:19:29.032 UTC**, after submit stopped; later requests for 25382
+fail with `GS_IO_ERROR (-5)`. `abr_thread`/`abr_tick_local` lack summary-age
+validation. This is a pending correction, not an explanation of the game's
+black image and not fixed by this review. No source behavior or IPK was changed.
+
+The local VibeShine comparison and remaining evidence are recorded in
+[VIBESHINE_INTEGRATION.md](VIBESHINE_INTEGRATION.md).
+
 ## Repeated fatal capture before updating (2026-10-22, 20:02 São Paulo)
 
 The next supplied v1 fatal report and `aurora-run.state` both identify PID

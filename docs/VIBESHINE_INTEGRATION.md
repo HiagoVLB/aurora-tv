@@ -1,5 +1,40 @@
 # VibeShine session and catalogue integration
 
+## 1.3.3 black game image and audio review (2026-10-22)
+
+Aurora `454e6b25888201816fa52ffb4720c67bd92cbdfb` plus local version/docs
+changes was compared with the clean local VibeShine checkout
+`97835dbfb14faafd8b4f13d98bc00cc921d45296`; remote freshness was not checked.
+The snapshot is `.cache/comparisons/vibeshine-state.json`. No installed host
+version can be established from the TV log. See the dated incident in
+[DIAGNOSTIC_LOG_REVIEW.md](DIAGNOSTIC_LOG_REVIEW.md) for observations/timestamps.
+
+The trace contains one successful launch/RTSP setup, audio queue overflows,
+subsequent loss of new video submissions and finally an unexpected control
+disconnect. Windows still responded to its Windows key; the user's black-game
+report does not establish a system hang. No automatic repeated launch, `/cancel`,
+decoder-feed rejection or Aurora fatal signal appears in this trace.
+
+VibeShine's `nvhttp.cpp:setBitrate` validates identity and bitrate, then
+`stream.cpp:set_bitrate_for_sessions` queues a change for that client's encoder.
+`video.cpp` coalesces requests and either applies the bitrate live or rebuilds
+an encoder that cannot apply it. The capability endpoint reports server-side
+ABR unsupported, matching Aurora's local control in this trace. These paths
+do not directly request a display-mode or audio-device change; whether encoder
+reconfiguration failed in the installed host requires its log. Aurora does
+have a demonstrated stale-summary ABR issue: it probes upward after new video
+stops. That correction remains pending and is not a proven game-black-screen
+cause.
+
+Stereo audio open and first-packet receipt succeed on the TV. Queue overflow
+does not identify whether the host captured silence, the audio consumer stalled
+or packets arrived in bursts. The host has explicit sink selection, capture-only,
+virtual sink and retained-ownership behavior; none can be diagnosed as the cause
+without host configuration/logs. Request the VibeShine log export for
+**20:17:45–20:20:05 São Paulo (23:17:45–23:20:05 UTC)**, including capture,
+encoder and audio messages. The Logs/Troubleshooting export uses
+`/api/logs/export` on Windows. No host/client behavior changed in this review.
+
 ## Evidence from the supplied TV log
 
 At 2026-10-18 21:49:03.361 UTC (18:49:03 in São Paulo), Aurora records
