@@ -6,7 +6,7 @@ The app uses a black OLED-friendly interface, an in-stream menu, a full on-scree
 
 ## Features
 
-- **TV navigation:** D-pad and gamepad navigation, app tiles, and Stream, Input, Host, and Experimental settings.
+- **TV navigation:** D-pad and gamepad navigation, app tiles, and Stream, Input, Host, and Other settings.
 - **Video options:** resolution and frame-rate selection, HEVC, AV1 when advertised by the decoder, and HDR when supported by the full host/TV path.
 - **Bitrate control:** manual selection up to 400 Mbps in the UI and adaptive bitrate control. The selected decoder and host can apply a lower limit.
 - **Streaming tools:** pinned performance stats, a full on-screen keyboard, virtual mouse, and configurable gamepad touchpad behavior.

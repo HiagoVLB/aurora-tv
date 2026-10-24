@@ -11,10 +11,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <locale.h>
+#include <math.h>
 
 static const char *reply;
 static int transport_status;
 static char last_url[4096];
+static char last_payload[256];
 /* Deterministic crypto is confined to this test executable; test no crypto here. */
 void mbedtls_entropy_init(mbedtls_entropy_context *ctx) { (void) ctx; }
 void mbedtls_entropy_free(mbedtls_entropy_context *ctx) { (void) ctx; }
@@ -43,6 +46,14 @@ int http_request(HTTP *http, char *url, HTTP_DATA *data) {
     data->size = strlen(reply);
     return GS_OK;
 }
+int http_post_json(HTTP *http, char *url, const char *payload, HTTP_DATA *data) {
+    (void)http; (void)url;
+    snprintf(last_payload, sizeof(last_payload), "%s", payload);
+    data->memory = strdup("{\"newBitrate\":45000}");
+    data->size = strlen(data->memory);
+    return GS_OK;
+}
+
 bool uuidstr_random(uuidstr_t *dest) {
     memcpy(dest, "00000000-0000-4000-8000-000000000000", 37);
     return true;
@@ -51,6 +62,21 @@ bool uuidstr_random(uuidstr_t *dest) {
 int main(void) {
     struct GS_CLIENT_T client = {0};
     SERVER_DATA server = {.serverInfo.address = "fixture", .currentGame = 42};
+    GS_ABR_FEEDBACK feedback = {.packet_loss = 2.25f, .decode_fps = 59.9f,
+        .rtt_ms = 10, .current_bitrate = 50000};
+    GS_ABR_ACTION action;
+    const char *comma_locale = setlocale(LC_NUMERIC, "pt_BR.UTF-8");
+    if (!comma_locale) puts("Comma numeric locale unavailable; checking C locale only");
+    assert(gs_report_abr_feedback(&client, &server, &feedback, &action) == GS_OK);
+    assert(strstr(last_payload, "\"packetLoss\":2.25") != NULL);
+    assert(strstr(last_payload, "\"decodeFps\":59.9") != NULL);
+    assert(action.has_new_bitrate && action.new_bitrate == 45000);
+    feedback.packet_loss = NAN;
+    assert(gs_report_abr_feedback(&client, &server, &feedback, &action) == GS_INVALID);
+    feedback.packet_loss = 0;
+    feedback.decode_fps = INFINITY;
+    assert(gs_report_abr_feedback(&client, &server, &feedback, &action) == GS_INVALID);
+    setlocale(LC_NUMERIC, "C");
     int applied = -1;
     reply = "<root status_code=\"200\"><bitrate>45000</bitrate></root>";
     assert(gs_set_bitrate_ex(&client, &server, 93000, &applied) == GS_OK);

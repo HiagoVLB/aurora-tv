@@ -23,8 +23,8 @@ static char ring[LOG_OVERLAY_CAPACITY][LOG_OVERLAY_LINE_MAX];
 static int ring_count = 0;
 static int ring_head = 0;
 static SDL_mutex *ring_lock = NULL;
-static volatile int capture = 0;
-static volatile int dirty = 0;
+static SDL_atomic_t capture;
+static SDL_atomic_t dirty;
 
 static log_overlay_state_t state = LOG_OVERLAY_OFF;
 static char frozen[LOG_OVERLAY_CAPACITY][LOG_OVERLAY_LINE_MAX];
@@ -152,7 +152,7 @@ static int copy_recent_unlocked(char out[][LOG_OVERLAY_LINE_MAX], int max_lines)
 }
 
 static void push_line_fmt(const char *tag, const char *fmt, ...) {
-    if (!capture || ring_lock == NULL) {
+    if (!SDL_AtomicGet(&capture) || ring_lock == NULL) {
         return;
     }
     char msg[160];
@@ -171,11 +171,11 @@ static void push_line_fmt(const char *tag, const char *fmt, ...) {
     SDL_LockMutex(ring_lock);
     ring_push_unlocked(line);
     SDL_UnlockMutex(ring_lock);
-    dirty = 1;
+    SDL_AtomicSet(&dirty, 1);
 }
 
 static void heartbeat_tick(void) {
-    if (state != LOG_OVERLAY_LIVE || !capture) {
+    if (state != LOG_OVERLAY_LIVE || !SDL_AtomicGet(&capture)) {
         return;
     }
     Uint32 now = SDL_GetTicks();
@@ -231,7 +231,6 @@ static void rebuild_label_text(void) {
         lv_obj_align(panel, LV_ALIGN_BOTTOM_MID, 0, 0);
         lv_obj_move_foreground(panel);
     }
-    dirty = 0;
 }
 
 static void set_panel_visible(bool visible) {
@@ -313,16 +312,16 @@ static void refresh_timer_cb(lv_timer_t *t) {
         }
     }
     heartbeat_tick();
-    if (dirty) {
+    if (SDL_AtomicSet(&dirty, 0)) {
         rebuild_label_text();
     }
 }
 
 static void apply_live(void) {
     ensure_ui();
-    capture = 1;
+    SDL_AtomicSet(&capture, 1);
     state = LOG_OVERLAY_LIVE;
-    dirty = 1;
+    SDL_AtomicSet(&dirty, 1);
     last_heartbeat_ms = 0;
     if (refresh_timer == NULL) {
         refresh_timer = lv_timer_create(refresh_timer_cb, LOG_OVERLAY_REFRESH_MS, NULL);
@@ -337,7 +336,7 @@ static void apply_live(void) {
 }
 
 static void apply_off(void) {
-    capture = 0;
+    SDL_AtomicSet(&capture, 0);
     state = LOG_OVERLAY_OFF;
     if (refresh_timer) {
         lv_timer_pause(refresh_timer);
@@ -367,19 +366,22 @@ void log_overlay_init(void) {
 }
 
 void log_overlay_deinit(void) {
+    SDL_AtomicSet(&capture, 0);
     destroy_ui();
     if (ring_lock != NULL) {
         SDL_DestroyMutex(ring_lock);
         ring_lock = NULL;
     }
-    capture = 0;
-    dirty = 0;
+    SDL_AtomicSet(&capture, 0);
+    SDL_AtomicSet(&dirty, 0);
     state = LOG_OVERLAY_OFF;
 }
 
 void log_overlay_reassert(void) {
     ensure_ui();
-    if (app_configuration != NULL && app_configuration->show_logs) {
+    if (state == LOG_OVERLAY_FROZEN) {
+        set_panel_visible(true);
+    } else if (app_configuration != NULL && app_configuration->show_logs) {
         apply_live();
     } else if (state == LOG_OVERLAY_LIVE || state == LOG_OVERLAY_FROZEN) {
         set_panel_visible(true);
@@ -387,10 +389,7 @@ void log_overlay_reassert(void) {
 }
 
 void log_overlay_on_log(commons_log_level level, const char *tag, const char *message) {
-    if (!capture || message == NULL) {
-        return;
-    }
-    if (!should_capture(level, tag, message)) {
+    if (!SDL_AtomicGet(&capture) || message == NULL) {
         return;
     }
     struct timespec ts;
@@ -403,9 +402,11 @@ void log_overlay_on_log(commons_log_level level, const char *tag, const char *me
         return;
     }
     SDL_LockMutex(ring_lock);
-    ring_push_unlocked(line);
+    if (should_capture(level, tag, message)) {
+        ring_push_unlocked(line);
+        SDL_AtomicSet(&dirty, 1);
+    }
     SDL_UnlockMutex(ring_lock);
-    dirty = 1;
 }
 
 log_overlay_state_t log_overlay_get_state(void) {
@@ -436,7 +437,7 @@ void log_overlay_cycle(void) {
                 frozen_count = copy_recent_unlocked(frozen, LOG_OVERLAY_CAPACITY);
                 SDL_UnlockMutex(ring_lock);
             }
-            capture = 0;
+            SDL_AtomicSet(&capture, 0);
             state = LOG_OVERLAY_FROZEN;
             if (refresh_timer) {
                 lv_timer_pause(refresh_timer);

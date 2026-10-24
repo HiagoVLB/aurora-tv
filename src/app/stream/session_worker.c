@@ -38,7 +38,7 @@ int session_worker(session_t *session) {
 #if TARGET_WEBOS
     webos_game_mode_state_t *game_mode_state = NULL;
     webos_stream_priority_state_t *stream_prio = NULL;
-    session->webos_game_mode = NULL;
+    session->webos_hdr = false;
 #endif
 
 #if FEATURE_INPUT_EVMOUSE
@@ -128,7 +128,7 @@ int session_worker(session_t *session) {
     SS4S_PlayerSetViewportSize(session->player, app->ui.width, app->ui.height);
     SS4S_PlayerSetUserdata(session->player, app);
 
-    session_video_prepare_stream();
+    session_video_prepare_stream(&session->config);
 
 #if TARGET_WEBOS
     /* Force-off experimental SS4S pacing. Enabling it (the default in some
@@ -172,11 +172,8 @@ int session_worker(session_t *session) {
 #if TARGET_WEBOS
     /* After the decoder is up: changing picture mode before LiStartConnection
      * can tear down NDL and make the session exit immediately. */
-    if (session->app->settings.game_mode) {
-        const bool hdr = session->app->settings.hdr &&
-                         (session->config.stream.supportedVideoFormats & VIDEO_FORMAT_MASK_10BIT) != 0;
-        game_mode_state = webos_game_mode_enter(hdr);
-        session->webos_game_mode = game_mode_state;
+    if (session->config.game_mode) {
+        game_mode_state = webos_game_mode_enter();
     }
 #endif
     session_set_state(session, STREAMING_STREAMING);
@@ -192,8 +189,20 @@ int session_worker(session_t *session) {
         };
         session->abr = adaptive_bitrate_start(&abr_config);
     }
+#if TARGET_WEBOS
+    bool game_mode_hdr = false;
+#endif
     SDL_LockMutex(session->mutex);
     while (!session->interrupted) {
+#if TARGET_WEBOS
+        if (session->webos_hdr != game_mode_hdr) {
+            game_mode_hdr = session->webos_hdr;
+            SDL_UnlockMutex(session->mutex);
+            webos_game_mode_on_hdr(game_mode_state, game_mode_hdr);
+            SDL_LockMutex(session->mutex);
+            continue;
+        }
+#endif
         // Wait until interrupted
         SDL_CondWait(session->cond, session->mutex);
     }
@@ -231,7 +240,6 @@ int session_worker(session_t *session) {
     session_set_state(session, STREAMING_NONE);
     thread_cleanup:
 #if TARGET_WEBOS
-    session->webos_game_mode = NULL;
     webos_game_mode_restore(game_mode_state);
     game_mode_state = NULL;
     webos_stream_priority_leave(stream_prio);

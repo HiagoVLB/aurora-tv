@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: moonlight-tv\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-19 04:22+0000\n"
+"POT-Creation-Date: 2026-10-24 22:39+0000\n"
 "PO-Revision-Date: 2026-10-19 01:15-0300\n"
 "Last-Translator: \n"
 "Language-Team: Portuguese, Brazilian\n"
@@ -18,46 +18,46 @@ msgstr ""
 "X-Crowdin-Project: moonlight-tv\n"
 "X-Crowdin-Project-ID: 484733\n"
 
-#: src/app/app.c:138
+#: src/app/app.c:186
 msgid "[Localized Language]"
 msgstr "Português do Brasil"
 
-#: src/app/app.c:359 src/app/ui/launcher/add.dialog.c:42
+#: src/app/app.c:419 src/app/ui/launcher/add.dialog.c:42
 #: src/app/ui/launcher/apps.controller.c:876
 #: src/app/ui/launcher/server.context_menu.c:101
 #: src/app/ui/launcher/server.context_menu.c:187
-#: src/app/ui/settings/panes/experimental.pane.c:212
-#: src/app/ui/settings/panes/pref_fps.c:144
+#: src/app/ui/settings/panes/other.pane.c:142
+#: src/app/ui/settings/panes/pref_fps.c:160
 #: src/app/ui/settings/panes/pref_res.c:174
 #: src/app/ui/streaming/streaming.controller.c:649
 msgid "Cancel"
 msgstr "Cancelar"
 
-#: src/app/app.c:359 src/app/ui/launcher/add.dialog.c:42
+#: src/app/app.c:419 src/app/ui/launcher/add.dialog.c:42
 #: src/app/ui/launcher/apps.controller.c:800
 #: src/app/ui/launcher/apps.controller.c:912
 #: src/app/ui/launcher/launcher.controller.c:629
 #: src/app/ui/launcher/launcher.controller.c:644
 #: src/app/ui/launcher/pair.dialog.c:54
-#: src/app/ui/launcher/server.context_menu.c:143 src/app/ui/root.c:403
-#: src/app/ui/settings/panes/pref_fps.c:144
+#: src/app/ui/launcher/server.context_menu.c:143 src/app/ui/root.c:412
+#: src/app/ui/settings/panes/pref_fps.c:160
 #: src/app/ui/settings/panes/pref_res.c:174
 msgid "OK"
 msgstr "OK"
 
-#: src/app/app.c:360
+#: src/app/app.c:420
 msgid "Quit Aurora?"
 msgstr "Sair do Aurora?"
 
-#: src/app/app_settings.c:133
+#: src/app/app_settings.c:138
 msgid "Stereo"
 msgstr "Estéreo"
 
-#: src/app/app_settings.c:134
+#: src/app/app_settings.c:139
 msgid "5.1 Surround"
 msgstr "5.1 Surround"
 
-#: src/app/app_settings.c:135
+#: src/app/app_settings.c:140
 msgid "7.1 Surround"
 msgstr "7.1 Surround"
 
@@ -75,12 +75,11 @@ msgstr "Controles e atalhos"
 
 #: src/app/ui/help/help.dialog.c:60
 msgid ""
-"During streaming, use these shortcuts to control Aurora. Scroll with Up/Down"
-" or the mouse wheel. Press Back/B/Escape to close this guide."
+"During streaming, use these shortcuts to control Aurora. Scroll with Up/Down "
+"or the mouse wheel. Press Back/B/Escape to close this guide."
 msgstr ""
-"Use estes atalhos para controlar o Aurora durante o streaming. Role com "
-"Cima/Baixo ou com a roda do mouse. Pressione Voltar/B/Esc para fechar este "
-"guia."
+"Use estes atalhos para controlar o Aurora durante o streaming. Role com Cima/"
+"Baixo ou com a roda do mouse. Pressione Voltar/B/Esc para fechar este guia."
 
 #: src/app/ui/help/help.dialog.c:62
 msgid "TV remote"
@@ -95,8 +94,8 @@ msgid ""
 "Open the stream menu. A short Back press sends Escape to the PC; holding "
 "Back on a Magic Remote sends Exit."
 msgstr ""
-"Abre o menu do streaming. Um toque em Voltar envia Esc ao PC; segurar Voltar"
-" no Magic Remote envia Exit."
+"Abre o menu do streaming. Um toque em Voltar envia Esc ao PC; segurar Voltar "
+"no Magic Remote envia Exit."
 
 #: src/app/ui/help/help.dialog.c:65
 msgid "Blue"
@@ -129,8 +128,7 @@ msgstr "Amarelo"
 #: src/app/ui/help/help.dialog.c:68
 msgid "Cycle the diagnostic log overlay: Off, Live, Frozen."
 msgstr ""
-"Alterna o painel de logs de diagnóstico entre Desligado, Ao vivo e "
-"Congelado."
+"Alterna o painel de logs de diagnóstico entre Desligado, Ao vivo e Congelado."
 
 #: src/app/ui/help/help.dialog.c:70 src/app/ui/settings/panes/input.pane.c:88
 msgid "Gamepad"
@@ -170,8 +168,8 @@ msgstr "Mouse virtual"
 
 #: src/app/ui/help/help.dialog.c:77
 msgid ""
-"Enable Virtual mouse in the stream menu, or enable it in Settings > Input to"
-" start each stream with it."
+"Enable Virtual mouse in the stream menu, or enable it in Settings > Input to "
+"start each stream with it."
 msgstr ""
 "Ative o mouse virtual no menu do streaming ou em Configurações > Entrada "
 "para usá-lo desde o início de cada transmissão."
@@ -219,8 +217,7 @@ msgstr "LT / LB / RB"
 #: src/app/ui/help/help.dialog.c:84
 msgid "Switch letters and symbols / move the text cursor left / right."
 msgstr ""
-"Alterna letras e símbolos / move o cursor de texto para a esquerda / "
-"direita."
+"Alterna letras e símbolos / move o cursor de texto para a esquerda / direita."
 
 #: src/app/ui/help/help.dialog.c:85
 msgid "B / Back"
@@ -256,8 +253,8 @@ msgid ""
 "Ask the host to close the application after confirmation. Not available for "
 "Remote Monitor / Remote Input streams."
 msgstr ""
-"Solicita ao host o encerramento do aplicativo após confirmação. Indisponível"
-" em transmissões Remote Monitor / Remote Input."
+"Solicita ao host o encerramento do aplicativo após confirmação. Indisponível "
+"em transmissões Remote Monitor / Remote Input."
 
 #: src/app/ui/help/help.dialog.c:91
 msgid "About Aurora"
@@ -366,11 +363,13 @@ msgstr "Offline"
 
 #: src/app/ui/launcher/apps.controller.c:497
 msgid ""
-"Press \"Wake\" to send Wake-on-LAN packet to turn the computer on if it supports this feature, press \"Retry\" to connect again.\n"
+"Press \"Wake\" to send Wake-on-LAN packet to turn the computer on if it "
+"supports this feature, press \"Retry\" to connect again.\n"
 "\n"
 "Try restart your computer if these doesn't work."
 msgstr ""
-"Pressione \"Ligar\" para enviar um pacote Wake-on-LAN e ligar o computador, se ele oferecer suporte, ou \"Tentar novamente\" para reconectar.\n"
+"Pressione \"Ligar\" para enviar um pacote Wake-on-LAN e ligar o computador, "
+"se ele oferecer suporte, ou \"Tentar novamente\" para reconectar.\n"
 "\n"
 "Se isso não funcionar, tente reiniciar o computador."
 
@@ -433,10 +432,12 @@ msgstr "Nenhum decodificador funcionando"
 #: src/app/ui/launcher/launcher.controller.c:634
 msgid ""
 "Streaming can't work without a valid decoder.\n"
-"(If your device supports moonlight-embedded, install it and Aurora will use it automatically.)"
+"(If your device supports moonlight-embedded, install it and Aurora will use "
+"it automatically.)"
 msgstr ""
 "O streaming precisa de um decodificador válido.\n"
-"(Se o dispositivo oferecer suporte ao moonlight-embedded, instale-o e o Aurora o usará automaticamente.)"
+"(Se o dispositivo oferecer suporte ao moonlight-embedded, instale-o e o "
+"Aurora o usará automaticamente.)"
 
 #: src/app/ui/launcher/launcher.controller.c:638
 msgid "Streaming can't work without a valid decoder."
@@ -448,13 +449,17 @@ msgstr "Não foi possível salvar as configurações"
 
 #: src/app/ui/launcher/launcher.controller.c:648
 msgid ""
-"Can't find a writable directory to save settings. Settings and pairing information will be lost when the TV is turned off.\n"
+"Can't find a writable directory to save settings. Settings and pairing "
+"information will be lost when the TV is turned off.\n"
 "\n"
 "(If you're using webOS 3.0 or newer, restart the TV may fix this issue.)"
 msgstr ""
-"Não foi possível encontrar um diretório gravável para salvar as configurações. As configurações e informações de pareamento serão perdidas quando a TV for desligada.\n"
+"Não foi possível encontrar um diretório gravável para salvar as "
+"configurações. As configurações e informações de pareamento serão perdidas "
+"quando a TV for desligada.\n"
 "\n"
-"(Se estiver usando webOS 3.0 ou mais recente, reiniciar a TV pode corrigir este problema.)"
+"(Se estiver usando webOS 3.0 ou mais recente, reiniciar a TV pode corrigir "
+"este problema.)"
 
 #: src/app/ui/launcher/pair.dialog.c:55
 msgid "Pairing"
@@ -510,12 +515,13 @@ msgid "Close"
 msgstr "Fechar"
 
 #: src/app/ui/launcher/server.popup.c:381
-msgid "No paired computers yet. Use the \"+\" button on the top bar to add one."
+msgid ""
+"No paired computers yet. Use the \"+\" button on the top bar to add one."
 msgstr ""
 "Nenhum computador pareado. Use o botão \"+\" na barra superior para "
 "adicionar um."
 
-#: src/app/ui/root.c:404
+#: src/app/ui/root.c:413
 msgid "Failed to start streaming"
 msgstr "Falha ao iniciar o streaming"
 
@@ -531,130 +537,92 @@ msgstr ""
 msgid "%s is conflicting with %s"
 msgstr "%s está em conflito com %s"
 
-#: src/app/ui/settings/panes/basic.pane.c:76
+#: src/app/ui/settings/panes/basic.pane.c:95
+msgid "Balanced"
+msgstr "Equilibrado"
+
+#: src/app/ui/settings/panes/basic.pane.c:96
+msgid "Quality"
+msgstr "Qualidade"
+
+#: src/app/ui/settings/panes/basic.pane.c:97
+msgid "Low latency"
+msgstr "Baixa latência"
+
+#: src/app/ui/settings/panes/basic.pane.c:103
 msgid "Auto"
 msgstr "Automático"
 
-#: src/app/ui/settings/panes/basic.pane.c:129
+#: src/app/ui/settings/panes/basic.pane.c:156
 #: src/app/ui/streaming/streaming.view.c:218
 msgid "Resolution"
 msgstr "Resolução"
 
-#: src/app/ui/settings/panes/basic.pane.c:143
+#: src/app/ui/settings/panes/basic.pane.c:170
 msgid "Frame rate"
 msgstr "Taxa de quadros"
 
-#: src/app/ui/settings/panes/basic.pane.c:150
-#: src/app/ui/settings/panes/experimental.pane.c:153
+#: src/app/ui/settings/panes/basic.pane.c:177
+#: src/app/ui/settings/panes/basic.pane.c:263
 msgid "Bitrate"
 msgstr "Taxa de bits"
 
-#: src/app/ui/settings/panes/basic.pane.c:166
+#: src/app/ui/settings/panes/basic.pane.c:193
 #: src/app/ui/streaming/streaming.view.c:220
 msgid "Video backend"
 msgstr "Backend de vídeo"
 
-#: src/app/ui/settings/panes/basic.pane.c:173
+#: src/app/ui/settings/panes/basic.pane.c:200
 msgid "HEVC"
 msgstr "HEVC"
 
-#: src/app/ui/settings/panes/basic.pane.c:177
+#: src/app/ui/settings/panes/basic.pane.c:204
 msgid "AV1"
 msgstr "AV1"
 
-#: src/app/ui/settings/panes/basic.pane.c:186
+#: src/app/ui/settings/panes/basic.pane.c:213
 msgid "HDR"
 msgstr "HDR"
 
-#: src/app/ui/settings/panes/basic.pane.c:189
+#: src/app/ui/settings/panes/basic.pane.c:216
 msgid "10-bit SDR"
 msgstr "SDR de 10 bits"
 
-#: src/app/ui/settings/panes/basic.pane.c:193
+#: src/app/ui/settings/panes/basic.pane.c:219
 #: src/app/ui/streaming/streaming.view.c:224
 msgid "Audio"
 msgstr "Áudio"
 
-#: src/app/ui/settings/panes/experimental.pane.c:72
-msgid "Balanced"
-msgstr "Equilibrado"
-
-#: src/app/ui/settings/panes/experimental.pane.c:73
-msgid "Quality"
-msgstr "Qualidade"
-
-#: src/app/ui/settings/panes/experimental.pane.c:74
-msgid "Low latency"
-msgstr "Baixa latência"
-
-#: src/app/ui/settings/panes/experimental.pane.c:94
-#: src/app/ui/settings/settings.controller.c:41
-msgid "Experimental"
-msgstr "Experimental"
-
-#: src/app/ui/settings/panes/experimental.pane.c:97
-msgid "Language"
-msgstr "Idioma"
-
-#: src/app/ui/settings/panes/experimental.pane.c:105
-msgid "Show logs"
-msgstr "Mostrar logs"
-
-#: src/app/ui/settings/panes/experimental.pane.c:114
-msgid "Game mode"
-msgstr "Modo de jogo"
-
-#: src/app/ui/settings/panes/experimental.pane.c:118
+#: src/app/ui/settings/panes/basic.pane.c:226
 #: src/app/ui/streaming/streaming.view.c:219
 msgid "Video"
 msgstr "Vídeo"
 
-#: src/app/ui/settings/panes/experimental.pane.c:120
+#: src/app/ui/settings/panes/basic.pane.c:228
 msgid "Full range YUV (SDR only)"
 msgstr "YUV de faixa completa (apenas SDR)"
 
-#: src/app/ui/settings/panes/experimental.pane.c:124
+#: src/app/ui/settings/panes/basic.pane.c:233
 msgid "HEVC sliced frames"
 msgstr "Quadros HEVC em fatias"
 
-#: src/app/ui/settings/panes/experimental.pane.c:129
+#: src/app/ui/settings/panes/basic.pane.c:239
 msgid "Periodic decoder refresh (HEVC)"
 msgstr "Renovação periódica do decodificador (HEVC)"
 
-#: src/app/ui/settings/panes/experimental.pane.c:143
-#: src/app/ui/settings/panes/experimental.pane.c:278
-#: src/app/ui/settings/panes/experimental.pane.c:281
+#: src/app/ui/settings/panes/basic.pane.c:253
+#: src/app/ui/settings/panes/basic.pane.c:396
+#: src/app/ui/settings/panes/basic.pane.c:399
 msgid "Refresh interval"
 msgstr "Intervalo de renovação"
 
-#: src/app/ui/settings/panes/experimental.pane.c:155
+#: src/app/ui/settings/panes/basic.pane.c:265
 msgid "Adaptive bitrate"
 msgstr "Taxa de bits adaptativa"
 
-#: src/app/ui/settings/panes/experimental.pane.c:157
+#: src/app/ui/settings/panes/basic.pane.c:267
 msgid "Profile"
 msgstr "Perfil"
-
-#: src/app/ui/settings/panes/experimental.pane.c:167
-#: src/app/ui/settings/panes/experimental.pane.c:212
-msgid "Reset"
-msgstr "Redefinir"
-
-#: src/app/ui/settings/panes/experimental.pane.c:171
-msgid "Reset all settings to defaults"
-msgstr "Restaurar todas as configurações padrão"
-
-#: src/app/ui/settings/panes/experimental.pane.c:213
-msgid "Reset settings"
-msgstr "Redefinir configurações"
-
-#: src/app/ui/settings/panes/experimental.pane.c:214
-msgid ""
-"Restore all settings to defaults? Pairing is kept. You must reconnect the "
-"stream."
-msgstr ""
-"Restaurar as configurações padrão? Os pareamentos serão mantidos. Será "
-"necessário reconectar o streaming."
 
 #: src/app/ui/settings/panes/host.pane.c:28
 msgid "Optimize for streaming (SOPS)"
@@ -808,31 +776,69 @@ msgstr "Comando de vibração enviado. Se nada vibrou, o controle o ignorou."
 msgid "SDL refused the rumble"
 msgstr "O SDL recusou a vibração"
 
-#: src/app/ui/settings/panes/pref_fps.c:74
-#: src/app/ui/settings/panes/pref_fps.c:79
+#: src/app/ui/settings/panes/other.pane.c:77
+#: src/app/ui/settings/settings.controller.c:41
+msgid "Other"
+msgstr "Outros"
+
+#: src/app/ui/settings/panes/other.pane.c:80
+msgid "Language"
+msgstr "Idioma"
+
+#: src/app/ui/settings/panes/other.pane.c:88
+msgid "Show logs"
+msgstr "Mostrar logs"
+
+#: src/app/ui/settings/panes/other.pane.c:94
+msgid "Game mode"
+msgstr "Modo de jogo"
+
+#: src/app/ui/settings/panes/other.pane.c:99
+#: src/app/ui/settings/panes/other.pane.c:142
+msgid "Reset"
+msgstr "Redefinir"
+
+#: src/app/ui/settings/panes/other.pane.c:103
+msgid "Reset all settings to defaults"
+msgstr "Restaurar todas as configurações padrão"
+
+#: src/app/ui/settings/panes/other.pane.c:145
+msgid "Reset settings"
+msgstr "Redefinir configurações"
+
+#: src/app/ui/settings/panes/other.pane.c:146
+msgid ""
+"Restore all settings to defaults? Pairing is kept. You must reconnect the "
+"stream."
+msgstr ""
+"Restaurar as configurações padrão? Os pareamentos serão mantidos. Será "
+"necessário reconectar o streaming."
+
+#: src/app/ui/settings/panes/pref_fps.c:90
+#: src/app/ui/settings/panes/pref_fps.c:95
 #, c-format
 msgid "%d FPS"
 msgstr "%d FPS"
 
 #. Custom FPS option
-#: src/app/ui/settings/panes/pref_fps.c:84
-#: src/app/ui/settings/panes/pref_fps.c:145
+#: src/app/ui/settings/panes/pref_fps.c:100
+#: src/app/ui/settings/panes/pref_fps.c:161
 msgid "Custom FPS"
 msgstr "FPS personalizado"
 
-#: src/app/ui/settings/panes/pref_fps.c:102
-#: src/app/ui/settings/panes/pref_fps.c:121
+#: src/app/ui/settings/panes/pref_fps.c:118
+#: src/app/ui/settings/panes/pref_fps.c:137
 #, c-format
 msgid "%.2f FPS (Custom)"
 msgstr "%.2f FPS (personalizado)"
 
-#: src/app/ui/settings/panes/pref_fps.c:105
-#: src/app/ui/settings/panes/pref_fps.c:124
+#: src/app/ui/settings/panes/pref_fps.c:121
+#: src/app/ui/settings/panes/pref_fps.c:140
 #, c-format
 msgid "%d FPS (Custom)"
 msgstr "%d FPS (personalizado)"
 
-#: src/app/ui/settings/panes/pref_fps.c:155
+#: src/app/ui/settings/panes/pref_fps.c:171
 #, c-format
 msgid "Enter a custom framerate (%d-%d FPS):"
 msgstr "Informe uma taxa de quadros (%d–%d FPS):"
@@ -872,26 +878,26 @@ msgstr "Entrada"
 msgid "Host"
 msgstr "Host"
 
-#: src/app/ui/settings/settings.controller.c:998
-#: src/app/ui/settings/settings.controller.c:1009
+#: src/app/ui/settings/settings.controller.c:1011
+#: src/app/ui/settings/settings.controller.c:1022
 msgid "Later"
 msgstr "Depois"
 
-#: src/app/ui/settings/settings.controller.c:998
+#: src/app/ui/settings/settings.controller.c:1011
 msgid "Restart app"
 msgstr "Reiniciar app"
 
-#: src/app/ui/settings/settings.controller.c:1000
+#: src/app/ui/settings/settings.controller.c:1013
 msgid "Language changes take effect after restarting the app. Restart now?"
 msgstr ""
 "As alterações de idioma só passam a valer após reiniciar o app. Reiniciar "
 "agora?"
 
-#: src/app/ui/settings/settings.controller.c:1009
+#: src/app/ui/settings/settings.controller.c:1022
 msgid "Reconnect streaming"
 msgstr "Reconectar streaming"
 
-#: src/app/ui/settings/settings.controller.c:1012
+#: src/app/ui/settings/settings.controller.c:1025
 msgid ""
 "Settings apply on the next streaming session. Reconnect now to use them "
 "right away?"
@@ -899,13 +905,13 @@ msgstr ""
 "As configurações serão aplicadas na próxima sessão de streaming. Reconectar "
 "agora para usá-las?"
 
-#: src/app/ui/settings/settings.controller.c:1531
-#: src/app/ui/settings/settings.controller.c:1828
+#: src/app/ui/settings/settings.controller.c:1544
+#: src/app/ui/settings/settings.controller.c:1841
 #: src/app/ui/settings/settings.view.c:36
 msgid "Settings"
 msgstr "Configurações"
 
-#: src/app/ui/settings/settings.controller.c:1760
+#: src/app/ui/settings/settings.controller.c:1773
 msgid "More settings"
 msgstr "Mais configurações"
 
@@ -927,16 +933,16 @@ msgstr ""
 
 #: src/app/ui/streaming/hints.c:11
 msgid ""
-"Xbox One/Series controller can't be directly connected via cable or official"
-" adapter."
+"Xbox One/Series controller can't be directly connected via cable or official "
+"adapter."
 msgstr ""
 "Controle Xbox One/Series não pode ser conectado diretamente via cabo ou "
 "adaptador oficial."
 
 #: src/app/ui/streaming/hints.c:13
 msgid ""
-"If you have ultra-wide monitor, you may need to change its resolution to fit"
-" 16:9 for streaming."
+"If you have ultra-wide monitor, you may need to change its resolution to fit "
+"16:9 for streaming."
 msgstr ""
 "Se você tem monitor ultrawide, pode precisar alterar a resolução para 16:9 "
 "no streaming."
@@ -1022,6 +1028,9 @@ msgstr "Latência do decodificador"
 msgid "CPU / RAM"
 msgstr "CPU / RAM"
 
+#~ msgid "Experimental"
+#~ msgstr "Experimental"
+
 #~ msgid "Help"
 #~ msgstr "Ajuda"
 
@@ -1042,10 +1051,12 @@ msgstr "CPU / RAM"
 
 #~ msgid ""
 #~ "Streaming can't work without a valid decoder.\n"
-#~ "(If your device supports moonlight-embedded, install it and Moonlight will use it automatically.)"
+#~ "(If your device supports moonlight-embedded, install it and Moonlight "
+#~ "will use it automatically.)"
 #~ msgstr ""
 #~ "A transmissão não funciona sem um decodificador válido.\n"
-#~ "(Se seu dispositivo suporta moonlight-embedded, instale-o e o Moonlight usará automaticamente.)"
+#~ "(Se seu dispositivo suporta moonlight-embedded, instale-o e o Moonlight "
+#~ "usará automaticamente.)"
 
 #~ msgid "Add computer"
 #~ msgstr "Adicionar computador"
@@ -1076,7 +1087,8 @@ msgstr "CPU / RAM"
 #~ msgstr "Não é possível usar interface em janela com este decodificador"
 
 #~ msgid ""
-#~ "Your computer may not perform well when using this resolution and framerate."
+#~ "Your computer may not perform well when using this resolution and "
+#~ "framerate."
 #~ msgstr "Seu computador pode não funcionar bem ao usar esta resolução e FPS."
 
 #, c-format
@@ -1085,7 +1097,8 @@ msgstr "CPU / RAM"
 
 #~ msgid "Higher bitrate may cause performance issue, try with caution."
 #~ msgstr ""
-#~ "Bitrate maior pode causar problema de performance, experimente com cuidado."
+#~ "Bitrate maior pode causar problema de performance, experimente com "
+#~ "cuidado."
 
 #~ msgid "Show performance stats on stream start"
 #~ msgstr "Exibir status de desempenho ao iniciar o streaming"
@@ -1109,8 +1122,8 @@ msgstr "CPU / RAM"
 #~ "Change in-game settings to optimize for streaming. Resolution will be "
 #~ "limited to 720p, 1080p or 4K. Framerate will be also limited to 30/60 FPS."
 #~ msgstr ""
-#~ "Altere as configurações do jogo para otimizar o streaming. A resolução será "
-#~ "limitada a 720p, 1080p ou 4K. O FPS também será limitado a 30/60 FPS."
+#~ "Altere as configurações do jogo para otimizar o streaming. A resolução "
+#~ "será limitada a 720p, 1080p ou 4K. O FPS também será limitado a 30/60 FPS."
 
 #~ msgid "Mute computer while streaming"
 #~ msgstr "Silenciar o host durante streaming"
@@ -1127,8 +1140,9 @@ msgstr "CPU / RAM"
 #~ "Use plugged mouse device only when streaming. This will have better "
 #~ "performance, but absolute mouse mode will not be enabled."
 #~ msgstr ""
-#~ "Usar dispositivo do mouse plugado somente quando transmitindo. Vai ter uma "
-#~ "melhor performance, mas o movimento absoluto do mouse não será habilitado."
+#~ "Usar dispositivo do mouse plugado somente quando transmitindo. Vai ter "
+#~ "uma melhor performance, mas o movimento absoluto do mouse não será "
+#~ "habilitado."
 
 #~ msgid ""
 #~ "Better for remote desktop. For some games, mouse will not work properly."
@@ -1140,11 +1154,11 @@ msgstr "CPU / RAM"
 #~ msgstr "Ativar HID Passthrough (Experimental)"
 
 #~ msgid ""
-#~ "Enabling HID Passthrough disables standard Moonlight controller emulation to"
-#~ " prevent duplicate inputs."
+#~ "Enabling HID Passthrough disables standard Moonlight controller emulation "
+#~ "to prevent duplicate inputs."
 #~ msgstr ""
-#~ "Ativar HID Passthrough desativa a emulação padrão de controle do Moonlight "
-#~ "para evitar entradas duplicadas."
+#~ "Ativar HID Passthrough desativa a emulação padrão de controle do "
+#~ "Moonlight para evitar entradas duplicadas."
 
 #~ msgid ""
 #~ "Swap A/B and X/Y gamepad buttons. Useful when you prefer Nintendo-like "
@@ -1153,10 +1167,11 @@ msgstr "CPU / RAM"
 #~ "Trocar botões A/B e X/Y do controle. Útil quando você prefere layouts "
 #~ "semelhantes a Nintendo."
 
-#~ msgid "Absolute mouse mode can't be used when \"Use mouse hardware\" enabled."
+#~ msgid ""
+#~ "Absolute mouse mode can't be used when \"Use mouse hardware\" enabled."
 #~ msgstr ""
-#~ "Movimento absoluto do mouse não pode ser usado quando \"Usar mouse físico\" "
-#~ "estiver habilitado."
+#~ "Movimento absoluto do mouse não pode ser usado quando \"Usar mouse "
+#~ "físico\" estiver habilitado."
 
 #, c-format
 #~ msgid "Video decoder - using %s"
@@ -1173,12 +1188,12 @@ msgstr "CPU / RAM"
 
 #~ msgid ""
 #~ "Request a keyframe every N seconds during HEVC streams to reduce long-"
-#~ "session artifact drift. Off by default; use 10–30 s if you see blockiness or"
-#~ " color smearing."
+#~ "session artifact drift. Off by default; use 10–30 s if you see blockiness "
+#~ "or color smearing."
 #~ msgstr ""
-#~ "Solicita um keyframe a cada N segundos em streams HEVC para reduzir drift de"
-#~ " artefatos em sessões longas. Desligado por padrão; use 10–30 s se notar "
-#~ "blocos ou manchas de cor."
+#~ "Solicita um keyframe a cada N segundos em streams HEVC para reduzir drift "
+#~ "de artefatos em sessões longas. Desligado por padrão; use 10–30 s se "
+#~ "notar blocos ou manchas de cor."
 
 #~ msgid "Enable H265 to use periodic decoder refresh."
 #~ msgstr "Ative H.265 para usar atualização periódica do decoder."
@@ -1191,8 +1206,8 @@ msgstr "CPU / RAM"
 #~ "Request a keyframe every N seconds during HEVC streams to reduce long-"
 #~ "session artifact drift. Off by default."
 #~ msgstr ""
-#~ "Solicita um keyframe a cada N segundos em streams HEVC para reduzir drift de"
-#~ " artefatos em sessões longas. Desligado por padrão."
+#~ "Solicita um keyframe a cada N segundos em streams HEVC para reduzir drift "
+#~ "de artefatos em sessões longas. Desligado por padrão."
 
 #, c-format
 #~ msgid "%s decoder doesn't support H265 codec."
@@ -1202,11 +1217,11 @@ msgstr "CPU / RAM"
 #~ msgstr "Usar AV1 quando possível (Experimental)"
 
 #~ msgid ""
-#~ "AV1 usually has better graphics, and supports HDR. However, it might be much"
-#~ " slower than H265 or H264."
+#~ "AV1 usually has better graphics, and supports HDR. However, it might be "
+#~ "much slower than H265 or H264."
 #~ msgstr ""
-#~ "AV1 geralmente tem melhor qualidade gráfica e suporta HDR. Porém, pode ser "
-#~ "bem mais lento que H.265 ou H.264."
+#~ "AV1 geralmente tem melhor qualidade gráfica e suporta HDR. Porém, pode "
+#~ "ser bem mais lento que H.265 ou H.264."
 
 #, c-format
 #~ msgid "%s decoder doesn't support AV1 codec."
@@ -1233,7 +1248,8 @@ msgstr "CPU / RAM"
 #~ msgid "HDR10+ (when host sends HDR10)"
 #~ msgstr "HDR10+ (quando o host envia HDR10)"
 
-#~ msgid "Signal HDR10+ to TV when host sends HDR10. May improve display on LG."
+#~ msgid ""
+#~ "Signal HDR10+ to TV when host sends HDR10. May improve display on LG."
 #~ msgstr ""
 #~ "Sinalizar HDR10+ para a TV quando o host envia HDR10. Pode melhorar a "
 #~ "exibição em LG."
@@ -1242,8 +1258,8 @@ msgstr "CPU / RAM"
 #~ "HDR is only supported on certain games and when connecting to supported "
 #~ "monitor."
 #~ msgstr ""
-#~ "O HDR é suportado somente em certos jogos e quando se conecta a um monitor "
-#~ "compatível."
+#~ "O HDR é suportado somente em certos jogos e quando se conecta a um "
+#~ "monitor compatível."
 
 #~ msgid "Basic Settings"
 #~ msgstr "Configurações básicas"
@@ -1258,11 +1274,11 @@ msgstr "CPU / RAM"
 #~ msgstr "Sobre"
 
 #~ msgid ""
-#~ "Frequent lagging on 5GHz Wi-Fi? Try changing to another channel, check Help "
-#~ "for details."
+#~ "Frequent lagging on 5GHz Wi-Fi? Try changing to another channel, check "
+#~ "Help for details."
 #~ msgstr ""
-#~ "Lag frequente no Wi-Fi 5GHz? Tente mudar para outro canal, veja Ajuda para "
-#~ "detalhes."
+#~ "Lag frequente no Wi-Fi 5GHz? Tente mudar para outro canal, veja Ajuda "
+#~ "para detalhes."
 
 #~ msgid "HID Devices"
 #~ msgstr "Dispositivos HID"
@@ -1402,18 +1418,19 @@ msgstr "CPU / RAM"
 #~ msgstr "Throttle de IDR — %d ms (padrão: Desligado)"
 
 #~ msgid ""
-#~ "Minimum interval between IDR (keyframe) requests when the decoder buffer is "
-#~ "full. Off = immediate requests (default). Enable 1500–3000 ms to reduce "
-#~ "control-channel congestion and input latency on aggressive host presets."
+#~ "Minimum interval between IDR (keyframe) requests when the decoder buffer "
+#~ "is full. Off = immediate requests (default). Enable 1500–3000 ms to "
+#~ "reduce control-channel congestion and input latency on aggressive host "
+#~ "presets."
 #~ msgstr ""
-#~ "Intervalo mínimo entre pedidos de IDR (keyframe) quando o buffer do decoder "
-#~ "enche. Desligado = pedidos imediatos (padrão). Use 1500–3000 ms para reduzir"
-#~ " congestionamento no canal de controle e latência de input em presets "
-#~ "agressivos do host."
+#~ "Intervalo mínimo entre pedidos de IDR (keyframe) quando o buffer do "
+#~ "decoder enche. Desligado = pedidos imediatos (padrão). Use 1500–3000 ms "
+#~ "para reduzir congestionamento no canal de controle e latência de input em "
+#~ "presets agressivos do host."
 
 #~ msgid ""
-#~ "AV1 on this TV presents at 60 Hz even when the overlay shows 120. Use HEVC "
-#~ "for 120 fps."
+#~ "AV1 on this TV presents at 60 Hz even when the overlay shows 120. Use "
+#~ "HEVC for 120 fps."
 #~ msgstr ""
 #~ "Nesta TV o AV1 apresenta a 60 Hz mesmo com o overlay a 120. Usa HEVC para "
 #~ "120 fps."
@@ -1429,19 +1446,19 @@ msgstr "CPU / RAM"
 #~ msgstr "Ative H265 e/ou AV1 (se suportados) para HDR10 a partir do host."
 
 #~ msgid ""
-#~ "HDR10 (PQ) when the host streams HDR (HEVC Main10 or AV1 Main10). Enabling "
-#~ "HDR also uses the full video color range (Android-style)."
+#~ "HDR10 (PQ) when the host streams HDR (HEVC Main10 or AV1 Main10). "
+#~ "Enabling HDR also uses the full video color range (Android-style)."
 #~ msgstr ""
-#~ "HDR10 (PQ) quando o host envia HDR (HEVC Main10 ou AV1 Main10). Ao ativar o "
-#~ "HDR, também se utiliza toda a gama de cores de vídeo (como no Android)."
+#~ "HDR10 (PQ) quando o host envia HDR (HEVC Main10 ou AV1 Main10). Ao ativar "
+#~ "o HDR, também se utiliza toda a gama de cores de vídeo (como no Android)."
 
 #~ msgid "Client refresh rate (Hz)"
 #~ msgstr "Taxa de atualização do cliente (Hz)"
 
 #~ msgid ""
-#~ "Optional. Leave empty for default. Sent to the host as client refresh x100 "
-#~ "for frame pacing (e.g. 119.94 for VRR game mode). Reconnect stream after "
-#~ "changing."
+#~ "Optional. Leave empty for default. Sent to the host as client refresh "
+#~ "x100 for frame pacing (e.g. 119.94 for VRR game mode). Reconnect stream "
+#~ "after changing."
 #~ msgstr ""
 #~ "Opcional. Deixe vazio para o padrão. Enviado ao host como taxa x100 para "
 #~ "frame pacing (ex.: 119.94 no modo jogo com VRR). Reconecte o stream após "

@@ -1,14 +1,14 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the Aurora package.
+# This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: Aurora 1.3.1\n"
+"Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-19 04:22+0000\n"
+"POT-Creation-Date: 2026-10-24 22:39+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,46 +17,46 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/app/app.c:138
+#: src/app/app.c:186
 msgid "[Localized Language]"
 msgstr ""
 
-#: src/app/app.c:359 src/app/ui/launcher/add.dialog.c:42
+#: src/app/app.c:419 src/app/ui/launcher/add.dialog.c:42
 #: src/app/ui/launcher/apps.controller.c:876
 #: src/app/ui/launcher/server.context_menu.c:101
 #: src/app/ui/launcher/server.context_menu.c:187
-#: src/app/ui/settings/panes/experimental.pane.c:212
-#: src/app/ui/settings/panes/pref_fps.c:144
+#: src/app/ui/settings/panes/other.pane.c:142
+#: src/app/ui/settings/panes/pref_fps.c:160
 #: src/app/ui/settings/panes/pref_res.c:174
 #: src/app/ui/streaming/streaming.controller.c:649
 msgid "Cancel"
 msgstr ""
 
-#: src/app/app.c:359 src/app/ui/launcher/add.dialog.c:42
+#: src/app/app.c:419 src/app/ui/launcher/add.dialog.c:42
 #: src/app/ui/launcher/apps.controller.c:800
 #: src/app/ui/launcher/apps.controller.c:912
 #: src/app/ui/launcher/launcher.controller.c:629
 #: src/app/ui/launcher/launcher.controller.c:644
 #: src/app/ui/launcher/pair.dialog.c:54
-#: src/app/ui/launcher/server.context_menu.c:143 src/app/ui/root.c:403
-#: src/app/ui/settings/panes/pref_fps.c:144
+#: src/app/ui/launcher/server.context_menu.c:143 src/app/ui/root.c:412
+#: src/app/ui/settings/panes/pref_fps.c:160
 #: src/app/ui/settings/panes/pref_res.c:174
 msgid "OK"
 msgstr ""
 
-#: src/app/app.c:360
+#: src/app/app.c:420
 msgid "Quit Aurora?"
 msgstr ""
 
-#: src/app/app_settings.c:133
+#: src/app/app_settings.c:138
 msgid "Stereo"
 msgstr ""
 
-#: src/app/app_settings.c:134
+#: src/app/app_settings.c:139
 msgid "5.1 Surround"
 msgstr ""
 
-#: src/app/app_settings.c:135
+#: src/app/app_settings.c:140
 msgid "7.1 Surround"
 msgstr ""
 
@@ -483,7 +483,7 @@ msgid ""
 "No paired computers yet. Use the \"+\" button on the top bar to add one."
 msgstr ""
 
-#: src/app/ui/root.c:404
+#: src/app/ui/root.c:413
 msgid "Failed to start streaming"
 msgstr ""
 
@@ -497,127 +497,91 @@ msgstr ""
 msgid "%s is conflicting with %s"
 msgstr ""
 
-#: src/app/ui/settings/panes/basic.pane.c:76
+#: src/app/ui/settings/panes/basic.pane.c:95
+msgid "Balanced"
+msgstr ""
+
+#: src/app/ui/settings/panes/basic.pane.c:96
+msgid "Quality"
+msgstr ""
+
+#: src/app/ui/settings/panes/basic.pane.c:97
+msgid "Low latency"
+msgstr ""
+
+#: src/app/ui/settings/panes/basic.pane.c:103
 msgid "Auto"
 msgstr ""
 
-#: src/app/ui/settings/panes/basic.pane.c:129
+#: src/app/ui/settings/panes/basic.pane.c:156
 #: src/app/ui/streaming/streaming.view.c:218
 msgid "Resolution"
 msgstr ""
 
-#: src/app/ui/settings/panes/basic.pane.c:143
+#: src/app/ui/settings/panes/basic.pane.c:170
 msgid "Frame rate"
 msgstr ""
 
-#: src/app/ui/settings/panes/basic.pane.c:150
-#: src/app/ui/settings/panes/experimental.pane.c:153
+#: src/app/ui/settings/panes/basic.pane.c:177
+#: src/app/ui/settings/panes/basic.pane.c:263
 msgid "Bitrate"
 msgstr ""
 
-#: src/app/ui/settings/panes/basic.pane.c:166
+#: src/app/ui/settings/panes/basic.pane.c:193
 #: src/app/ui/streaming/streaming.view.c:220
 msgid "Video backend"
 msgstr ""
 
-#: src/app/ui/settings/panes/basic.pane.c:173
+#: src/app/ui/settings/panes/basic.pane.c:200
 msgid "HEVC"
 msgstr ""
 
-#: src/app/ui/settings/panes/basic.pane.c:177
+#: src/app/ui/settings/panes/basic.pane.c:204
 msgid "AV1"
 msgstr ""
 
-#: src/app/ui/settings/panes/basic.pane.c:186
+#: src/app/ui/settings/panes/basic.pane.c:213
 msgid "HDR"
 msgstr ""
 
-#: src/app/ui/settings/panes/basic.pane.c:189
+#: src/app/ui/settings/panes/basic.pane.c:216
 msgid "10-bit SDR"
 msgstr ""
 
-#: src/app/ui/settings/panes/basic.pane.c:193
+#: src/app/ui/settings/panes/basic.pane.c:219
 #: src/app/ui/streaming/streaming.view.c:224
 msgid "Audio"
 msgstr ""
 
-#: src/app/ui/settings/panes/experimental.pane.c:72
-msgid "Balanced"
-msgstr ""
-
-#: src/app/ui/settings/panes/experimental.pane.c:73
-msgid "Quality"
-msgstr ""
-
-#: src/app/ui/settings/panes/experimental.pane.c:74
-msgid "Low latency"
-msgstr ""
-
-#: src/app/ui/settings/panes/experimental.pane.c:94
-#: src/app/ui/settings/settings.controller.c:41
-msgid "Experimental"
-msgstr ""
-
-#: src/app/ui/settings/panes/experimental.pane.c:97
-msgid "Language"
-msgstr ""
-
-#: src/app/ui/settings/panes/experimental.pane.c:105
-msgid "Show logs"
-msgstr ""
-
-#: src/app/ui/settings/panes/experimental.pane.c:114
-msgid "Game mode"
-msgstr ""
-
-#: src/app/ui/settings/panes/experimental.pane.c:118
+#: src/app/ui/settings/panes/basic.pane.c:226
 #: src/app/ui/streaming/streaming.view.c:219
 msgid "Video"
 msgstr ""
 
-#: src/app/ui/settings/panes/experimental.pane.c:120
+#: src/app/ui/settings/panes/basic.pane.c:228
 msgid "Full range YUV (SDR only)"
 msgstr ""
 
-#: src/app/ui/settings/panes/experimental.pane.c:124
+#: src/app/ui/settings/panes/basic.pane.c:233
 msgid "HEVC sliced frames"
 msgstr ""
 
-#: src/app/ui/settings/panes/experimental.pane.c:129
+#: src/app/ui/settings/panes/basic.pane.c:239
 msgid "Periodic decoder refresh (HEVC)"
 msgstr ""
 
-#: src/app/ui/settings/panes/experimental.pane.c:143
-#: src/app/ui/settings/panes/experimental.pane.c:278
-#: src/app/ui/settings/panes/experimental.pane.c:281
+#: src/app/ui/settings/panes/basic.pane.c:253
+#: src/app/ui/settings/panes/basic.pane.c:396
+#: src/app/ui/settings/panes/basic.pane.c:399
 msgid "Refresh interval"
 msgstr ""
 
-#: src/app/ui/settings/panes/experimental.pane.c:155
+#: src/app/ui/settings/panes/basic.pane.c:265
 msgid "Adaptive bitrate"
 msgstr ""
 
-#: src/app/ui/settings/panes/experimental.pane.c:157
+#: src/app/ui/settings/panes/basic.pane.c:267
 msgid "Profile"
-msgstr ""
-
-#: src/app/ui/settings/panes/experimental.pane.c:167
-#: src/app/ui/settings/panes/experimental.pane.c:212
-msgid "Reset"
-msgstr ""
-
-#: src/app/ui/settings/panes/experimental.pane.c:171
-msgid "Reset all settings to defaults"
-msgstr ""
-
-#: src/app/ui/settings/panes/experimental.pane.c:213
-msgid "Reset settings"
-msgstr ""
-
-#: src/app/ui/settings/panes/experimental.pane.c:214
-msgid ""
-"Restore all settings to defaults? Pairing is kept. You must reconnect the "
-"stream."
 msgstr ""
 
 #: src/app/ui/settings/panes/host.pane.c:28
@@ -772,31 +736,67 @@ msgstr ""
 msgid "SDL refused the rumble"
 msgstr ""
 
-#: src/app/ui/settings/panes/pref_fps.c:74
-#: src/app/ui/settings/panes/pref_fps.c:79
+#: src/app/ui/settings/panes/other.pane.c:77
+#: src/app/ui/settings/settings.controller.c:41
+msgid "Other"
+msgstr ""
+
+#: src/app/ui/settings/panes/other.pane.c:80
+msgid "Language"
+msgstr ""
+
+#: src/app/ui/settings/panes/other.pane.c:88
+msgid "Show logs"
+msgstr ""
+
+#: src/app/ui/settings/panes/other.pane.c:94
+msgid "Game mode"
+msgstr ""
+
+#: src/app/ui/settings/panes/other.pane.c:99
+#: src/app/ui/settings/panes/other.pane.c:142
+msgid "Reset"
+msgstr ""
+
+#: src/app/ui/settings/panes/other.pane.c:103
+msgid "Reset all settings to defaults"
+msgstr ""
+
+#: src/app/ui/settings/panes/other.pane.c:145
+msgid "Reset settings"
+msgstr ""
+
+#: src/app/ui/settings/panes/other.pane.c:146
+msgid ""
+"Restore all settings to defaults? Pairing is kept. You must reconnect the "
+"stream."
+msgstr ""
+
+#: src/app/ui/settings/panes/pref_fps.c:90
+#: src/app/ui/settings/panes/pref_fps.c:95
 #, c-format
 msgid "%d FPS"
 msgstr ""
 
 #. Custom FPS option
-#: src/app/ui/settings/panes/pref_fps.c:84
-#: src/app/ui/settings/panes/pref_fps.c:145
+#: src/app/ui/settings/panes/pref_fps.c:100
+#: src/app/ui/settings/panes/pref_fps.c:161
 msgid "Custom FPS"
 msgstr ""
 
-#: src/app/ui/settings/panes/pref_fps.c:102
-#: src/app/ui/settings/panes/pref_fps.c:121
+#: src/app/ui/settings/panes/pref_fps.c:118
+#: src/app/ui/settings/panes/pref_fps.c:137
 #, c-format
 msgid "%.2f FPS (Custom)"
 msgstr ""
 
-#: src/app/ui/settings/panes/pref_fps.c:105
-#: src/app/ui/settings/panes/pref_fps.c:124
+#: src/app/ui/settings/panes/pref_fps.c:121
+#: src/app/ui/settings/panes/pref_fps.c:140
 #, c-format
 msgid "%d FPS (Custom)"
 msgstr ""
 
-#: src/app/ui/settings/panes/pref_fps.c:155
+#: src/app/ui/settings/panes/pref_fps.c:171
 #, c-format
 msgid "Enter a custom framerate (%d-%d FPS):"
 msgstr ""
@@ -836,36 +836,36 @@ msgstr ""
 msgid "Host"
 msgstr ""
 
-#: src/app/ui/settings/settings.controller.c:998
-#: src/app/ui/settings/settings.controller.c:1009
+#: src/app/ui/settings/settings.controller.c:1011
+#: src/app/ui/settings/settings.controller.c:1022
 msgid "Later"
 msgstr ""
 
-#: src/app/ui/settings/settings.controller.c:998
+#: src/app/ui/settings/settings.controller.c:1011
 msgid "Restart app"
 msgstr ""
 
-#: src/app/ui/settings/settings.controller.c:1000
+#: src/app/ui/settings/settings.controller.c:1013
 msgid "Language changes take effect after restarting the app. Restart now?"
 msgstr ""
 
-#: src/app/ui/settings/settings.controller.c:1009
+#: src/app/ui/settings/settings.controller.c:1022
 msgid "Reconnect streaming"
 msgstr ""
 
-#: src/app/ui/settings/settings.controller.c:1012
+#: src/app/ui/settings/settings.controller.c:1025
 msgid ""
 "Settings apply on the next streaming session. Reconnect now to use them "
 "right away?"
 msgstr ""
 
-#: src/app/ui/settings/settings.controller.c:1531
-#: src/app/ui/settings/settings.controller.c:1828
+#: src/app/ui/settings/settings.controller.c:1544
+#: src/app/ui/settings/settings.controller.c:1841
 #: src/app/ui/settings/settings.view.c:36
 msgid "Settings"
 msgstr ""
 
-#: src/app/ui/settings/settings.controller.c:1760
+#: src/app/ui/settings/settings.controller.c:1773
 msgid "More settings"
 msgstr ""
 

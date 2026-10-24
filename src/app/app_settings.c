@@ -37,6 +37,11 @@ static void set_int(int *field, const char *value);
 static const char *const touchpad_mode_values[] = {"mouse", "native"};
 
 void settings_sync_refresh_rate(app_settings_t *config) {
+#if !defined(TARGET_WEBOS)
+    if (config && config->client_refresh_rate_x100 > 0) {
+        config->stream.fps = (config->client_refresh_rate_x100 + 50) / 100;
+    }
+#endif
     settings_reconcile_refresh_rate(config);
 }
 
@@ -206,9 +211,12 @@ void settings_initialize(app_settings_t *config, char *conf_dir) {
 
 void settings_restore_defaults(app_settings_t *config) {
     char *conf_dir = config->conf_dir;
+    bool persistent = config->conf_persistent;
     /* settings_initialize memset()s the struct; conf_dir is a parameter so it
      * survives. Pairing keys live under key_dir on disk and are not wiped. */
+    settings_clear(config);
     settings_initialize(config, conf_dir);
+    config->conf_persistent = persistent;
     settings_save(config);
 }
 

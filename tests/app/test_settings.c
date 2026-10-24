@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/stat.h>
+#include <unistd.h>
 #include "unity.h"
 #include "app_settings.h"
 #include "uuidstr.h"
@@ -206,8 +208,63 @@ void testIdrRefreshIntervalMsDefaultAndClamp() {
     settings.ini_path = ini_backup;
 }
 
+void testOtherOptionsPersistAndReset() {
+    TEST_ASSERT_EQUAL_INT(0, mkdir(settings.conf_dir, 0700));
+    TEST_ASSERT_EQUAL_INT(0, mkdir(settings.key_dir, 0700));
+    char marker[256];
+    snprintf(marker, sizeof(marker), "%s/pairing-fixture", settings.key_dir);
+    FILE *fp = fopen(marker, "w");
+    TEST_ASSERT_NOT_NULL(fp);
+    fputs("pairing is kept", fp);
+    fclose(fp);
+    settings.force_full_color_range = true;
+    settings.hevc_sliced_frames = true;
+    settings.idr_refresh_interval_ms = 12500;
+    settings.auto_adjust_bitrate = true;
+    settings.abr_mode = 2;
+    settings.game_mode = false;
+    settings.show_logs = true;
+    TEST_ASSERT_TRUE(settings_save(&settings));
+    app_settings_t loaded;
+    settings_initialize(&loaded, settings.conf_dir);
+    TEST_ASSERT_TRUE(settings_read(&loaded));
+    TEST_ASSERT_TRUE(loaded.force_full_color_range);
+    TEST_ASSERT_TRUE(loaded.hevc_sliced_frames);
+    TEST_ASSERT_EQUAL_INT(12500, loaded.idr_refresh_interval_ms);
+    TEST_ASSERT_TRUE(loaded.auto_adjust_bitrate);
+    TEST_ASSERT_EQUAL_INT(2, loaded.abr_mode);
+    TEST_ASSERT_FALSE(loaded.game_mode);
+    TEST_ASSERT_TRUE(loaded.show_logs);
+    loaded.conf_persistent = true;
+    char *directory = loaded.conf_dir;
+    settings_restore_defaults(&loaded);
+    TEST_ASSERT_EQUAL_PTR(directory, loaded.conf_dir);
+    TEST_ASSERT_TRUE(loaded.conf_persistent);
+    TEST_ASSERT_FALSE(loaded.force_full_color_range);
+    TEST_ASSERT_FALSE(loaded.hevc_sliced_frames);
+    TEST_ASSERT_EQUAL_INT(0, loaded.idr_refresh_interval_ms);
+    TEST_ASSERT_FALSE(loaded.auto_adjust_bitrate);
+    TEST_ASSERT_EQUAL_INT(0, loaded.abr_mode);
+    TEST_ASSERT_TRUE(loaded.game_mode);
+    TEST_ASSERT_FALSE(loaded.show_logs);
+    TEST_ASSERT_TRUE(settings_read(&loaded));
+    TEST_ASSERT_FALSE(loaded.show_logs);
+    fp = fopen(marker, "r");
+    TEST_ASSERT_NOT_NULL(fp);
+    char content[32] = {0};
+    TEST_ASSERT_EQUAL_INT(15, fread(content, 1, sizeof(content), fp));
+    TEST_ASSERT_EQUAL_STRING("pairing is kept", content);
+    fclose(fp);
+    settings_clear(&loaded);
+    remove(marker);
+    remove(settings.ini_path);
+    rmdir(settings.key_dir);
+    rmdir(settings.conf_dir);
+}
+
 int main() {
     UNITY_BEGIN();
+    RUN_TEST(testOtherOptionsPersistAndReset);
     RUN_TEST(testReadINI);
     RUN_TEST(testWriteINI);
     RUN_TEST(testControllerTouchpadDefaults);

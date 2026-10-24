@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: moonlight-tv\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-19 04:22+0000\n"
+"POT-Creation-Date: 2026-10-24 22:39+0000\n"
 "PO-Revision-Date: 2026-10-19 01:15-0300\n"
 "Last-Translator: \n"
 "Language-Team: Chinese Simplified\n"
@@ -18,46 +18,46 @@ msgstr ""
 "X-Crowdin-Project: moonlight-tv\n"
 "X-Crowdin-Project-ID: 484733\n"
 
-#: src/app/app.c:138
+#: src/app/app.c:186
 msgid "[Localized Language]"
 msgstr "简体中文"
 
-#: src/app/app.c:359 src/app/ui/launcher/add.dialog.c:42
+#: src/app/app.c:419 src/app/ui/launcher/add.dialog.c:42
 #: src/app/ui/launcher/apps.controller.c:876
 #: src/app/ui/launcher/server.context_menu.c:101
 #: src/app/ui/launcher/server.context_menu.c:187
-#: src/app/ui/settings/panes/experimental.pane.c:212
-#: src/app/ui/settings/panes/pref_fps.c:144
+#: src/app/ui/settings/panes/other.pane.c:142
+#: src/app/ui/settings/panes/pref_fps.c:160
 #: src/app/ui/settings/panes/pref_res.c:174
 #: src/app/ui/streaming/streaming.controller.c:649
 msgid "Cancel"
 msgstr "取消"
 
-#: src/app/app.c:359 src/app/ui/launcher/add.dialog.c:42
+#: src/app/app.c:419 src/app/ui/launcher/add.dialog.c:42
 #: src/app/ui/launcher/apps.controller.c:800
 #: src/app/ui/launcher/apps.controller.c:912
 #: src/app/ui/launcher/launcher.controller.c:629
 #: src/app/ui/launcher/launcher.controller.c:644
 #: src/app/ui/launcher/pair.dialog.c:54
-#: src/app/ui/launcher/server.context_menu.c:143 src/app/ui/root.c:403
-#: src/app/ui/settings/panes/pref_fps.c:144
+#: src/app/ui/launcher/server.context_menu.c:143 src/app/ui/root.c:412
+#: src/app/ui/settings/panes/pref_fps.c:160
 #: src/app/ui/settings/panes/pref_res.c:174
 msgid "OK"
 msgstr "确定"
 
-#: src/app/app.c:360
+#: src/app/app.c:420
 msgid "Quit Aurora?"
 msgstr "退出 Aurora？"
 
-#: src/app/app_settings.c:133
+#: src/app/app_settings.c:138
 msgid "Stereo"
 msgstr "立体声"
 
-#: src/app/app_settings.c:134
+#: src/app/app_settings.c:139
 msgid "5.1 Surround"
 msgstr "5.1 声道"
 
-#: src/app/app_settings.c:135
+#: src/app/app_settings.c:140
 msgid "7.1 Surround"
 msgstr "7.1 声道"
 
@@ -75,9 +75,11 @@ msgstr "操作与快捷键"
 
 #: src/app/ui/help/help.dialog.c:60
 msgid ""
-"During streaming, use these shortcuts to control Aurora. Scroll with Up/Down"
-" or the mouse wheel. Press Back/B/Escape to close this guide."
-msgstr "串流时可用以下快捷键操作 Aurora。用上下键或鼠标滚轮滚动，按返回/B/Esc 关闭本指南。"
+"During streaming, use these shortcuts to control Aurora. Scroll with Up/Down "
+"or the mouse wheel. Press Back/B/Escape to close this guide."
+msgstr ""
+"串流时可用以下快捷键操作 Aurora。用上下键或鼠标滚轮滚动，按返回/B/Esc 关闭本"
+"指南。"
 
 #: src/app/ui/help/help.dialog.c:62
 msgid "TV remote"
@@ -91,7 +93,9 @@ msgstr "长按返回 / 按红色键或 Exit"
 msgid ""
 "Open the stream menu. A short Back press sends Escape to the PC; holding "
 "Back on a Magic Remote sends Exit."
-msgstr "打开串流菜单。短按返回会向 PC 发送 Esc；在 Magic Remote 上长按返回会发送 Exit。"
+msgstr ""
+"打开串流菜单。短按返回会向 PC 发送 Esc；在 Magic Remote 上长按返回会发送 "
+"Exit。"
 
 #: src/app/ui/help/help.dialog.c:65
 msgid "Blue"
@@ -161,9 +165,11 @@ msgstr "虚拟鼠标"
 
 #: src/app/ui/help/help.dialog.c:77
 msgid ""
-"Enable Virtual mouse in the stream menu, or enable it in Settings > Input to"
-" start each stream with it."
-msgstr "在串流菜单中启用虚拟鼠标，或在“设置 > 输入”中启用，以便每次串流开始时自动使用。"
+"Enable Virtual mouse in the stream menu, or enable it in Settings > Input to "
+"start each stream with it."
+msgstr ""
+"在串流菜单中启用虚拟鼠标，或在“设置 > 输入”中启用，以便每次串流开始时自动使"
+"用。"
 
 #: src/app/ui/help/help.dialog.c:78
 msgid "Right stick / Left stick"
@@ -241,7 +247,8 @@ msgstr "结束会话"
 msgid ""
 "Ask the host to close the application after confirmation. Not available for "
 "Remote Monitor / Remote Input streams."
-msgstr "确认后请求主机关闭应用。Remote Monitor / Remote Input 串流不支持此操作。"
+msgstr ""
+"确认后请求主机关闭应用。Remote Monitor / Remote Input 串流不支持此操作。"
 
 #: src/app/ui/help/help.dialog.c:91
 msgid "About Aurora"
@@ -350,7 +357,8 @@ msgstr "离线"
 
 #: src/app/ui/launcher/apps.controller.c:497
 msgid ""
-"Press \"Wake\" to send Wake-on-LAN packet to turn the computer on if it supports this feature, press \"Retry\" to connect again.\n"
+"Press \"Wake\" to send Wake-on-LAN packet to turn the computer on if it "
+"supports this feature, press \"Retry\" to connect again.\n"
 "\n"
 "Try restart your computer if these doesn't work."
 msgstr ""
@@ -417,7 +425,8 @@ msgstr "没有可用的解码器"
 #: src/app/ui/launcher/launcher.controller.c:634
 msgid ""
 "Streaming can't work without a valid decoder.\n"
-"(If your device supports moonlight-embedded, install it and Aurora will use it automatically.)"
+"(If your device supports moonlight-embedded, install it and Aurora will use "
+"it automatically.)"
 msgstr ""
 "串流需要有效的解码器。\n"
 "（如果设备支持 moonlight-embedded，安装后 Aurora 会自动使用。）"
@@ -432,7 +441,8 @@ msgstr "无法保存设置"
 
 #: src/app/ui/launcher/launcher.controller.c:648
 msgid ""
-"Can't find a writable directory to save settings. Settings and pairing information will be lost when the TV is turned off.\n"
+"Can't find a writable directory to save settings. Settings and pairing "
+"information will be lost when the TV is turned off.\n"
 "\n"
 "(If you're using webOS 3.0 or newer, restart the TV may fix this issue.)"
 msgstr ""
@@ -494,10 +504,11 @@ msgid "Close"
 msgstr "关闭"
 
 #: src/app/ui/launcher/server.popup.c:381
-msgid "No paired computers yet. Use the \"+\" button on the top bar to add one."
+msgid ""
+"No paired computers yet. Use the \"+\" button on the top bar to add one."
 msgstr "尚未配对任何电脑。请用顶部栏的“+”按钮添加。"
 
-#: src/app/ui/root.c:404
+#: src/app/ui/root.c:413
 msgid "Failed to start streaming"
 msgstr "无法开始串流"
 
@@ -511,128 +522,92 @@ msgstr "Aurora 使用 moonlight-embedded 自动选择合适的解码器。"
 msgid "%s is conflicting with %s"
 msgstr "%s 与 %s 冲突"
 
-#: src/app/ui/settings/panes/basic.pane.c:76
+#: src/app/ui/settings/panes/basic.pane.c:95
+msgid "Balanced"
+msgstr "均衡"
+
+#: src/app/ui/settings/panes/basic.pane.c:96
+msgid "Quality"
+msgstr "画质优先"
+
+#: src/app/ui/settings/panes/basic.pane.c:97
+msgid "Low latency"
+msgstr "低延迟"
+
+#: src/app/ui/settings/panes/basic.pane.c:103
 msgid "Auto"
 msgstr "自动"
 
-#: src/app/ui/settings/panes/basic.pane.c:129
+#: src/app/ui/settings/panes/basic.pane.c:156
 #: src/app/ui/streaming/streaming.view.c:218
 msgid "Resolution"
 msgstr "分辨率"
 
-#: src/app/ui/settings/panes/basic.pane.c:143
+#: src/app/ui/settings/panes/basic.pane.c:170
 msgid "Frame rate"
 msgstr "帧率"
 
-#: src/app/ui/settings/panes/basic.pane.c:150
-#: src/app/ui/settings/panes/experimental.pane.c:153
+#: src/app/ui/settings/panes/basic.pane.c:177
+#: src/app/ui/settings/panes/basic.pane.c:263
 msgid "Bitrate"
 msgstr "码率"
 
-#: src/app/ui/settings/panes/basic.pane.c:166
+#: src/app/ui/settings/panes/basic.pane.c:193
 #: src/app/ui/streaming/streaming.view.c:220
 msgid "Video backend"
 msgstr "视频后端"
 
-#: src/app/ui/settings/panes/basic.pane.c:173
+#: src/app/ui/settings/panes/basic.pane.c:200
 msgid "HEVC"
 msgstr "HEVC"
 
-#: src/app/ui/settings/panes/basic.pane.c:177
+#: src/app/ui/settings/panes/basic.pane.c:204
 msgid "AV1"
 msgstr "AV1"
 
-#: src/app/ui/settings/panes/basic.pane.c:186
+#: src/app/ui/settings/panes/basic.pane.c:213
 msgid "HDR"
 msgstr "HDR"
 
-#: src/app/ui/settings/panes/basic.pane.c:189
+#: src/app/ui/settings/panes/basic.pane.c:216
 msgid "10-bit SDR"
 msgstr "10 位 SDR"
 
-#: src/app/ui/settings/panes/basic.pane.c:193
+#: src/app/ui/settings/panes/basic.pane.c:219
 #: src/app/ui/streaming/streaming.view.c:224
 msgid "Audio"
 msgstr "音频"
 
-#: src/app/ui/settings/panes/experimental.pane.c:72
-msgid "Balanced"
-msgstr "均衡"
-
-#: src/app/ui/settings/panes/experimental.pane.c:73
-msgid "Quality"
-msgstr "画质优先"
-
-#: src/app/ui/settings/panes/experimental.pane.c:74
-msgid "Low latency"
-msgstr "低延迟"
-
-#: src/app/ui/settings/panes/experimental.pane.c:94
-#: src/app/ui/settings/settings.controller.c:41
-msgid "Experimental"
-msgstr "实验功能"
-
-#: src/app/ui/settings/panes/experimental.pane.c:97
-msgid "Language"
-msgstr "语言"
-
-#: src/app/ui/settings/panes/experimental.pane.c:105
-msgid "Show logs"
-msgstr "显示日志"
-
-#: src/app/ui/settings/panes/experimental.pane.c:114
-msgid "Game mode"
-msgstr "游戏模式"
-
-#: src/app/ui/settings/panes/experimental.pane.c:118
+#: src/app/ui/settings/panes/basic.pane.c:226
 #: src/app/ui/streaming/streaming.view.c:219
 msgid "Video"
 msgstr "视频"
 
-#: src/app/ui/settings/panes/experimental.pane.c:120
+#: src/app/ui/settings/panes/basic.pane.c:228
 msgid "Full range YUV (SDR only)"
 msgstr "全范围 YUV（仅 SDR）"
 
-#: src/app/ui/settings/panes/experimental.pane.c:124
+#: src/app/ui/settings/panes/basic.pane.c:233
 msgid "HEVC sliced frames"
 msgstr "HEVC 分片帧"
 
-#: src/app/ui/settings/panes/experimental.pane.c:129
+#: src/app/ui/settings/panes/basic.pane.c:239
 msgid "Periodic decoder refresh (HEVC)"
 msgstr "定期刷新解码器（HEVC）"
 
-#: src/app/ui/settings/panes/experimental.pane.c:143
-#: src/app/ui/settings/panes/experimental.pane.c:278
-#: src/app/ui/settings/panes/experimental.pane.c:281
+#: src/app/ui/settings/panes/basic.pane.c:253
+#: src/app/ui/settings/panes/basic.pane.c:396
+#: src/app/ui/settings/panes/basic.pane.c:399
 msgid "Refresh interval"
 msgstr "刷新间隔"
 
-#: src/app/ui/settings/panes/experimental.pane.c:155
+#: src/app/ui/settings/panes/basic.pane.c:265
 msgid "Adaptive bitrate"
 msgstr "自适应码率"
 
-#: src/app/ui/settings/panes/experimental.pane.c:157
+#: src/app/ui/settings/panes/basic.pane.c:267
 msgid "Profile"
 msgstr "配置文件"
-
-#: src/app/ui/settings/panes/experimental.pane.c:167
-#: src/app/ui/settings/panes/experimental.pane.c:212
-msgid "Reset"
-msgstr "重置"
-
-#: src/app/ui/settings/panes/experimental.pane.c:171
-msgid "Reset all settings to defaults"
-msgstr "恢复所有默认设置"
-
-#: src/app/ui/settings/panes/experimental.pane.c:213
-msgid "Reset settings"
-msgstr "重置设置"
-
-#: src/app/ui/settings/panes/experimental.pane.c:214
-msgid ""
-"Restore all settings to defaults? Pairing is kept. You must reconnect the "
-"stream."
-msgstr "恢复默认设置？配对信息将保留，但需要重新连接串流。"
 
 #: src/app/ui/settings/panes/host.pane.c:28
 msgid "Optimize for streaming (SOPS)"
@@ -786,31 +761,67 @@ msgstr "已发送振动指令。如果没有振动，说明手柄忽略了该指
 msgid "SDL refused the rumble"
 msgstr "SDL 拒绝了振动请求"
 
-#: src/app/ui/settings/panes/pref_fps.c:74
-#: src/app/ui/settings/panes/pref_fps.c:79
+#: src/app/ui/settings/panes/other.pane.c:77
+#: src/app/ui/settings/settings.controller.c:41
+msgid "Other"
+msgstr "其他"
+
+#: src/app/ui/settings/panes/other.pane.c:80
+msgid "Language"
+msgstr "语言"
+
+#: src/app/ui/settings/panes/other.pane.c:88
+msgid "Show logs"
+msgstr "显示日志"
+
+#: src/app/ui/settings/panes/other.pane.c:94
+msgid "Game mode"
+msgstr "游戏模式"
+
+#: src/app/ui/settings/panes/other.pane.c:99
+#: src/app/ui/settings/panes/other.pane.c:142
+msgid "Reset"
+msgstr "重置"
+
+#: src/app/ui/settings/panes/other.pane.c:103
+msgid "Reset all settings to defaults"
+msgstr "恢复所有默认设置"
+
+#: src/app/ui/settings/panes/other.pane.c:145
+msgid "Reset settings"
+msgstr "重置设置"
+
+#: src/app/ui/settings/panes/other.pane.c:146
+msgid ""
+"Restore all settings to defaults? Pairing is kept. You must reconnect the "
+"stream."
+msgstr "恢复默认设置？配对信息将保留，但需要重新连接串流。"
+
+#: src/app/ui/settings/panes/pref_fps.c:90
+#: src/app/ui/settings/panes/pref_fps.c:95
 #, c-format
 msgid "%d FPS"
 msgstr "%d FPS"
 
 #. Custom FPS option
-#: src/app/ui/settings/panes/pref_fps.c:84
-#: src/app/ui/settings/panes/pref_fps.c:145
+#: src/app/ui/settings/panes/pref_fps.c:100
+#: src/app/ui/settings/panes/pref_fps.c:161
 msgid "Custom FPS"
 msgstr "自定义帧率"
 
-#: src/app/ui/settings/panes/pref_fps.c:102
-#: src/app/ui/settings/panes/pref_fps.c:121
+#: src/app/ui/settings/panes/pref_fps.c:118
+#: src/app/ui/settings/panes/pref_fps.c:137
 #, c-format
 msgid "%.2f FPS (Custom)"
 msgstr "%.2f FPS（自定义）"
 
-#: src/app/ui/settings/panes/pref_fps.c:105
-#: src/app/ui/settings/panes/pref_fps.c:124
+#: src/app/ui/settings/panes/pref_fps.c:121
+#: src/app/ui/settings/panes/pref_fps.c:140
 #, c-format
 msgid "%d FPS (Custom)"
 msgstr "%d FPS（自定义）"
 
-#: src/app/ui/settings/panes/pref_fps.c:155
+#: src/app/ui/settings/panes/pref_fps.c:171
 #, c-format
 msgid "Enter a custom framerate (%d-%d FPS):"
 msgstr "输入自定义帧率（%d–%d FPS）："
@@ -850,36 +861,36 @@ msgstr "输入"
 msgid "Host"
 msgstr "主机"
 
-#: src/app/ui/settings/settings.controller.c:998
-#: src/app/ui/settings/settings.controller.c:1009
+#: src/app/ui/settings/settings.controller.c:1011
+#: src/app/ui/settings/settings.controller.c:1022
 msgid "Later"
 msgstr "稍后"
 
-#: src/app/ui/settings/settings.controller.c:998
+#: src/app/ui/settings/settings.controller.c:1011
 msgid "Restart app"
 msgstr "重启应用"
 
-#: src/app/ui/settings/settings.controller.c:1000
+#: src/app/ui/settings/settings.controller.c:1013
 msgid "Language changes take effect after restarting the app. Restart now?"
 msgstr "更改语言后需重启应用才能生效。立即重启？"
 
-#: src/app/ui/settings/settings.controller.c:1009
+#: src/app/ui/settings/settings.controller.c:1022
 msgid "Reconnect streaming"
 msgstr "重新连接串流"
 
-#: src/app/ui/settings/settings.controller.c:1012
+#: src/app/ui/settings/settings.controller.c:1025
 msgid ""
 "Settings apply on the next streaming session. Reconnect now to use them "
 "right away?"
 msgstr "设置将在下次串流会话生效。立即重新连接以应用设置？"
 
-#: src/app/ui/settings/settings.controller.c:1531
-#: src/app/ui/settings/settings.controller.c:1828
+#: src/app/ui/settings/settings.controller.c:1544
+#: src/app/ui/settings/settings.controller.c:1841
 #: src/app/ui/settings/settings.view.c:36
 msgid "Settings"
 msgstr "设置"
 
-#: src/app/ui/settings/settings.controller.c:1760
+#: src/app/ui/settings/settings.controller.c:1773
 msgid "More settings"
 msgstr "更多设置"
 
@@ -897,14 +908,14 @@ msgstr "串流时仅按住 Select/Back 4 秒，即可显示或隐藏性能统计
 
 #: src/app/ui/streaming/hints.c:11
 msgid ""
-"Xbox One/Series controller can't be directly connected via cable or official"
-" adapter."
+"Xbox One/Series controller can't be directly connected via cable or official "
+"adapter."
 msgstr "Xbox One/Series 手柄无法通过线缆或官方适配器直接连接。"
 
 #: src/app/ui/streaming/hints.c:13
 msgid ""
-"If you have ultra-wide monitor, you may need to change its resolution to fit"
-" 16:9 for streaming."
+"If you have ultra-wide monitor, you may need to change its resolution to fit "
+"16:9 for streaming."
 msgstr "使用超宽屏显示器时，可能需要将分辨率调整为 16:9 才能串流。"
 
 #: src/app/ui/streaming/streaming.controller.c:330
@@ -986,6 +997,9 @@ msgstr "解码器延迟"
 msgid "CPU / RAM"
 msgstr "CPU / RAM"
 
+#~ msgid "Experimental"
+#~ msgstr "实验功能"
+
 #~ msgid "Help"
 #~ msgstr "帮助"
 
@@ -1003,10 +1017,12 @@ msgstr "CPU / RAM"
 
 #~ msgid ""
 #~ "Streaming can't work without a valid decoder.\n"
-#~ "(If your device supports moonlight-embedded, install it and Moonlight will use it automatically.)"
+#~ "(If your device supports moonlight-embedded, install it and Moonlight "
+#~ "will use it automatically.)"
 #~ msgstr ""
 #~ "因为没有可用的解码器，无法进行串流。\n"
-#~ "（如果你的设备支持moonlight-embedded，请先安装它。Moonlight会自动使用它来串流）"
+#~ "（如果你的设备支持moonlight-embedded，请先安装它。Moonlight会自动使用它来"
+#~ "串流）"
 
 #~ msgid "Add computer"
 #~ msgstr "添加电脑"
@@ -1034,7 +1050,8 @@ msgstr "CPU / RAM"
 #~ msgstr "全屏"
 
 #~ msgid ""
-#~ "Your computer may not perform well when using this resolution and framerate."
+#~ "Your computer may not perform well when using this resolution and "
+#~ "framerate."
 #~ msgstr "你的电脑性能可能不足以使用这个分辨率和帧率。"
 
 #, c-format
@@ -1050,7 +1067,9 @@ msgstr "CPU / RAM"
 #~ msgid ""
 #~ "Change in-game settings to optimize for streaming. Resolution will be "
 #~ "limited to 720p, 1080p or 4K. Framerate will be also limited to 30/60 FPS."
-#~ msgstr "更改游戏设置以优化串流。分辨率会被限制在720p、1080p和4K，帧率也会被限制在30/60帧。"
+#~ msgstr ""
+#~ "更改游戏设置以优化串流。分辨率会被限制在720p、1080p和4K，帧率也会被限制在"
+#~ "30/60帧。"
 
 #~ msgid "Mute computer while streaming"
 #~ msgstr "串流时在电脑上静音"
@@ -1064,7 +1083,8 @@ msgstr "CPU / RAM"
 #~ msgid ""
 #~ "Use plugged mouse device only when streaming. This will have better "
 #~ "performance, but absolute mouse mode will not be enabled."
-#~ msgstr "在串流时使用插入的鼠标硬件。这会带来性能提升，但是绝对指针模式将不可用。"
+#~ msgstr ""
+#~ "在串流时使用插入的鼠标硬件。这会带来性能提升，但是绝对指针模式将不可用。"
 
 #~ msgid ""
 #~ "Better for remote desktop. For some games, mouse will not work properly."
@@ -1076,8 +1096,8 @@ msgstr "CPU / RAM"
 #~ msgstr "注意：一些游戏会使用比Moonlight的设置更大的死区"
 
 #~ msgid ""
-#~ "Press LB + RS to move mouse cursor with sticks. LT/RT for left/right mouse "
-#~ "buttons."
+#~ "Press LB + RS to move mouse cursor with sticks. LT/RT for left/right "
+#~ "mouse buttons."
 #~ msgstr "按LB + RS来切换使用摇杆控制鼠标指针。LT=鼠标左键，RT=鼠标右键。"
 
 #~ msgid ""
@@ -1085,7 +1105,8 @@ msgstr "CPU / RAM"
 #~ "layouts."
 #~ msgstr "交换手柄的A/B和X/Y键。如果你习惯使用类似任天堂的按键布局会有用。"
 
-#~ msgid "Absolute mouse mode can't be used when \"Use mouse hardware\" enabled."
+#~ msgid ""
+#~ "Absolute mouse mode can't be used when \"Use mouse hardware\" enabled."
 #~ msgstr "启用“使用鼠标硬件”后，绝对指针模式无法使用。"
 
 #, c-format
@@ -1109,8 +1130,8 @@ msgstr "CPU / RAM"
 #~ msgstr "优先使用 AV1 （实验性功能）"
 
 #~ msgid ""
-#~ "AV1 usually has better graphics, and supports HDR. However, it might be much"
-#~ " slower than H265 or H264."
+#~ "AV1 usually has better graphics, and supports HDR. However, it might be "
+#~ "much slower than H265 or H264."
 #~ msgstr "AV1 的画质通常更好，并且支持 HDR。"
 
 #, c-format

@@ -52,7 +52,7 @@ O comando imprime o diretório de resultados em `.cache/ui-sim-run-*/artifacts/`
 
 Os logs da imagem e compilação ficam um nível acima, em `image-build.log` e
 `compile.log`. O roteiro padrão verifica as configurações de Stream, Input, Host
-e Experimental, o cancelamento de adicionar PC e o cancelamento da saída por
+e Other, o cancelamento de adicionar PC e o cancelamento da saída por
 mouse e pela tecla Escape. As opções de Stream ficam na lista principal de
 configurações; as outras três abrem painéis secundários.
 
@@ -60,6 +60,15 @@ O runtime usa `--network none`, fonte e compilação montadas somente para leitu
 e nenhum dispositivo/credencial da TV. Nenhum host real pode receber `/cancel`
 nesses testes. O próprio aplicativo e seu backend continuam executando: uma falha
 de mDNS pela ausência de rede, por exemplo, é exercitada de verdade.
+
+## Opções de streaming
+
+`tools/ui-sim/stream-options.json` percorre YUV SDR, slices HEVC, atualização
+periódica, ABR, troca de codec, logs e reset confirmado/cancelado. Esse roteiro
+requer `AURORA_UI_SIM_VIDEO_FIXTURE=1` no container de runtime: o driver anuncia
+HEVC/AV1/HDR sintéticos para testar habilitação e preferências. A saída continua
+dummy; isso não valida decodificação. As árvores JSON incluem `checked` nos
+checkboxes para conferir as transições, além do estado `disabled`.
 
 ## Roteiros
 
@@ -78,7 +87,7 @@ Exemplo:
   "steps": [
     {"action": "settings"},
     {"expect": "Resolution"},
-    {"click_text": "Experimental"},
+    {"click_text": "Other"},
     {"expect": "Show logs"},
     {"key": "Down"},
     {"key": "Escape"}

@@ -136,6 +136,15 @@ void app_ui_open(app_ui_t *ui, bool open_launcher, const app_launch_params_t *pa
     app_set_keep_awake(ui->app, false);
 }
 
+void app_ui_reload(app_ui_t *ui) {
+    if (ui->disp == NULL || ui->fm == NULL) return;
+    lv_fragment_manager_del(ui->fm);
+    ui->fm = lv_fragment_manager_create(NULL);
+    launcher_fragment_args_t args = {.app = ui->app, .params = NULL};
+    lv_fragment_t *fragment = lv_fragment_create(&launcher_controller_class, &args);
+    lv_fragment_manager_push(ui->fm, fragment, &ui->container);
+}
+
 void app_ui_close(app_ui_t *ui) {
     SDL_SetAssertionHandler(app_assertion_handler_abort, NULL);
     if (ui->disp == NULL) {

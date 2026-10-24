@@ -74,16 +74,10 @@
       "key": "Escape"
     },
     {
-      "click_text": "Experimental"
+      "click_text": "Other"
     },
     {
       "expect": "Show logs"
-    },
-    {
-      "scroll_text": "Periodic decoder refresh (HEVC)"
-    },
-    {
-      "scroll_text": "Profile"
     },
     {
       "click_text": "Reset all settings to defaults"
@@ -194,16 +188,10 @@
       "key": "Escape"
     },
     {
-      "click_text": "Experimental"
+      "click_text": "Other"
     },
     {
       "expect": "Show logs"
-    },
-    {
-      "scroll_text": "Periodic decoder refresh (HEVC)"
-    },
-    {
-      "scroll_text": "Profile"
     },
     {
       "click_text": "Reset all settings to defaults"

@@ -31,6 +31,9 @@ typedef struct _HTTP_DATA {
     size_t size;
 } HTTP_DATA;
 
+/* Call before starting application/vendor worker threads. Safe to repeat. */
+int http_init(void);
+
 HTTP *http_create(const char *keydir);
 
 int http_request(HTTP *http, char *url, HTTP_DATA * data);

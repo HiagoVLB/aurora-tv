@@ -12,6 +12,21 @@ static bool is_valid_fps(int fps) {
     return fps > 0;
 }
 
+/* The numeric editor accepts '.', independently of the translated UI locale. */
+static bool parse_custom_fps(const char *text, double *fps) {
+    char *end;
+    long whole = strtol(text, &end, 10);
+    if (end == text) return false;
+    *fps = (double) whole;
+    if (*end == '.') {
+        double place = 0.1;
+        for (++end; *end >= '0' && *end <= '9'; ++end, place *= 0.1) {
+            *fps += (*end - '0') * place;
+        }
+    }
+    return *end == '\0';
+}
+
 static void dropdown_fps_select_cb(lv_event_t *e);
 
 static void dropdown_delete_cb(lv_event_t *e);
@@ -69,6 +84,7 @@ lv_obj_t *pref_dropdown_fps(lv_obj_t *parent, const int *options, int max, int *
     num_entries++;
 
     pref_dropdown_int_entry_t *entries = lv_mem_alloc(sizeof(pref_dropdown_int_entry_t) * num_entries);
+    lv_memset_00(entries, sizeof(pref_dropdown_int_entry_t) * num_entries);
     char buf[32];
     for (int i = 0; i < num_options; i++) {
         snprintf(buf, sizeof(buf), locstr("%d FPS"), options[i]);
@@ -162,7 +178,8 @@ void dropdown_fps_select_cb(lv_event_t *e) {
     lv_textarea_set_max_length(ta, 10);
     char value[24];
     if (ctx->refresh_rate_x100_ref != NULL && *ctx->refresh_rate_x100_ref > 0) {
-        snprintf(value, sizeof(value), "%.2f", *ctx->refresh_rate_x100_ref / 100.0);
+        snprintf(value, sizeof(value), "%d.%02d", *ctx->refresh_rate_x100_ref / 100,
+                 *ctx->refresh_rate_x100_ref % 100);
     } else {
         snprintf(value, sizeof(value), "%d", *ctx->value_ref);
     }
@@ -195,8 +212,8 @@ static void cus_fps_dialog_cb(lv_event_t *e) {
 
     lv_obj_t *ta = lv_event_get_user_data(e);
     const char *text = lv_textarea_get_text(ta);
-    char *end = NULL;
-    double fps = strtod(text, &end);
+    double fps;
+    if (!parse_custom_fps(text, &fps)) return;
     int min_fps = 30;
     int max_fps = ctx->entries[ctx->num_entries - 2].value;
     if (fps < min_fps) {

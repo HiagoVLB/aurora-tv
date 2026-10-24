@@ -139,9 +139,9 @@ automática de uma tarefa de documentação, revisão ou build.
   foco. Cancele callbacks assíncronos que guardem um fragment ao destruí-lo.
   Valide Back/Escape e retorno de foco ao fechar dropdowns, popups e overlay.
 - A lista `entries[]` de `settings.controller.c` determina os painéis acessíveis:
-  Stream, Input, Host e Experimental. Compilar um pane não o torna visível.
-  Preferências comuns pertencem ao painel correspondente; experimentos ficam em
-  `experimental.pane.c`. Não recrie panes de vídeo/áudio inacessíveis.
+  Stream, Input, Host e Other (Outros). Compilar um pane não o torna visível.
+  Vídeo e bitrate pertencem a Stream (`basic.pane.c`); idioma, logs, Game Mode
+  e reset ficam em `other.pane.c`. Não recrie panes de vídeo/áudio inacessíveis.
 - Uma preferência nova precisa de campo, default, leitura/escrita INI, UI acessível
   e consumidor real. Decida se pertence ao perfil ou é global; confira os dois
   sentidos de conversão em `profile_manager.c`. Checkbox salvo não prova efeito.

@@ -12,8 +12,9 @@ bool webos_game_mode_is_rooted(void);
 
 typedef struct webos_game_mode_state webos_game_mode_state_t;
 
-/** Apply Game picture/sound. NULL if nothing applied. Connecting UI is SDR — hdrGame is applied later via on_hdr. */
-webos_game_mode_state_t *webos_game_mode_enter(bool hdr);
+/** Apply Game picture/sound with known rollback values. NULL if unavailable.
+ * Connecting UI is SDR; HDR transitions are applied later via on_hdr. */
+webos_game_mode_state_t *webos_game_mode_enter(void);
 
 /** Switch to hdrGame once the host enables HDR. */
 void webos_game_mode_on_hdr(webos_game_mode_state_t *state, bool hdr);

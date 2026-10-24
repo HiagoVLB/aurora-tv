@@ -1,0 +1,110 @@
+{
+  "name": "stream-options-and-reset",
+  "steps": [
+    {
+      "action": "settings"
+    },
+    {
+      "click_text": "Full range YUV (SDR only)"
+    },
+    {
+      "click_text": "HEVC sliced frames"
+    },
+    {
+      "click_text": "Periodic decoder refresh (HEVC)"
+    },
+    {
+      "key": "Return"
+    },
+    {
+      "key": "Return"
+    },
+    {
+      "key": "Down"
+    },
+    {
+      "key": "Right"
+    },
+    {
+      "click_text": "Adaptive bitrate"
+    },
+    {
+      "click_text": "Balanced"
+    },
+    {
+      "key": "Down"
+    },
+    {
+      "key": "Return"
+    },
+    {
+      "key": "Escape"
+    },
+    {
+      "action": "settings"
+    },
+    {
+      "scroll_text": "Periodic decoder refresh (HEVC)"
+    },
+    {
+      "scroll_text": "Profile"
+    },
+    {
+      "click_text": "HDR"
+    },
+    {
+      "scroll_text": "Full range YUV (SDR only)"
+    },
+    {
+      "click_text": "AV1"
+    },
+    {
+      "scroll_text": "HEVC sliced frames"
+    },
+    {
+      "scroll_text": "Periodic decoder refresh (HEVC)"
+    },
+    {
+      "click_text": "Other"
+    },
+    {
+      "expect": "Show logs"
+    },
+    {
+      "click_text": "Show logs"
+    },
+    {
+      "click_text": "Show logs"
+    },
+    {
+      "click_text": "Reset all settings to defaults"
+    },
+    {
+      "click_text": "Cancel"
+    },
+    {
+      "expect": "Show logs"
+    },
+    {
+      "click_text": "Reset all settings to defaults"
+    },
+    {
+      "click_text": "Reset"
+    },
+    {
+      "absent": "Reset settings"
+    },
+    {
+      "action": "settings"
+    },
+    {
+      "scroll_text": "Periodic decoder refresh (HEVC)"
+    },
+    {
+      "scroll_text": "Profile"
+    },
+    {
+      "key": "Escape"
+    }
+  ]
+}

@@ -2,7 +2,7 @@ target_sources(moonlight-lib PRIVATE
         keyboard_webos.c
         navkey_sdl_webos.c
         pbnjson_compat.c
-        game_mode.c
+        game_mode.c game_mode_luna.c
         stream_priority.c
         dualsense_usb.c
         keyboard_evdev.c

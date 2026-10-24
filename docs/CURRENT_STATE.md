@@ -1,6 +1,6 @@
 # Estado atual do Aurora
 
-Linha de base revisada em **22/10/2026**, horário de São Paulo. Este é o ponto de
+Linha de base revisada em **24/10/2026**, horário de São Paulo. Este é o ponto de
 entrada mantido para saber onde estamos e comparar futuras versões. Os relatórios
 detalhados continuam em [integração VibeShine](VIBESHINE_INTEGRATION.md),
 [comparação Nonary/webOS](NONARY_MOONLIGHT_WEBOS_REVIEW.md) e
@@ -36,7 +36,77 @@ locais automatizam IPK/versionamento e fazem a marca do ELF derivar de APP_VERSI
 Nem todas as áreas foram validadas em hardware; não considerar tudo pronto para
 release. As revisões comparativas anteriores não alteraram o streaming.
 
+## Revisão das opções experimentais e menus (24/10/2026)
+
+- Todas as opções do antigo Experimental foram rastreadas até persistência e
+  consumidor. Vídeo/refresh HEVC e ABR ficam em **Stream**; idioma, logs,
+  Game Mode e reset ficam em **Other / Outros**, traduzido nos 16 catálogos.
+- Corrigidos ownership/limpeza de fragments, memória não inicializada de FPS,
+  rebuild de UI no reset/idioma, liberação de preferências no reset, snapshots
+  de sessão, ABR com amostras repetidas e rollback/HDR do Game Mode. Detalhes e
+  limites em [EXPERIMENTAL_FEATURE_REVIEW.md](EXPERIMENTAL_FEATURE_REVIEW.md).
+- CTest e fixtures com ASan/UBSan aprovados; UI localizada em inglês + 16 idiomas
+  em 1080p/720p, roteiro de opções/reset real com sanitizers nas duas resoluções,
+  gettext/cstrings dos 16 catálogos e compilação ARM aprovados. O IPK de teste foi
+  gerado e auditado; instalado na C2 e startup conferido às 19:57, com hashes de
+  pareamento preservados e vídeo/áudio NDL. Casos de streaming ainda pendentes.
+  Critérios por opção em [C2_EXPERIMENTAL_VALIDATION.md](C2_EXPERIMENTAL_VALIDATION.md).
+- Rodada real abriu Desktop em AV1 e HEVC, SDR 2560×1440/90 solicitados,
+  estéreo NDL, teto aplicado de 95 Mbps. Três modos ABR ajustaram bitrate aceito
+  pelo host e completaram a parada; slices HEVC alterou o anúncio de 1 para 6.
+  Perdas de pacotes e lacunas de áudio observadas; sem crash/erro de feed nos
+  trechos coletados. Isso ainda não valida apresentação física.
+- Encontrado e corrigido refresh HEVC baseado em contagem de frames: agora usa
+  tempo monotônico, inclusive com FPS variável/pausas, sem overflow por
+  multiplicação de FPS. Seis CTests pertinentes e novo fixture ASan/UBSan
+  aprovados; novo IPK gerado e instalado às 20:08. Na C2, pedidos periódicos
+  observaram o intervalo em tempo; desligado e AV1 não geraram esses pedidos.
+  SDR full range e HEVC HDR abriram sem erro de feed/crash; HDR sinalizado pelo
+  host e metadados PQ/BT.2020 no NDL. Cores/áudio físicos ainda pendentes.
+  Preferências temporárias restauradas, perfis/hosts/pareamento preservados.
+- Estabilidade física permanece pendente: decoder, cores/HDR e permissões e
+  restauração do firmware não são demonstrados pelo backend dummy. O refresh
+  periódico continua opcional/desligado por padrão e pode causar hitches de IDR.
+
 ## Geração de IPK e versionamento
+
+- Em **24/10/2026, 20:08 São Paulo**, IPK **1.3.3** regenerado com a correção
+  do temporizador HEVC, **2.385.978 bytes**, SHA-256
+  `dc2e20ccf82a56d462c980937983dcfab8c83da4e2783d26539ce5dfca584c51`.
+  Recibo `.cache/ipk/run-hfluctai/`. Instalado na C2; ELF conferido:
+  `d1c5e52a694d7089824a4f1f4629444f87bf24b053ef8455df06ddf96a2bb548`.
+  Novo reset de logs por instalação observado; cópia anterior preservada.
+  Menu Outros e 14 bundles iguais aos já auditados. Refresh, SDR/HDR e gating
+  AV1 exercitados no cliente; observação física de imagem/áudio/controle e
+  UI real continuam pendentes. Evidências em
+  `.cache/experimental-physical/timer-fix-installation-receipt.json` e
+  `timer-package-runtime-review.json`. Configuração da rodada restaurada.
+
+- Em **24/10/2026, 19:42 São Paulo**, IPK **1.3.3** regenerado com as correções
+  da revisão Experimental/Outros, mantendo a versão central. Entrega `aurora.ipk`,
+  **2.386.028 bytes**, SHA-256
+  `94dc5af224cf1e2d0744f47e6396ac7f394e888b627734b907f5bf9fcf016506`.
+  Recibo `.cache/ipk/run-2k2ho7b_/` (`latest.json` aponta para essa execução).
+  ELF ARM, identidade, versão e marcador de logs aprovados; auditoria adicional
+  confirmou o menu Other/Outros, ausência do antigo menu Experimental, código
+  de rollback novo e os 14 bundles empacotados. Após a confirmação de disponibilidade
+  pelo usuário, instalado via SSH/Docker e reaberto às 19:57 na **OLED42C2PSA**,
+  firmware **33.31.68**, webOS **10.3.1**. ELF confere com o pacote; configurações
+  e pareamento preservados, logs da instalação anterior salvos antes do reset.
+  Startup pt-BR com NDL vídeo/áudio e sem crash na coleta inicial. Serviço
+  Homebrew inexistente; Game Mode root indisponível. Streaming/scanout/HDR ainda
+  pendentes; recibo `.cache/experimental-physical/installation-receipt.json`.
+
+- Em **24/10/2026, 11:35 São Paulo**, IPK **1.3.3** recompilado com proteção
+  da vida útil do contexto nos callbacks NDL e correções HTTP, sem incremento.
+  ARM/RelWithDebInfo, metadados/ELF e reset por instalação aprovados. SHA-256
+  `7f2b74c21926432ba35b7ef04d81bb3b2f6ec7caff47fdfa7f69fa2f194111a1`;
+  recibo, log e símbolos em `.cache/ipk/run-16ak3gfd/`. Símbolos do novo pacote
+  confirmam `CallbackContextLock` e `http_init`; módulo NDL com SHA-256
+  `b264106440c7f8cb223841df721518075c330a5b341a6ebdec867769f45b3817`.
+  Build desktop e quatro testes CTest pertinentes passaram, além dos fixtures
+  HTTP/NDL/decode com ASan/UBSan. O caso novo de callback falhava antes do patch.
+  Pacote não instalado e aplicativo não executado, conforme restrição do usuário.
 
 - Em **22/10/2026, 21:36 São Paulo**, IPK **1.3.3** recompilado com correção
   local da concorrência NDL e validação de fragmentos de vídeo, sem incrementar
@@ -103,6 +173,26 @@ release. As revisões comparativas anteriores não alteraram o streaming.
   Recibo/log/símbolos em `.cache/ipk/run-eu54hyum/`; não instalado na TV.
 
 ## SIGABRT confirmado na C2 e captura v2 (22/10/2026)
+
+- Revisão de **24/10/2026** dos três arquivos fornecidos: fatal de **11:18:29
+  São Paulo**, PID **16316**, `moonlight-io`, `munmap_chunk(): invalid pointer`.
+  `aurora-run.state` corresponde ao fatal. O log completo (8967 linhas) contém
+  cinco startups que identificam execuções anteriores como `crashed`; o último
+  fatal vem após cleanup da sessão. O frame próprio `0x4fe40` resolve para
+  `http_destroy` nos símbolos do IPK local de 22/10; o restante passa por
+  libc/c-ares/libcurl. Isso identifica onde a corrupção foi detectada, sem
+  provar a escrita original nem a identidade binária da instalação atual.
+  Um novo teste isolado reproduziu escrita inválida no callback NDL
+  `LOADCOMPLETED` durante destruição do player. Patch local SS4S protege a
+  publicação/retirada do contexto com um mutex separado dos calls de firmware,
+  evitando acesso após destruição e deadlock em callback síncrono.
+  A rede agora inicializa curl antes de iniciar threads, protege tamanhos/OOM
+  do buffer HTTP, usa os tipos corretos da API e limpa referências temporárias
+  após requisições. Evidência, validação e limites em
+  [DIAGNOSTIC_LOG_REVIEW.md](DIAGNOSTIC_LOG_REVIEW.md). Nenhum aplicativo ou
+  sessão de streaming foi executado nesta investigação. Testes isolados HTTP
+  e NDL/decode com ASan/UBSan passaram; build desktop do aplicativo e quatro
+  testes CTest pertinentes passaram, incluindo os 20000 ciclos com callbacks.
 
 - Nova captura v2, às **21:18:36 de 22/10**, confirma **corrupção do heap**:
   `corrupted size vs. prev_size`, PID 5052, thread VideoRecv, AV1 1440p90.
@@ -290,7 +380,7 @@ release. As revisões comparativas anteriores não alteraram o streaming.
 | Controles 410 | Conclusões conhecidas, com UUID e mensagem correspondentes, retornam ao launcher sem RTSP; confirmação permanece mensagem, sem repetição automática. | `gs_start_app_ex`, `src/app/stream/session_worker.c` |
 | Bitrate | Sessão respeita teto do backend; ABR respeita esse teto e bitrate aplicado pelo host; para antes do encerramento da conexão. | `session.c`, `adaptive_bitrate.c`, `session_worker.c`, `gs_set_bitrate_ex` |
 | Estatísticas | Novas sessões limpam amostras anteriores; FPS de saída mede submit ao backend, não apresentação física. | `src/app/stream/video/session_video.c` |
-| Configurações | Stream, Input, Host e Experimental são os painéis registrados. Persistência INI e perfis locais existem. | `src/app/ui/settings/settings.controller.c`, `src/app/app_settings.c`, `src/app/profile/` |
+| Configurações | Stream, Input, Host e Other (Outros) são os painéis registrados. Persistência INI e perfis locais existem. | `src/app/ui/settings/settings.controller.c`, `src/app/app_settings.c`, `src/app/profile/` |
 
 ## README and built-in controls guide (2026-10-18)
 
@@ -346,7 +436,7 @@ Esses contratos têm rastreamento e referências de código no
 | Alta | `quitappafter` está persistido/visível, sem consumidor encontrado no encerramento. | Definir/corrigir a semântica sem tornar Disconnect um `/cancel` involuntário. |
 | Alta | Perfis só guardam resolução, FPS inteiro, bitrate, rotação, HDR e HEVC. AV1 e outras opções permanecem globais. | Tornar explícito o escopo ou ampliar perfis, verificando alternância e migração. |
 | Alta | UI permite até 400 Mbps; sessão aplica teto menor sem explicar valor efetivo. | Exibir solicitado/aplicado/limite com base no backend selecionado. |
-| Alta | Aviso de reconexão não cobre todas as alterações de vídeo. | Cobrir opções que só entram na configuração da próxima sessão. |
+| Média | Stream agora sinaliza reconexão para vídeo/bitrate/ABR; NTSC ainda está no painel Host sem esse callback. | Revisar o restante das preferências de Host separadamente. |
 | Alta | Codec/FPS anunciado pelo backend não prova capacidade de cada modo na C2. | Medir HEVC/AV1 por resolução/FPS e apresentação física, preservando caps SS4S. |
 | Média | Nome 10-bit SDR local não explica dependência da política do host. | Melhorar a informação e validar Main10 SDR real na C2. |
 | Média | Confirmação de Terminate/substituição aparece como erro genérico. | Tratar confirmação na UI mantendo uma nova ação explícita do usuário. |

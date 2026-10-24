@@ -81,6 +81,9 @@ typedef struct session_config_t {
     bool report_gamepad_battery;
     bool auto_adjust_bitrate;
     int abr_mode;
+    bool hevc_sliced_frames;
+    int idr_refresh_interval_ms;
+    bool game_mode;
 } session_config_t;
 
 extern int streaming_errno;

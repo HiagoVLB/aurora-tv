@@ -1,5 +1,84 @@
 # webOS diagnostic log review and upstream comparison
 
+## Repeated crashes and player callback lifetime (2026-10-24)
+
+All three supplied files were reviewed and preserved under
+`.cache/crash-diagnostics/cleanup-2026-10-24/`, together with a full-log summary
+and sanitizer output. `aurora.log` contains 8967 lines and five startups reporting
+an earlier `crashed` marker. Only the last fatal's stack survives in the crash
+file; the other failures cannot be assigned that same stack.
+
+The fatal and run-state match version **1.3.3**, PID **16316**, boot ID
+`f216aef8-b327-470e-86d9-2e309c791300`, started at epoch **1792850439**.
+At epoch **1792851509**, **14:18:29 UTC / 11:18:29 São Paulo**, thread
+**moonlight-io** (16325) aborts with **`munmap_chunk(): invalid pointer`**.
+The session had just completed user-requested disconnect, connection stop and
+cleanup; host refresh/discovery then resumed. Network frame/audio loss earlier
+in the log does not explain an invalid allocator pointer.
+
+The stack includes libc, c-ares offset **0x4514**, libcurl offsets **0x3ccfe**
+and **0x10f88**, then Aurora address **0x4fe40**. The latter resolves to
+`http_destroy`, immediately after `curl_easy_cleanup`, using symbols from
+`.cache/ipk/run-s4iicwal/`. These are local candidate symbols; matching version
+alone does not establish installed binary identity. Exact current firmware
+network libraries could not be copied because developer SSH was unreachable.
+Do not apply SDK library symbols as if they were the TV's exact binaries.
+
+A source audit found an independent, reproducible invalid-write race in NDL:
+`LOADCOMPLETED` checked the global player pointer, then performed three atomic
+stores through that pointer while destruction could clear/free it. Atomic fields
+do not keep their containing allocation alive. A focused regression delivering
+load/render callbacks during 20000 create/destroy cycles failed on the previous
+driver at `ndl_player.c:827`, with UBSan reporting member access through null
+and ASan identifying a write to address **0x72**. The same unsynchronized lifetime
+also permits a stale pointer to a freed allocation. This is a demonstrated defect,
+not proof that this particular callback caused the supplied allocator abort.
+
+The local SS4S patch introduces a short callback-context guard, detaches/drains
+state callbacks before unload/free and publishes new contexts under both guards.
+The callback guard is never held over a firmware call or thread join; the state
+callback never waits on the NDL media mutex, preserving synchronous callbacks.
+Rendered-frame callbacks retain their nonblocking media trylock. Existing feed/
+unload serialization patches are preserved. No pacing/PTS, codec capabilities,
+bitrate policy or audio channel mapping was changed.
+
+HTTP fixes initialize libcurl once before application/vendor threads start,
+with a guarded fallback for direct library callers and explicit initialization
+failure. This removes reliance on thread-unsafe lazy initialization in older
+curl/resolver builds, as described by the
+[libcurl threading documentation](https://curl.se/libcurl/c/threadsafe.html).
+Global resolver state remains alive for the process; individual client teardown
+does not run global cleanup. HTTP writes reject size overflow/allocation failure,
+buffer reset occurs under the handle mutex, status outputs use `long` as required
+by curl (the previous `int *` can overwrite the stack on LP64; ARM32 has equal
+int/long widths), and temporary POST/body/header references are detached before
+their owners are freed. `CURLOPT_NOSIGNAL` is enabled for worker transfers.
+
+Validation uses isolated HTTP and NDL executables with simulated transport/
+firmware, not Aurora/Moonlight or a streaming session. The HTTP ASan/UBSan fixture
+passes concurrent first-use initialization, failed initialization, shared-handle
+requests, repeated POST/GET, HTTP/transport errors, cleanup and size overflow.
+Physical crash elimination remains unverified under the user's no-execution
+constraint; sanitizer regressions establish the corrected defects only.
+
+The corrected NDL/decode ASan/UBSan fixture also passes, including concurrent
+AV1/HEVC/H264 feed/unload, synchronous callbacks, delayed priming and all 20000
+callback lifetime cycles. Desktop application compilation and the four relevant
+CTest cases (`test_http_lifecycle`, `test_http_init_failure`, `test_decode_unit`,
+`test_ndl_serialization`) pass. An initial build of every test target encountered
+missing cached `libunwind.h`; the targeted integration build requires no unwind
+test dependency and completed. No application or simulator was executed.
+
+The ARM/RelWithDebInfo IPK was rebuilt and verified at **14:35 UTC / 11:35
+São Paulo**, version **1.3.3**, SHA-256
+`7f2b74c21926432ba35b7ef04d81bb3b2f6ec7caff47fdfa7f69fa2f194111a1`.
+Receipt/log/debug symbols are in `.cache/ipk/run-16ak3gfd/`; `aurora.ipk` at
+the repository root is the verified delivery. Its NDL module hash is
+`b264106440c7f8cb223841df721518075c330a5b341a6ebdec867769f45b3817`.
+Debug symbols confirm the callback-context guard and HTTP global initializer;
+ARM ELF, app identity/version and installation log-reset marker pass validation.
+No installation or TV execution was performed.
+
 ## Heap corruption in AV1 feed on 1.3.3 (2026-10-22, 21:18:36 São Paulo)
 
 The new v2 fatal report identifies PID **5052**, thread **VideoRecv** (5996),

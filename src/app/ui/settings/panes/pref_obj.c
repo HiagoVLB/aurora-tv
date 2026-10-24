@@ -253,7 +253,7 @@ lv_obj_t *pref_dropdown_int(lv_obj_t *parent, const pref_dropdown_int_entry_t *e
     }
     if (match_index >= 0) {
         lv_dropdown_set_selected(dropdown, match_index);
-    } else if (fallback_index) {
+    } else if (fallback_index >= 0) {
         lv_dropdown_set_selected(dropdown, fallback_index);
     } else {
         lv_dropdown_set_selected(dropdown, 0);
@@ -285,7 +285,7 @@ lv_obj_t *pref_dropdown_int_pair(lv_obj_t *parent, const pref_dropdown_int_pair_
     }
     if (match_index >= 0) {
         lv_dropdown_set_selected(dropdown, match_index);
-    } else if (fallback_index) {
+    } else if (fallback_index >= 0) {
         lv_dropdown_set_selected(dropdown, fallback_index);
     } else {
         lv_dropdown_set_selected(dropdown, 0);
@@ -318,7 +318,7 @@ lv_obj_t *pref_dropdown_string(lv_obj_t *parent, const pref_dropdown_string_entr
     }
     if (match_index >= 0) {
         lv_dropdown_set_selected(dropdown, match_index);
-    } else if (fallback_index) {
+    } else if (fallback_index >= 0) {
         lv_dropdown_set_selected(dropdown, fallback_index);
     } else {
         lv_dropdown_set_selected(dropdown, 0);

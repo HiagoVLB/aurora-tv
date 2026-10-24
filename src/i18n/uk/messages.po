@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: moonlight-tv\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-19 04:22+0000\n"
+"POT-Creation-Date: 2026-10-24 22:39+0000\n"
 "PO-Revision-Date: 2026-10-19 01:15-0300\n"
 "Last-Translator: \n"
 "Language-Team: Ukrainian\n"
@@ -11,53 +11,55 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=4; plural=((n%10==1 && n%100!=11) ? 0 : ((n%10 >= 2 && n%10 <=4 && (n%100 < 12 || n%100 > 14)) ? 1 : ((n%10 == 0 || (n%10 >= 5 && n%10 <=9)) || (n%100 >= 11 && n%100 <= 14)) ? 2 : 3));\n"
+"Plural-Forms: nplurals=4; plural=((n%10==1 && n%100!=11) ? 0 : ((n%10 >= 2 "
+"&& n%10 <=4 && (n%100 < 12 || n%100 > 14)) ? 1 : ((n%10 == 0 || (n%10 >= 5 "
+"&& n%10 <=9)) || (n%100 >= 11 && n%100 <= 14)) ? 2 : 3));\n"
 "X-Crowdin-File: messages.pot\n"
 "X-Crowdin-File-ID: 22613\n"
 "X-Crowdin-Language: uk\n"
 "X-Crowdin-Project: moonlight-tv\n"
 "X-Crowdin-Project-ID: 484733\n"
 
-#: src/app/app.c:138
+#: src/app/app.c:186
 msgid "[Localized Language]"
 msgstr "Українська"
 
-#: src/app/app.c:359 src/app/ui/launcher/add.dialog.c:42
+#: src/app/app.c:419 src/app/ui/launcher/add.dialog.c:42
 #: src/app/ui/launcher/apps.controller.c:876
 #: src/app/ui/launcher/server.context_menu.c:101
 #: src/app/ui/launcher/server.context_menu.c:187
-#: src/app/ui/settings/panes/experimental.pane.c:212
-#: src/app/ui/settings/panes/pref_fps.c:144
+#: src/app/ui/settings/panes/other.pane.c:142
+#: src/app/ui/settings/panes/pref_fps.c:160
 #: src/app/ui/settings/panes/pref_res.c:174
 #: src/app/ui/streaming/streaming.controller.c:649
 msgid "Cancel"
 msgstr "Скасувати"
 
-#: src/app/app.c:359 src/app/ui/launcher/add.dialog.c:42
+#: src/app/app.c:419 src/app/ui/launcher/add.dialog.c:42
 #: src/app/ui/launcher/apps.controller.c:800
 #: src/app/ui/launcher/apps.controller.c:912
 #: src/app/ui/launcher/launcher.controller.c:629
 #: src/app/ui/launcher/launcher.controller.c:644
 #: src/app/ui/launcher/pair.dialog.c:54
-#: src/app/ui/launcher/server.context_menu.c:143 src/app/ui/root.c:403
-#: src/app/ui/settings/panes/pref_fps.c:144
+#: src/app/ui/launcher/server.context_menu.c:143 src/app/ui/root.c:412
+#: src/app/ui/settings/panes/pref_fps.c:160
 #: src/app/ui/settings/panes/pref_res.c:174
 msgid "OK"
 msgstr "OK"
 
-#: src/app/app.c:360
+#: src/app/app.c:420
 msgid "Quit Aurora?"
 msgstr "Вийти з Aurora?"
 
-#: src/app/app_settings.c:133
+#: src/app/app_settings.c:138
 msgid "Stereo"
 msgstr "Стерео"
 
-#: src/app/app_settings.c:134
+#: src/app/app_settings.c:139
 msgid "5.1 Surround"
 msgstr "Об'ємний звук 5.1"
 
-#: src/app/app_settings.c:135
+#: src/app/app_settings.c:140
 msgid "7.1 Surround"
 msgstr "Об'ємний звук 7.1"
 
@@ -75,8 +77,8 @@ msgstr "Керування та сполучення кнопок"
 
 #: src/app/ui/help/help.dialog.c:60
 msgid ""
-"During streaming, use these shortcuts to control Aurora. Scroll with Up/Down"
-" or the mouse wheel. Press Back/B/Escape to close this guide."
+"During streaming, use these shortcuts to control Aurora. Scroll with Up/Down "
+"or the mouse wheel. Press Back/B/Escape to close this guide."
 msgstr ""
 "Під час трансляції керуйте Aurora за допомогою цих сполучень. Гортайте "
 "кнопками вгору/вниз або коліщатком миші. Натисніть Назад/B/Esc, щоб закрити "
@@ -151,8 +153,8 @@ msgid ""
 "Show or hide pinned performance stats. Hold this button alone; it is also "
 "sent to the PC."
 msgstr ""
-"Показує або приховує закріплену статистику продуктивності. Утримуйте лише цю"
-" кнопку; вона також надсилається на ПК."
+"Показує або приховує закріплену статистику продуктивності. Утримуйте лише цю "
+"кнопку; вона також надсилається на ПК."
 
 #: src/app/ui/help/help.dialog.c:74
 msgid "Y / Triangle with virtual mouse enabled"
@@ -168,8 +170,8 @@ msgstr "Віртуальна миша"
 
 #: src/app/ui/help/help.dialog.c:77
 msgid ""
-"Enable Virtual mouse in the stream menu, or enable it in Settings > Input to"
-" start each stream with it."
+"Enable Virtual mouse in the stream menu, or enable it in Settings > Input to "
+"start each stream with it."
 msgstr ""
 "Увімкніть віртуальну мишу в меню трансляції або в Налаштування > Ввід, щоб "
 "використовувати її від початку кожної сесії."
@@ -254,8 +256,8 @@ msgid ""
 "Ask the host to close the application after confirmation. Not available for "
 "Remote Monitor / Remote Input streams."
 msgstr ""
-"Після підтвердження просить хост закрити програму. Недоступно для трансляцій"
-" Remote Monitor / Remote Input."
+"Після підтвердження просить хост закрити програму. Недоступно для трансляцій "
+"Remote Monitor / Remote Input."
 
 #: src/app/ui/help/help.dialog.c:91
 msgid "About Aurora"
@@ -366,11 +368,13 @@ msgstr "Не в мережі"
 
 #: src/app/ui/launcher/apps.controller.c:497
 msgid ""
-"Press \"Wake\" to send Wake-on-LAN packet to turn the computer on if it supports this feature, press \"Retry\" to connect again.\n"
+"Press \"Wake\" to send Wake-on-LAN packet to turn the computer on if it "
+"supports this feature, press \"Retry\" to connect again.\n"
 "\n"
 "Try restart your computer if these doesn't work."
 msgstr ""
-"Натисніть \"Пробудити\", щоб увімкнути ПК через Wake-on-LAN, якщо підтримується, або \"Повторити\", щоб під'єднатися знову.\n"
+"Натисніть \"Пробудити\", щоб увімкнути ПК через Wake-on-LAN, якщо "
+"підтримується, або \"Повторити\", щоб під'єднатися знову.\n"
 "\n"
 "Якщо це не допоможе, перезапустіть ПК."
 
@@ -433,10 +437,12 @@ msgstr "Немає робочого декодера"
 #: src/app/ui/launcher/launcher.controller.c:634
 msgid ""
 "Streaming can't work without a valid decoder.\n"
-"(If your device supports moonlight-embedded, install it and Aurora will use it automatically.)"
+"(If your device supports moonlight-embedded, install it and Aurora will use "
+"it automatically.)"
 msgstr ""
 "Для трансляції потрібен придатний декодер.\n"
-"(Якщо пристрій підтримує moonlight-embedded, установіть його. Aurora використовуватиме його автоматично.)"
+"(Якщо пристрій підтримує moonlight-embedded, установіть його. Aurora "
+"використовуватиме його автоматично.)"
 
 #: src/app/ui/launcher/launcher.controller.c:638
 msgid "Streaming can't work without a valid decoder."
@@ -448,11 +454,13 @@ msgstr "Не вдалося зберегти налаштування"
 
 #: src/app/ui/launcher/launcher.controller.c:648
 msgid ""
-"Can't find a writable directory to save settings. Settings and pairing information will be lost when the TV is turned off.\n"
+"Can't find a writable directory to save settings. Settings and pairing "
+"information will be lost when the TV is turned off.\n"
 "\n"
 "(If you're using webOS 3.0 or newer, restart the TV may fix this issue.)"
 msgstr ""
-"Не знайдено папку з правом запису. Налаштування та дані парування буде втрачено після вимкнення телевізора.\n"
+"Не знайдено папку з правом запису. Налаштування та дані парування буде "
+"втрачено після вимкнення телевізора.\n"
 "\n"
 "(На webOS 3.0 або новішій може допомогти перезапуск телевізора.)"
 
@@ -510,12 +518,13 @@ msgid "Close"
 msgstr "Закрити"
 
 #: src/app/ui/launcher/server.popup.c:381
-msgid "No paired computers yet. Use the \"+\" button on the top bar to add one."
+msgid ""
+"No paired computers yet. Use the \"+\" button on the top bar to add one."
 msgstr ""
 "Ще немає спарених комп'ютерів. Додайте комп'ютер кнопкою \"+\" на верхній "
 "панелі."
 
-#: src/app/ui/root.c:404
+#: src/app/ui/root.c:413
 msgid "Failed to start streaming"
 msgstr "Не вдалося почати трансляцію"
 
@@ -531,130 +540,92 @@ msgstr ""
 msgid "%s is conflicting with %s"
 msgstr "%s конфліктує з %s"
 
-#: src/app/ui/settings/panes/basic.pane.c:76
+#: src/app/ui/settings/panes/basic.pane.c:95
+msgid "Balanced"
+msgstr "Збалансований"
+
+#: src/app/ui/settings/panes/basic.pane.c:96
+msgid "Quality"
+msgstr "Якість"
+
+#: src/app/ui/settings/panes/basic.pane.c:97
+msgid "Low latency"
+msgstr "Низька затримка"
+
+#: src/app/ui/settings/panes/basic.pane.c:103
 msgid "Auto"
 msgstr "Автоматично"
 
-#: src/app/ui/settings/panes/basic.pane.c:129
+#: src/app/ui/settings/panes/basic.pane.c:156
 #: src/app/ui/streaming/streaming.view.c:218
 msgid "Resolution"
 msgstr "Роздільність"
 
-#: src/app/ui/settings/panes/basic.pane.c:143
+#: src/app/ui/settings/panes/basic.pane.c:170
 msgid "Frame rate"
 msgstr "Частота кадрів"
 
-#: src/app/ui/settings/panes/basic.pane.c:150
-#: src/app/ui/settings/panes/experimental.pane.c:153
+#: src/app/ui/settings/panes/basic.pane.c:177
+#: src/app/ui/settings/panes/basic.pane.c:263
 msgid "Bitrate"
 msgstr "Бітрейт"
 
-#: src/app/ui/settings/panes/basic.pane.c:166
+#: src/app/ui/settings/panes/basic.pane.c:193
 #: src/app/ui/streaming/streaming.view.c:220
 msgid "Video backend"
 msgstr "Відеобекенд"
 
-#: src/app/ui/settings/panes/basic.pane.c:173
+#: src/app/ui/settings/panes/basic.pane.c:200
 msgid "HEVC"
 msgstr "HEVC"
 
-#: src/app/ui/settings/panes/basic.pane.c:177
+#: src/app/ui/settings/panes/basic.pane.c:204
 msgid "AV1"
 msgstr "AV1"
 
-#: src/app/ui/settings/panes/basic.pane.c:186
+#: src/app/ui/settings/panes/basic.pane.c:213
 msgid "HDR"
 msgstr "HDR"
 
-#: src/app/ui/settings/panes/basic.pane.c:189
+#: src/app/ui/settings/panes/basic.pane.c:216
 msgid "10-bit SDR"
 msgstr "10-бітний SDR"
 
-#: src/app/ui/settings/panes/basic.pane.c:193
+#: src/app/ui/settings/panes/basic.pane.c:219
 #: src/app/ui/streaming/streaming.view.c:224
 msgid "Audio"
 msgstr "Звук"
 
-#: src/app/ui/settings/panes/experimental.pane.c:72
-msgid "Balanced"
-msgstr "Збалансований"
-
-#: src/app/ui/settings/panes/experimental.pane.c:73
-msgid "Quality"
-msgstr "Якість"
-
-#: src/app/ui/settings/panes/experimental.pane.c:74
-msgid "Low latency"
-msgstr "Низька затримка"
-
-#: src/app/ui/settings/panes/experimental.pane.c:94
-#: src/app/ui/settings/settings.controller.c:41
-msgid "Experimental"
-msgstr "Експериментальні"
-
-#: src/app/ui/settings/panes/experimental.pane.c:97
-msgid "Language"
-msgstr "Мова"
-
-#: src/app/ui/settings/panes/experimental.pane.c:105
-msgid "Show logs"
-msgstr "Показувати журнали"
-
-#: src/app/ui/settings/panes/experimental.pane.c:114
-msgid "Game mode"
-msgstr "Ігровий режим"
-
-#: src/app/ui/settings/panes/experimental.pane.c:118
+#: src/app/ui/settings/panes/basic.pane.c:226
 #: src/app/ui/streaming/streaming.view.c:219
 msgid "Video"
 msgstr "Відео"
 
-#: src/app/ui/settings/panes/experimental.pane.c:120
+#: src/app/ui/settings/panes/basic.pane.c:228
 msgid "Full range YUV (SDR only)"
 msgstr "Повний діапазон YUV (лише SDR)"
 
-#: src/app/ui/settings/panes/experimental.pane.c:124
+#: src/app/ui/settings/panes/basic.pane.c:233
 msgid "HEVC sliced frames"
 msgstr "Кадри HEVC зі зрізами"
 
-#: src/app/ui/settings/panes/experimental.pane.c:129
+#: src/app/ui/settings/panes/basic.pane.c:239
 msgid "Periodic decoder refresh (HEVC)"
 msgstr "Періодичне оновлення декодера (HEVC)"
 
-#: src/app/ui/settings/panes/experimental.pane.c:143
-#: src/app/ui/settings/panes/experimental.pane.c:278
-#: src/app/ui/settings/panes/experimental.pane.c:281
+#: src/app/ui/settings/panes/basic.pane.c:253
+#: src/app/ui/settings/panes/basic.pane.c:396
+#: src/app/ui/settings/panes/basic.pane.c:399
 msgid "Refresh interval"
 msgstr "Інтервал оновлення"
 
-#: src/app/ui/settings/panes/experimental.pane.c:155
+#: src/app/ui/settings/panes/basic.pane.c:265
 msgid "Adaptive bitrate"
 msgstr "Адаптивний бітрейт"
 
-#: src/app/ui/settings/panes/experimental.pane.c:157
+#: src/app/ui/settings/panes/basic.pane.c:267
 msgid "Profile"
 msgstr "Профіль"
-
-#: src/app/ui/settings/panes/experimental.pane.c:167
-#: src/app/ui/settings/panes/experimental.pane.c:212
-msgid "Reset"
-msgstr "Скинути"
-
-#: src/app/ui/settings/panes/experimental.pane.c:171
-msgid "Reset all settings to defaults"
-msgstr "Відновити всі типові налаштування"
-
-#: src/app/ui/settings/panes/experimental.pane.c:213
-msgid "Reset settings"
-msgstr "Скидання налаштувань"
-
-#: src/app/ui/settings/panes/experimental.pane.c:214
-msgid ""
-"Restore all settings to defaults? Pairing is kept. You must reconnect the "
-"stream."
-msgstr ""
-"Відновити типові налаштування? Створені пари збережуться. Трансляцію "
-"потрібно під'єднати знову."
 
 #: src/app/ui/settings/panes/host.pane.c:28
 msgid "Optimize for streaming (SOPS)"
@@ -809,31 +780,69 @@ msgstr ""
 msgid "SDL refused the rumble"
 msgstr "SDL відхилила команду вібрації"
 
-#: src/app/ui/settings/panes/pref_fps.c:74
-#: src/app/ui/settings/panes/pref_fps.c:79
+#: src/app/ui/settings/panes/other.pane.c:77
+#: src/app/ui/settings/settings.controller.c:41
+msgid "Other"
+msgstr "Інше"
+
+#: src/app/ui/settings/panes/other.pane.c:80
+msgid "Language"
+msgstr "Мова"
+
+#: src/app/ui/settings/panes/other.pane.c:88
+msgid "Show logs"
+msgstr "Показувати журнали"
+
+#: src/app/ui/settings/panes/other.pane.c:94
+msgid "Game mode"
+msgstr "Ігровий режим"
+
+#: src/app/ui/settings/panes/other.pane.c:99
+#: src/app/ui/settings/panes/other.pane.c:142
+msgid "Reset"
+msgstr "Скинути"
+
+#: src/app/ui/settings/panes/other.pane.c:103
+msgid "Reset all settings to defaults"
+msgstr "Відновити всі типові налаштування"
+
+#: src/app/ui/settings/panes/other.pane.c:145
+msgid "Reset settings"
+msgstr "Скидання налаштувань"
+
+#: src/app/ui/settings/panes/other.pane.c:146
+msgid ""
+"Restore all settings to defaults? Pairing is kept. You must reconnect the "
+"stream."
+msgstr ""
+"Відновити типові налаштування? Створені пари збережуться. Трансляцію "
+"потрібно під'єднати знову."
+
+#: src/app/ui/settings/panes/pref_fps.c:90
+#: src/app/ui/settings/panes/pref_fps.c:95
 #, c-format
 msgid "%d FPS"
 msgstr "%d FPS"
 
 #. Custom FPS option
-#: src/app/ui/settings/panes/pref_fps.c:84
-#: src/app/ui/settings/panes/pref_fps.c:145
+#: src/app/ui/settings/panes/pref_fps.c:100
+#: src/app/ui/settings/panes/pref_fps.c:161
 msgid "Custom FPS"
 msgstr "Власна частота кадрів"
 
-#: src/app/ui/settings/panes/pref_fps.c:102
-#: src/app/ui/settings/panes/pref_fps.c:121
+#: src/app/ui/settings/panes/pref_fps.c:118
+#: src/app/ui/settings/panes/pref_fps.c:137
 #, c-format
 msgid "%.2f FPS (Custom)"
 msgstr "%.2f FPS (власна частота)"
 
-#: src/app/ui/settings/panes/pref_fps.c:105
-#: src/app/ui/settings/panes/pref_fps.c:124
+#: src/app/ui/settings/panes/pref_fps.c:121
+#: src/app/ui/settings/panes/pref_fps.c:140
 #, c-format
 msgid "%d FPS (Custom)"
 msgstr "%d FPS (власна частота)"
 
-#: src/app/ui/settings/panes/pref_fps.c:155
+#: src/app/ui/settings/panes/pref_fps.c:171
 #, c-format
 msgid "Enter a custom framerate (%d-%d FPS):"
 msgstr "Введіть частоту кадрів (%d–%d FPS):"
@@ -873,24 +882,24 @@ msgstr "Ввід"
 msgid "Host"
 msgstr "Хост"
 
-#: src/app/ui/settings/settings.controller.c:998
-#: src/app/ui/settings/settings.controller.c:1009
+#: src/app/ui/settings/settings.controller.c:1011
+#: src/app/ui/settings/settings.controller.c:1022
 msgid "Later"
 msgstr "Пізніше"
 
-#: src/app/ui/settings/settings.controller.c:998
+#: src/app/ui/settings/settings.controller.c:1011
 msgid "Restart app"
 msgstr "Перезапустити"
 
-#: src/app/ui/settings/settings.controller.c:1000
+#: src/app/ui/settings/settings.controller.c:1013
 msgid "Language changes take effect after restarting the app. Restart now?"
 msgstr "Мова зміниться після перезапуску програми. Перезапустити зараз?"
 
-#: src/app/ui/settings/settings.controller.c:1009
+#: src/app/ui/settings/settings.controller.c:1022
 msgid "Reconnect streaming"
 msgstr "Перепід'єднати трансляцію"
 
-#: src/app/ui/settings/settings.controller.c:1012
+#: src/app/ui/settings/settings.controller.c:1025
 msgid ""
 "Settings apply on the next streaming session. Reconnect now to use them "
 "right away?"
@@ -898,13 +907,13 @@ msgstr ""
 "Налаштування діятимуть із наступного сеансу. Під'єднатися знову, щоб "
 "застосувати їх зараз?"
 
-#: src/app/ui/settings/settings.controller.c:1531
-#: src/app/ui/settings/settings.controller.c:1828
+#: src/app/ui/settings/settings.controller.c:1544
+#: src/app/ui/settings/settings.controller.c:1841
 #: src/app/ui/settings/settings.view.c:36
 msgid "Settings"
 msgstr "Налаштування"
 
-#: src/app/ui/settings/settings.controller.c:1760
+#: src/app/ui/settings/settings.controller.c:1773
 msgid "More settings"
 msgstr "Інші налаштування"
 
@@ -926,16 +935,16 @@ msgstr ""
 
 #: src/app/ui/streaming/hints.c:11
 msgid ""
-"Xbox One/Series controller can't be directly connected via cable or official"
-" adapter."
+"Xbox One/Series controller can't be directly connected via cable or official "
+"adapter."
 msgstr ""
-"Геймпади Xbox One/Series не можна під'єднати безпосередньо кабелем або через"
-" офіційний адаптер."
+"Геймпади Xbox One/Series не можна під'єднати безпосередньо кабелем або через "
+"офіційний адаптер."
 
 #: src/app/ui/streaming/hints.c:13
 msgid ""
-"If you have ultra-wide monitor, you may need to change its resolution to fit"
-" 16:9 for streaming."
+"If you have ultra-wide monitor, you may need to change its resolution to fit "
+"16:9 for streaming."
 msgstr ""
 "Для трансляції з надширокого монітора може знадобитися змінити роздільність "
 "на формат 16:9."
@@ -1020,3 +1029,6 @@ msgstr "Затримка декодера"
 #: src/app/ui/streaming/streaming.view.c:223
 msgid "CPU / RAM"
 msgstr "CPU / RAM"
+
+#~ msgid "Experimental"
+#~ msgstr "Експериментальні"

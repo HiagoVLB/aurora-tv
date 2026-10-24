@@ -261,7 +261,10 @@ void streaming_set_hdr(session_t *session, bool hdr) {
         SS4S_PlayerVideoSetHDRInfo(session->player, &info);
     }
 #if TARGET_WEBOS
-    webos_game_mode_on_hdr(session->webos_game_mode, hdr);
+    SDL_LockMutex(session->mutex);
+    session->webos_hdr = hdr;
+    SDL_CondSignal(session->cond);
+    SDL_UnlockMutex(session->mutex);
 #endif
 }
 
@@ -323,6 +326,9 @@ void session_config_init(app_t *app, session_config_t *config, const SERVER_DATA
     config->report_gamepad_battery = app_config->report_gamepad_battery;
     config->auto_adjust_bitrate = app_config->auto_adjust_bitrate;
     config->abr_mode = app_config->abr_mode;
+    config->hevc_sliced_frames = app_config->hevc_sliced_frames;
+    config->idr_refresh_interval_ms = app_config->idr_refresh_interval_ms;
+    config->game_mode = app_config->game_mode;
 
     SS4S_VideoCapabilities video_cap = app->ss4s.video_cap;
     SS4S_AudioCapabilities audio_cap = app->ss4s.audio_cap;

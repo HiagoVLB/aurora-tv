@@ -53,6 +53,9 @@ void app_ui_open(app_ui_t *ui, bool open_launcher, const app_launch_params_t *pa
 
 void app_ui_close(app_ui_t *ui);
 
+/** Rebuild launcher/preferences without replacing the active display or input devices. */
+void app_ui_reload(app_ui_t *ui);
+
 bool app_ui_is_opened(const app_ui_t *ui);
 
 bool ui_has_stream_renderer();

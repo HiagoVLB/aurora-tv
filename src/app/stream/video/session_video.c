@@ -1,6 +1,7 @@
 #include "session_video.h"
 #include "session_pacing_diag.h"
 #include "decode_unit.h"
+#include "idr_refresh.h"
 
 #include "config.h"
 
@@ -53,7 +54,7 @@ static unsigned vdec_slices_for_stream(int width, int height, int fps) {
 
 static int vdec_stream_target_fps = 60;
 
-static int frames_since_idr = 0;
+static idr_refresh_t periodic_idr;
 
 static session_t *session = NULL;
 static SS4S_Player *player = NULL;
@@ -101,17 +102,15 @@ DECODER_RENDERER_CALLBACKS ss4s_dec_callbacks = {
         .capabilities = CAPABILITY_DIRECT_SUBMIT,
 };
 
-void session_video_prepare_stream(void) {
+void session_video_prepare_stream(const session_config_t *config) {
     int caps = CAPABILITY_DIRECT_SUBMIT;
-    const bool hevc = app_configuration != NULL && app_configuration->hevc;
-    const bool sliced = hevc && app_configuration != NULL && app_configuration->hevc_sliced_frames;
+    const bool hevc = (config->stream.supportedVideoFormats & VIDEO_FORMAT_MASK_H265) != 0;
+    const bool sliced = hevc && config->hevc_sliced_frames;
     unsigned slices = 1;
     if (hevc) {
         caps |= CAPABILITY_REFERENCE_FRAME_INVALIDATION_HEVC;
         if (sliced) {
-            slices = vdec_slices_for_stream(app_configuration->stream.width,
-                                            app_configuration->stream.height,
-                                            app_configuration->stream.fps);
+            slices = vdec_slices_for_stream(config->stream.width, config->stream.height, config->stream.fps);
             caps |= CAPABILITY_SLICES_PER_FRAME(slices);
         }
     }
@@ -160,7 +159,7 @@ int vdec_delegate_setup(int videoFormat, int width, int height, int redrawRate, 
     need_idr_on_resume = false;
     last_feed_ok_ticks = 0;
     dead_pipeline_tripped = false;
-    frames_since_idr = 0;
+    periodic_idr = (idr_refresh_t) {0};
     vdec_stream_target_fps = redrawRate > 0 ? redrawRate : 60;
     vdec_warned_near_buffer_limit = false;
     __atomic_store_n(&diag_last_submit, 0, __ATOMIC_RELAXED);
@@ -248,23 +247,15 @@ void vdec_delegate_cleanup(void) {
 static int vdec_finish_feed(SS4S_VideoFeedResult result, PDECODE_UNIT decodeUnit) {
     if (result == SS4S_VIDEO_FEED_OK) {
         last_feed_ok_ticks = SDL_GetTicks();
-        if (decodeUnit->frameType == FRAME_TYPE_IDR) {
-            frames_since_idr = 0;
-        } else {
-            frames_since_idr++;
-        }
         /* Optional periodic HEVC IDR (Settings → Video). Off by default (0).
          * When enabled (e.g. 10000 ms) it can cause a hitch every interval. */
-        const int idr_ms = app_configuration ? app_configuration->idr_refresh_interval_ms : 0;
+        const int idr_ms = session->config.idr_refresh_interval_ms;
         const bool hevc_stream = vdec_stream_format == VIDEO_FORMAT_H265 ||
                                  vdec_stream_format == VIDEO_FORMAT_H265_MAIN10;
-        if (hevc_stream && idr_ms >= 500 && vdec_stream_target_fps > 0) {
-            const int frames_threshold = (vdec_stream_target_fps * idr_ms + 500) / 1000;
-            if (frames_threshold > 0 && frames_since_idr >= frames_threshold) {
-                commons_log_info("Session", "IDR reason: periodic refresh (%d ms)", idr_ms);
-                LiRequestIdrFrame();
-                frames_since_idr = 0;
-            }
+        if (hevc_stream && idr_refresh_due(&periodic_idr, last_feed_ok_ticks,
+                                           decodeUnit->frameType == FRAME_TYPE_IDR, idr_ms)) {
+            commons_log_info("Session", "IDR reason: periodic refresh (%d ms)", idr_ms);
+            LiRequestIdrFrame();
         }
         if (vdec_stream_info.width == 0 || vdec_stream_info.height == 0) {
             stream_info_parse_size(decodeUnit, &vdec_stream_info);

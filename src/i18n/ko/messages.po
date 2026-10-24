@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: moonlight-tv\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-19 04:22+0000\n"
+"POT-Creation-Date: 2026-10-24 22:39+0000\n"
 "PO-Revision-Date: 2026-10-19 01:15-0300\n"
 "Last-Translator: \n"
 "Language-Team: Korean\n"
@@ -18,46 +18,46 @@ msgstr ""
 "X-Crowdin-Project: moonlight-tv\n"
 "X-Crowdin-Project-ID: 484733\n"
 
-#: src/app/app.c:138
+#: src/app/app.c:186
 msgid "[Localized Language]"
 msgstr "한국어"
 
-#: src/app/app.c:359 src/app/ui/launcher/add.dialog.c:42
+#: src/app/app.c:419 src/app/ui/launcher/add.dialog.c:42
 #: src/app/ui/launcher/apps.controller.c:876
 #: src/app/ui/launcher/server.context_menu.c:101
 #: src/app/ui/launcher/server.context_menu.c:187
-#: src/app/ui/settings/panes/experimental.pane.c:212
-#: src/app/ui/settings/panes/pref_fps.c:144
+#: src/app/ui/settings/panes/other.pane.c:142
+#: src/app/ui/settings/panes/pref_fps.c:160
 #: src/app/ui/settings/panes/pref_res.c:174
 #: src/app/ui/streaming/streaming.controller.c:649
 msgid "Cancel"
 msgstr "취소"
 
-#: src/app/app.c:359 src/app/ui/launcher/add.dialog.c:42
+#: src/app/app.c:419 src/app/ui/launcher/add.dialog.c:42
 #: src/app/ui/launcher/apps.controller.c:800
 #: src/app/ui/launcher/apps.controller.c:912
 #: src/app/ui/launcher/launcher.controller.c:629
 #: src/app/ui/launcher/launcher.controller.c:644
 #: src/app/ui/launcher/pair.dialog.c:54
-#: src/app/ui/launcher/server.context_menu.c:143 src/app/ui/root.c:403
-#: src/app/ui/settings/panes/pref_fps.c:144
+#: src/app/ui/launcher/server.context_menu.c:143 src/app/ui/root.c:412
+#: src/app/ui/settings/panes/pref_fps.c:160
 #: src/app/ui/settings/panes/pref_res.c:174
 msgid "OK"
 msgstr "확인"
 
-#: src/app/app.c:360
+#: src/app/app.c:420
 msgid "Quit Aurora?"
 msgstr "Aurora를 종료할까요?"
 
-#: src/app/app_settings.c:133
+#: src/app/app_settings.c:138
 msgid "Stereo"
 msgstr "스테레오"
 
-#: src/app/app_settings.c:134
+#: src/app/app_settings.c:139
 msgid "5.1 Surround"
 msgstr "5.1 서라운드"
 
-#: src/app/app_settings.c:135
+#: src/app/app_settings.c:140
 msgid "7.1 Surround"
 msgstr "7.1 서라운드"
 
@@ -75,11 +75,11 @@ msgstr "조작 및 단축키"
 
 #: src/app/ui/help/help.dialog.c:60
 msgid ""
-"During streaming, use these shortcuts to control Aurora. Scroll with Up/Down"
-" or the mouse wheel. Press Back/B/Escape to close this guide."
+"During streaming, use these shortcuts to control Aurora. Scroll with Up/Down "
+"or the mouse wheel. Press Back/B/Escape to close this guide."
 msgstr ""
-"스트리밍 중 다음 단축키로 Aurora를 조작할 수 있습니다. 위/아래 버튼이나 마우스 휠로 스크롤하고, 뒤로/B/Esc를 눌러 이 "
-"안내를 닫으세요."
+"스트리밍 중 다음 단축키로 Aurora를 조작할 수 있습니다. 위/아래 버튼이나 마우"
+"스 휠로 스크롤하고, 뒤로/B/Esc를 눌러 이 안내를 닫으세요."
 
 #: src/app/ui/help/help.dialog.c:62
 msgid "TV remote"
@@ -94,7 +94,8 @@ msgid ""
 "Open the stream menu. A short Back press sends Escape to the PC; holding "
 "Back on a Magic Remote sends Exit."
 msgstr ""
-"스트림 메뉴를 엽니다. 뒤로를 짧게 누르면 PC에 Esc를 보내고, Magic Remote에서 길게 누르면 Exit를 보냅니다."
+"스트림 메뉴를 엽니다. 뒤로를 짧게 누르면 PC에 Esc를 보내고, Magic Remote에서 "
+"길게 누르면 Exit를 보냅니다."
 
 #: src/app/ui/help/help.dialog.c:65
 msgid "Blue"
@@ -148,7 +149,9 @@ msgstr "Select / Back 길게 누르기 (4초)"
 msgid ""
 "Show or hide pinned performance stats. Hold this button alone; it is also "
 "sent to the PC."
-msgstr "고정된 성능 통계를 표시하거나 숨깁니다. 이 버튼만 길게 누르세요. PC에도 전달됩니다."
+msgstr ""
+"고정된 성능 통계를 표시하거나 숨깁니다. 이 버튼만 길게 누르세요. PC에도 전달"
+"됩니다."
 
 #: src/app/ui/help/help.dialog.c:74
 msgid "Y / Triangle with virtual mouse enabled"
@@ -164,9 +167,11 @@ msgstr "가상 마우스"
 
 #: src/app/ui/help/help.dialog.c:77
 msgid ""
-"Enable Virtual mouse in the stream menu, or enable it in Settings > Input to"
-" start each stream with it."
-msgstr "스트림 메뉴에서 가상 마우스를 켜세요. 매번 스트림 시작 시 사용하려면 설정 > 입력에서 켜세요."
+"Enable Virtual mouse in the stream menu, or enable it in Settings > Input to "
+"start each stream with it."
+msgstr ""
+"스트림 메뉴에서 가상 마우스를 켜세요. 매번 스트림 시작 시 사용하려면 설정 > "
+"입력에서 켜세요."
 
 #: src/app/ui/help/help.dialog.c:78
 msgid "Right stick / Left stick"
@@ -232,7 +237,9 @@ msgstr "연결 해제"
 msgid ""
 "Return to Aurora and leave the application running on the PC so you can "
 "resume later."
-msgstr "Aurora로 돌아갑니다. PC의 앱은 계속 실행되므로 나중에 다시 이어서 사용할 수 있습니다."
+msgstr ""
+"Aurora로 돌아갑니다. PC의 앱은 계속 실행되므로 나중에 다시 이어서 사용할 수 "
+"있습니다."
 
 #: src/app/ui/help/help.dialog.c:89
 #: src/app/ui/streaming/streaming.controller.c:649
@@ -245,7 +252,8 @@ msgid ""
 "Ask the host to close the application after confirmation. Not available for "
 "Remote Monitor / Remote Input streams."
 msgstr ""
-"확인 후 호스트에 앱 종료를 요청합니다. Remote Monitor / Remote Input 스트림에서는 사용할 수 없습니다."
+"확인 후 호스트에 앱 종료를 요청합니다. Remote Monitor / Remote Input 스트림에"
+"서는 사용할 수 없습니다."
 
 #: src/app/ui/help/help.dialog.c:91
 msgid "About Aurora"
@@ -354,11 +362,13 @@ msgstr "오프라인"
 
 #: src/app/ui/launcher/apps.controller.c:497
 msgid ""
-"Press \"Wake\" to send Wake-on-LAN packet to turn the computer on if it supports this feature, press \"Retry\" to connect again.\n"
+"Press \"Wake\" to send Wake-on-LAN packet to turn the computer on if it "
+"supports this feature, press \"Retry\" to connect again.\n"
 "\n"
 "Try restart your computer if these doesn't work."
 msgstr ""
-"지원되는 컴퓨터를 Wake-on-LAN으로 켜려면 \"깨우기\"를, 다시 연결하려면 \"다시 시도\"를 누르세요.\n"
+"지원되는 컴퓨터를 Wake-on-LAN으로 켜려면 \"깨우기\"를, 다시 연결하려면 \"다"
+"시 시도\"를 누르세요.\n"
 "\n"
 "해결되지 않으면 컴퓨터를 다시 시작하세요."
 
@@ -421,10 +431,12 @@ msgstr "사용 가능한 디코더 없음"
 #: src/app/ui/launcher/launcher.controller.c:634
 msgid ""
 "Streaming can't work without a valid decoder.\n"
-"(If your device supports moonlight-embedded, install it and Aurora will use it automatically.)"
+"(If your device supports moonlight-embedded, install it and Aurora will use "
+"it automatically.)"
 msgstr ""
 "스트리밍에는 유효한 디코더가 필요합니다.\n"
-"(기기가 moonlight-embedded를 지원하면 설치하세요. Aurora가 자동으로 사용합니다.)"
+"(기기가 moonlight-embedded를 지원하면 설치하세요. Aurora가 자동으로 사용합니"
+"다.)"
 
 #: src/app/ui/launcher/launcher.controller.c:638
 msgid "Streaming can't work without a valid decoder."
@@ -436,11 +448,13 @@ msgstr "설정을 저장할 수 없습니다"
 
 #: src/app/ui/launcher/launcher.controller.c:648
 msgid ""
-"Can't find a writable directory to save settings. Settings and pairing information will be lost when the TV is turned off.\n"
+"Can't find a writable directory to save settings. Settings and pairing "
+"information will be lost when the TV is turned off.\n"
 "\n"
 "(If you're using webOS 3.0 or newer, restart the TV may fix this issue.)"
 msgstr ""
-"설정을 저장할 쓰기 가능한 폴더를 찾을 수 없습니다. TV를 끄면 설정과 페어링 정보가 사라집니다.\n"
+"설정을 저장할 쓰기 가능한 폴더를 찾을 수 없습니다. TV를 끄면 설정과 페어링 정"
+"보가 사라집니다.\n"
 "\n"
 "(webOS 3.0 이상에서는 TV를 다시 시작하면 해결될 수 있습니다.)"
 
@@ -498,10 +512,11 @@ msgid "Close"
 msgstr "닫기"
 
 #: src/app/ui/launcher/server.popup.c:381
-msgid "No paired computers yet. Use the \"+\" button on the top bar to add one."
+msgid ""
+"No paired computers yet. Use the \"+\" button on the top bar to add one."
 msgstr "페어링된 컴퓨터가 없습니다. 상단의 \"+\" 버튼으로 추가하세요."
 
-#: src/app/ui/root.c:404
+#: src/app/ui/root.c:413
 msgid "Failed to start streaming"
 msgstr "스트리밍을 시작하지 못했습니다"
 
@@ -515,128 +530,92 @@ msgstr "Aurora는 moonlight-embedded로 적절한 디코더를 자동으로 선�
 msgid "%s is conflicting with %s"
 msgstr "%s 항목이 %s 항목과 충돌합니다"
 
-#: src/app/ui/settings/panes/basic.pane.c:76
+#: src/app/ui/settings/panes/basic.pane.c:95
+msgid "Balanced"
+msgstr "균형"
+
+#: src/app/ui/settings/panes/basic.pane.c:96
+msgid "Quality"
+msgstr "화질"
+
+#: src/app/ui/settings/panes/basic.pane.c:97
+msgid "Low latency"
+msgstr "낮은 지연 시간"
+
+#: src/app/ui/settings/panes/basic.pane.c:103
 msgid "Auto"
 msgstr "자동"
 
-#: src/app/ui/settings/panes/basic.pane.c:129
+#: src/app/ui/settings/panes/basic.pane.c:156
 #: src/app/ui/streaming/streaming.view.c:218
 msgid "Resolution"
 msgstr "해상도"
 
-#: src/app/ui/settings/panes/basic.pane.c:143
+#: src/app/ui/settings/panes/basic.pane.c:170
 msgid "Frame rate"
 msgstr "프레임 속도"
 
-#: src/app/ui/settings/panes/basic.pane.c:150
-#: src/app/ui/settings/panes/experimental.pane.c:153
+#: src/app/ui/settings/panes/basic.pane.c:177
+#: src/app/ui/settings/panes/basic.pane.c:263
 msgid "Bitrate"
 msgstr "비트레이트"
 
-#: src/app/ui/settings/panes/basic.pane.c:166
+#: src/app/ui/settings/panes/basic.pane.c:193
 #: src/app/ui/streaming/streaming.view.c:220
 msgid "Video backend"
 msgstr "비디오 백엔드"
 
-#: src/app/ui/settings/panes/basic.pane.c:173
+#: src/app/ui/settings/panes/basic.pane.c:200
 msgid "HEVC"
 msgstr "HEVC"
 
-#: src/app/ui/settings/panes/basic.pane.c:177
+#: src/app/ui/settings/panes/basic.pane.c:204
 msgid "AV1"
 msgstr "AV1"
 
-#: src/app/ui/settings/panes/basic.pane.c:186
+#: src/app/ui/settings/panes/basic.pane.c:213
 msgid "HDR"
 msgstr "HDR"
 
-#: src/app/ui/settings/panes/basic.pane.c:189
+#: src/app/ui/settings/panes/basic.pane.c:216
 msgid "10-bit SDR"
 msgstr "10비트 SDR"
 
-#: src/app/ui/settings/panes/basic.pane.c:193
+#: src/app/ui/settings/panes/basic.pane.c:219
 #: src/app/ui/streaming/streaming.view.c:224
 msgid "Audio"
 msgstr "오디오"
 
-#: src/app/ui/settings/panes/experimental.pane.c:72
-msgid "Balanced"
-msgstr "균형"
-
-#: src/app/ui/settings/panes/experimental.pane.c:73
-msgid "Quality"
-msgstr "화질"
-
-#: src/app/ui/settings/panes/experimental.pane.c:74
-msgid "Low latency"
-msgstr "낮은 지연 시간"
-
-#: src/app/ui/settings/panes/experimental.pane.c:94
-#: src/app/ui/settings/settings.controller.c:41
-msgid "Experimental"
-msgstr "실험적 기능"
-
-#: src/app/ui/settings/panes/experimental.pane.c:97
-msgid "Language"
-msgstr "언어"
-
-#: src/app/ui/settings/panes/experimental.pane.c:105
-msgid "Show logs"
-msgstr "로그 표시"
-
-#: src/app/ui/settings/panes/experimental.pane.c:114
-msgid "Game mode"
-msgstr "게임 모드"
-
-#: src/app/ui/settings/panes/experimental.pane.c:118
+#: src/app/ui/settings/panes/basic.pane.c:226
 #: src/app/ui/streaming/streaming.view.c:219
 msgid "Video"
 msgstr "비디오"
 
-#: src/app/ui/settings/panes/experimental.pane.c:120
+#: src/app/ui/settings/panes/basic.pane.c:228
 msgid "Full range YUV (SDR only)"
 msgstr "전체 범위 YUV (SDR 전용)"
 
-#: src/app/ui/settings/panes/experimental.pane.c:124
+#: src/app/ui/settings/panes/basic.pane.c:233
 msgid "HEVC sliced frames"
 msgstr "슬라이스된 HEVC 프레임"
 
-#: src/app/ui/settings/panes/experimental.pane.c:129
+#: src/app/ui/settings/panes/basic.pane.c:239
 msgid "Periodic decoder refresh (HEVC)"
 msgstr "주기적 디코더 갱신 (HEVC)"
 
-#: src/app/ui/settings/panes/experimental.pane.c:143
-#: src/app/ui/settings/panes/experimental.pane.c:278
-#: src/app/ui/settings/panes/experimental.pane.c:281
+#: src/app/ui/settings/panes/basic.pane.c:253
+#: src/app/ui/settings/panes/basic.pane.c:396
+#: src/app/ui/settings/panes/basic.pane.c:399
 msgid "Refresh interval"
 msgstr "갱신 간격"
 
-#: src/app/ui/settings/panes/experimental.pane.c:155
+#: src/app/ui/settings/panes/basic.pane.c:265
 msgid "Adaptive bitrate"
 msgstr "적응형 비트레이트"
 
-#: src/app/ui/settings/panes/experimental.pane.c:157
+#: src/app/ui/settings/panes/basic.pane.c:267
 msgid "Profile"
 msgstr "프로필"
-
-#: src/app/ui/settings/panes/experimental.pane.c:167
-#: src/app/ui/settings/panes/experimental.pane.c:212
-msgid "Reset"
-msgstr "초기화"
-
-#: src/app/ui/settings/panes/experimental.pane.c:171
-msgid "Reset all settings to defaults"
-msgstr "모든 설정을 기본값으로 복원"
-
-#: src/app/ui/settings/panes/experimental.pane.c:213
-msgid "Reset settings"
-msgstr "설정 초기화"
-
-#: src/app/ui/settings/panes/experimental.pane.c:214
-msgid ""
-"Restore all settings to defaults? Pairing is kept. You must reconnect the "
-"stream."
-msgstr "기본 설정으로 복원할까요? 페어링은 유지됩니다. 스트림을 다시 연결해야 합니다."
 
 #: src/app/ui/settings/panes/host.pane.c:28
 msgid "Optimize for streaming (SOPS)"
@@ -783,38 +762,76 @@ msgstr "연결된 게임패드가 없습니다."
 
 #: src/app/ui/settings/panes/input.pane.c:296
 msgid "Rumble sent. If nothing moved, the pad ignored it."
-msgstr "진동 명령을 보냈습니다. 진동하지 않았다면 게임패드가 명령을 무시한 것입니다."
+msgstr ""
+"진동 명령을 보냈습니다. 진동하지 않았다면 게임패드가 명령을 무시한 것입니다."
 
 #: src/app/ui/settings/panes/input.pane.c:299
 #: src/app/ui/settings/panes/input.pane.c:303
 msgid "SDL refused the rumble"
 msgstr "SDL이 진동을 거부했습니다"
 
-#: src/app/ui/settings/panes/pref_fps.c:74
-#: src/app/ui/settings/panes/pref_fps.c:79
+#: src/app/ui/settings/panes/other.pane.c:77
+#: src/app/ui/settings/settings.controller.c:41
+msgid "Other"
+msgstr "기타"
+
+#: src/app/ui/settings/panes/other.pane.c:80
+msgid "Language"
+msgstr "언어"
+
+#: src/app/ui/settings/panes/other.pane.c:88
+msgid "Show logs"
+msgstr "로그 표시"
+
+#: src/app/ui/settings/panes/other.pane.c:94
+msgid "Game mode"
+msgstr "게임 모드"
+
+#: src/app/ui/settings/panes/other.pane.c:99
+#: src/app/ui/settings/panes/other.pane.c:142
+msgid "Reset"
+msgstr "초기화"
+
+#: src/app/ui/settings/panes/other.pane.c:103
+msgid "Reset all settings to defaults"
+msgstr "모든 설정을 기본값으로 복원"
+
+#: src/app/ui/settings/panes/other.pane.c:145
+msgid "Reset settings"
+msgstr "설정 초기화"
+
+#: src/app/ui/settings/panes/other.pane.c:146
+msgid ""
+"Restore all settings to defaults? Pairing is kept. You must reconnect the "
+"stream."
+msgstr ""
+"기본 설정으로 복원할까요? 페어링은 유지됩니다. 스트림을 다시 연결해야 합니다."
+
+#: src/app/ui/settings/panes/pref_fps.c:90
+#: src/app/ui/settings/panes/pref_fps.c:95
 #, c-format
 msgid "%d FPS"
 msgstr "%d FPS"
 
 #. Custom FPS option
-#: src/app/ui/settings/panes/pref_fps.c:84
-#: src/app/ui/settings/panes/pref_fps.c:145
+#: src/app/ui/settings/panes/pref_fps.c:100
+#: src/app/ui/settings/panes/pref_fps.c:161
 msgid "Custom FPS"
 msgstr "사용자 지정 FPS"
 
-#: src/app/ui/settings/panes/pref_fps.c:102
-#: src/app/ui/settings/panes/pref_fps.c:121
+#: src/app/ui/settings/panes/pref_fps.c:118
+#: src/app/ui/settings/panes/pref_fps.c:137
 #, c-format
 msgid "%.2f FPS (Custom)"
 msgstr "%.2f FPS (사용자 지정)"
 
-#: src/app/ui/settings/panes/pref_fps.c:105
-#: src/app/ui/settings/panes/pref_fps.c:124
+#: src/app/ui/settings/panes/pref_fps.c:121
+#: src/app/ui/settings/panes/pref_fps.c:140
 #, c-format
 msgid "%d FPS (Custom)"
 msgstr "%d FPS (사용자 지정)"
 
-#: src/app/ui/settings/panes/pref_fps.c:155
+#: src/app/ui/settings/panes/pref_fps.c:171
 #, c-format
 msgid "Enter a custom framerate (%d-%d FPS):"
 msgstr "프레임 속도를 입력하세요 (%d–%d FPS):"
@@ -854,36 +871,37 @@ msgstr "입력"
 msgid "Host"
 msgstr "호스트"
 
-#: src/app/ui/settings/settings.controller.c:998
-#: src/app/ui/settings/settings.controller.c:1009
+#: src/app/ui/settings/settings.controller.c:1011
+#: src/app/ui/settings/settings.controller.c:1022
 msgid "Later"
 msgstr "나중에"
 
-#: src/app/ui/settings/settings.controller.c:998
+#: src/app/ui/settings/settings.controller.c:1011
 msgid "Restart app"
 msgstr "앱 다시 시작"
 
-#: src/app/ui/settings/settings.controller.c:1000
+#: src/app/ui/settings/settings.controller.c:1013
 msgid "Language changes take effect after restarting the app. Restart now?"
 msgstr "언어 변경은 앱을 다시 시작한 후 적용됩니다. 지금 다시 시작할까요?"
 
-#: src/app/ui/settings/settings.controller.c:1009
+#: src/app/ui/settings/settings.controller.c:1022
 msgid "Reconnect streaming"
 msgstr "스트리밍 다시 연결"
 
-#: src/app/ui/settings/settings.controller.c:1012
+#: src/app/ui/settings/settings.controller.c:1025
 msgid ""
 "Settings apply on the next streaming session. Reconnect now to use them "
 "right away?"
-msgstr "설정은 다음 스트리밍 세션부터 적용됩니다. 지금 다시 연결하여 적용할까요?"
+msgstr ""
+"설정은 다음 스트리밍 세션부터 적용됩니다. 지금 다시 연결하여 적용할까요?"
 
-#: src/app/ui/settings/settings.controller.c:1531
-#: src/app/ui/settings/settings.controller.c:1828
+#: src/app/ui/settings/settings.controller.c:1544
+#: src/app/ui/settings/settings.controller.c:1841
 #: src/app/ui/settings/settings.view.c:36
 msgid "Settings"
 msgstr "설정"
 
-#: src/app/ui/settings/settings.controller.c:1760
+#: src/app/ui/settings/settings.controller.c:1773
 msgid "More settings"
 msgstr "추가 설정"
 
@@ -891,25 +909,31 @@ msgstr "추가 설정"
 msgid ""
 "Long press BACK (or press EXIT for traditional TV remote) while streaming, "
 "to open status overlay."
-msgstr "스트리밍 중 BACK을 길게 누르거나 일반 TV 리모컨에서 EXIT를 누르면 상태 화면이 열립니다."
+msgstr ""
+"스트리밍 중 BACK을 길게 누르거나 일반 TV 리모컨에서 EXIT를 누르면 상태 화면"
+"이 열립니다."
 
 #: src/app/ui/streaming/hints.c:10
 msgid ""
 "Hold Select/Back alone for 4 seconds during streaming to show or hide "
 "performance stats."
-msgstr "스트리밍 중 Select/Back만 4초간 길게 누르면 성능 통계를 표시하거나 숨깁니다."
+msgstr ""
+"스트리밍 중 Select/Back만 4초간 길게 누르면 성능 통계를 표시하거나 숨깁니다."
 
 #: src/app/ui/streaming/hints.c:11
 msgid ""
-"Xbox One/Series controller can't be directly connected via cable or official"
-" adapter."
-msgstr "Xbox One/Series 컨트롤러는 케이블이나 공식 어댑터로 직접 연결할 수 없습니다."
+"Xbox One/Series controller can't be directly connected via cable or official "
+"adapter."
+msgstr ""
+"Xbox One/Series 컨트롤러는 케이블이나 공식 어댑터로 직접 연결할 수 없습니다."
 
 #: src/app/ui/streaming/hints.c:13
 msgid ""
-"If you have ultra-wide monitor, you may need to change its resolution to fit"
-" 16:9 for streaming."
-msgstr "울트라와이드 모니터는 스트리밍을 위해 해상도를 16:9로 변경해야 할 수 있습니다."
+"If you have ultra-wide monitor, you may need to change its resolution to fit "
+"16:9 for streaming."
+msgstr ""
+"울트라와이드 모니터는 스트리밍을 위해 해상도를 16:9로 변경해야 할 수 있습니"
+"다."
 
 #: src/app/ui/streaming/streaming.controller.c:330
 msgid "total"
@@ -931,7 +955,9 @@ msgstr "PC의 세션을 종료할까요?"
 msgid ""
 "This asks the host to close the application or desktop session and restore "
 "its display. To leave it running, choose Disconnect."
-msgstr "호스트에 앱이나 데스크톱 세션을 종료하고 화면을 복원하도록 요청합니다. 계속 실행하려면 연결 해제를 선택하세요."
+msgstr ""
+"호스트에 앱이나 데스크톱 세션을 종료하고 화면을 복원하도록 요청합니다. 계속 "
+"실행하려면 연결 해제를 선택하세요."
 
 #: src/app/ui/streaming/streaming.view.c:35
 #, c-format
@@ -989,3 +1015,6 @@ msgstr "디코더 지연"
 #: src/app/ui/streaming/streaming.view.c:223
 msgid "CPU / RAM"
 msgstr "CPU / RAM"
+
+#~ msgid "Experimental"
+#~ msgstr "실험적 기능"

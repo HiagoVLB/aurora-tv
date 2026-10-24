@@ -35,6 +35,8 @@ typedef struct {
 
     lv_obj_t *detail;
     lv_group_t *detail_group;
+    /** Owned inline Stream pane; submenu user_data contains classes, not fragments. */
+    lv_fragment_t *stream_pane;
 
     lv_obj_t *tabview;
     lv_group_t **tab_groups;
@@ -62,6 +64,8 @@ typedef struct {
     bool needs_stream_reconnect;
     /** Language changed: apply locale on close (no app quit). */
     bool needs_locale_reapply;
+    bool closing;
+    bool close_pending;
 #if TARGET_WEBOS
     int panel_width;
     int panel_height;
@@ -78,4 +82,4 @@ extern const lv_fragment_class_t settings_controller_cls;
 extern const lv_fragment_class_t settings_pane_basic_cls;
 extern const lv_fragment_class_t settings_pane_host_cls;
 extern const lv_fragment_class_t settings_pane_input_cls;
-extern const lv_fragment_class_t settings_pane_experimental_cls;
+extern const lv_fragment_class_t settings_pane_other_cls;

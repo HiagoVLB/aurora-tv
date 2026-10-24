@@ -156,6 +156,32 @@ static void run_codec(SS4S_VideoCodec codec) {
     SS4S_NDL_webOS5_PlayerDriver.Destroy(ctx);
     atomic_store(&hold_video, false);
 }
+
+static atomic_bool stop_callbacks;
+static void *late_load_callbacks(void *arg) {
+    (void) arg;
+    while (!atomic_load(&stop_callbacks)) {
+        callback(0x16, 0, "true");
+        callback(0x31, 0, NULL);
+    }
+    return NULL;
+}
+
+static void run_callback_lifetime(void) {
+    /* Firmware owns the callback and may invoke it after Unload returns.
+     * Recycle contexts while that thread still delivers notifications. */
+    pthread_t thread;
+    assert(pthread_create(&thread, NULL, late_load_callbacks, NULL) == 0);
+    for (int i = 0; i < 20000; i++) {
+        SS4S_PlayerContext *context = SS4S_NDL_webOS5_PlayerDriver.Create(NULL);
+        SS4S_NDL_webOS5_PlayerDriver.Destroy(context);
+    }
+    atomic_store(&stop_callbacks, true);
+    pthread_join(thread, NULL);
+    callback(0x16, 0, "true"); /* No active player. */
+    callback(0x31, 0, NULL);
+    puts("NDL: callbacks during and after player destruction passed");
+}
 int main(void) {
     alarm(60);
     SS4S_Module module;
@@ -164,6 +190,7 @@ int main(void) {
     run_codec(SS4S_VIDEO_AV1); run_codec(SS4S_VIDEO_H265); run_codec(SS4S_VIDEO_H264);
     atomic_store(&delayed_load, true);
     run_codec(SS4S_VIDEO_AV1);
+    run_callback_lifetime();
     delayed_feed_us = 650000;
     atomic_store(&delayed_load, true);
     run_codec(SS4S_VIDEO_AV1);

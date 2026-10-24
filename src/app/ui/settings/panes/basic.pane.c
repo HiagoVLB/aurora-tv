@@ -17,12 +17,21 @@
 
 /**
  * Compact stream settings (punktfunk FocusRow style): one labelled control per row.
- * Advanced host/input/experimental stay in their panes.
+ * Host, input and application preferences stay in their panes.
  */
 typedef struct {
     lv_fragment_t base;
     settings_controller_t *parent;
 
+    lv_obj_t *idr_checkbox;
+    lv_obj_t *idr_row;
+    lv_obj_t *idr_slider;
+    lv_obj_t *idr_value_label;
+    int idr_refresh_slider_value;
+    lv_obj_t *abr_dropdown;
+    pref_dropdown_int_entry_t abr_entries[3];
+    lv_obj_t *full_range_checkbox;
+    lv_obj_t *sliced_checkbox;
     lv_obj_t *bitrate_label;
     lv_obj_t *bitrate_slider;
     lv_obj_t *hevc_checkbox;
@@ -57,6 +66,20 @@ static void codec_checkbox_cb(lv_event_t *e);
 
 static void module_changed_cb(lv_event_t *e);
 
+static void abr_state_update(basic_pane_t *pane);
+
+static void abr_checkbox_cb(lv_event_t *e);
+
+static void idr_refresh_state_update(basic_pane_t *pane);
+
+static void idr_checkbox_activate(lv_event_t *e);
+
+static void idr_refresh_checkbox_cb(lv_event_t *e);
+
+static void idr_refresh_slider_cb(lv_event_t *e);
+
+static void reconnect_cb(lv_event_t *e);
+
 const lv_fragment_class_t settings_pane_basic_cls = {
     .constructor_cb = pane_ctor,
     .destructor_cb = pane_dtor,
@@ -69,6 +92,10 @@ const lv_fragment_class_t settings_pane_basic_cls = {
 static void pane_ctor(lv_fragment_t *self, void *args) {
     basic_pane_t *pane = (basic_pane_t *) self;
     pane->parent = args;
+    pane->abr_entries[0] = (pref_dropdown_int_entry_t) {locstr("Balanced"), 0, true};
+    pane->abr_entries[1] = (pref_dropdown_int_entry_t) {locstr("Quality"), 1, false};
+    pane->abr_entries[2] = (pref_dropdown_int_entry_t) {locstr("Low latency"), 2, false};
+
     app_t *app = pane->parent->app;
 
     array_list_t modules = app->ss4s.modules;
@@ -188,7 +215,6 @@ static lv_obj_t *create_obj(lv_fragment_t *self, lv_obj_t *container) {
 
     pane->force_10bit_checkbox = pref_checkbox(view, locstr("10-bit SDR"), &app_configuration->force_10bit, false);
     lv_obj_add_event_cb(pane->force_10bit_checkbox, hdr_state_update_cb, LV_EVENT_VALUE_CHANGED, pane);
-    hdr_state_update(pane);
 
     lv_obj_t *audio_row = pref_focus_row(view, locstr("Audio"));
     lv_obj_t *ch_dropdown = pref_dropdown_int(audio_row, pane->surround_entries, pane->surround_entries_len,
@@ -197,16 +223,69 @@ static lv_obj_t *create_obj(lv_fragment_t *self, lv_obj_t *container) {
     pref_row_bind_control(audio_row, ch_dropdown);
     lv_obj_add_event_cb(ch_dropdown, module_changed_cb, LV_EVENT_VALUE_CHANGED, pane);
 
+    pref_header(view, locstr("Video"));
+
+    lv_obj_t *full_range = pref_checkbox(view, locstr("Full range YUV (SDR only)"),
+                                         &app_configuration->force_full_color_range, false);
+    pane->full_range_checkbox = full_range;
+    lv_obj_add_event_cb(full_range, reconnect_cb, LV_EVENT_VALUE_CHANGED, pane);
+
+    lv_obj_t *sliced = pref_checkbox(view, locstr("HEVC sliced frames"),
+                                     &app_configuration->hevc_sliced_frames, false);
+    pane->sliced_checkbox = sliced;
+    lv_obj_add_event_cb(sliced, reconnect_cb, LV_EVENT_VALUE_CHANGED, pane);
+
+    lv_obj_t *idr_checkbox = lv_checkbox_create(view);
+    lv_checkbox_set_text(idr_checkbox, locstr("Periodic decoder refresh (HEVC)"));
+    lv_obj_set_size(idr_checkbox, LV_PCT(100), PREF_ROW_HEIGHT);
+    lv_obj_set_style_pad_hor(idr_checkbox, LV_DPX(16), 0);
+    lv_obj_set_style_pad_top(idr_checkbox, LV_DPX(12), 0);
+    lv_obj_set_style_pad_bottom(idr_checkbox, LV_DPX(8), 0);
+    lv_obj_set_style_radius(idr_checkbox, LV_DPX(8), 0);
+    if (app_configuration->idr_refresh_interval_ms >= 500) {
+        lv_obj_add_state(idr_checkbox, LV_STATE_CHECKED);
+    }
+    pane->idr_checkbox = idr_checkbox;
+    pane->idr_refresh_slider_value = app_configuration->idr_refresh_interval_ms >= 500
+            ? app_configuration->idr_refresh_interval_ms
+            : 10000;
+    pref_checkbox_prepare_for_dpad(idr_checkbox);
+    pane->idr_row = pref_focus_row(view, locstr("Refresh interval"));
+    pane->idr_value_label = lv_obj_get_child(pane->idr_row, 0);
+    lv_obj_t *idr_slider = pref_slider(pane->idr_row, &pane->idr_refresh_slider_value, 500, 60000, 500);
+    pref_style_inline_control(idr_slider);
+    pref_row_bind_control(pane->idr_row, idr_slider);
+    pane->idr_slider = idr_slider;
+    lv_obj_add_event_cb(idr_checkbox, idr_checkbox_activate, LV_EVENT_CLICKED, pane);
+    lv_obj_add_event_cb(idr_slider, idr_refresh_slider_cb, LV_EVENT_VALUE_CHANGED, pane);
+    idr_refresh_state_update(pane);
+
+    pref_header(view, locstr("Bitrate"));
+
+    lv_obj_t *abr_checkbox = pref_checkbox(view, locstr("Adaptive bitrate"),
+                                           &app_configuration->auto_adjust_bitrate, false);
+    lv_obj_t *abr_row = pref_focus_row(view, locstr("Profile"));
+    pane->abr_dropdown = pref_dropdown_int(abr_row, pane->abr_entries,
+                                           sizeof(pane->abr_entries) / sizeof(pane->abr_entries[0]),
+                                           &app_configuration->abr_mode, NULL);
+    pref_style_inline_control(pane->abr_dropdown);
+    pref_row_bind_control(abr_row, pane->abr_dropdown);
+    lv_obj_add_event_cb(abr_checkbox, abr_checkbox_cb, LV_EVENT_VALUE_CHANGED, pane);
+    lv_obj_add_event_cb(pane->abr_dropdown, reconnect_cb, LV_EVENT_VALUE_CHANGED, pane);
+    abr_state_update(pane);
+
+    hdr_state_update(pane);
     return view;
 }
 
 static void on_bitrate_changed(lv_event_t *e) {
+    reconnect_cb(e);
     update_bitrate_label(lv_event_get_user_data(e));
 }
 
 static void on_res_fps_updated(lv_event_t *e) {
     basic_pane_t *pane = lv_event_get_user_data(e);
-    (void) pane;
+    pane->parent->needs_stream_reconnect = true;
 }
 
 static void update_bitrate_label(basic_pane_t *pane) {
@@ -221,6 +300,14 @@ static void hdr_state_update(basic_pane_t *pane) {
     const bool av1_hdr = app_configuration->av1 && (app->ss4s.video_cap.codecs & SS4S_VIDEO_AV1);
     const bool main10_codec = hevc_hdr || av1_hdr;
     bool hdr_ok = main10_codec && app->ss4s.video_cap.hdr;
+    if (pane->sliced_checkbox != NULL) {
+        if (hevc_hdr && !av1_hdr) lv_obj_clear_state(pane->sliced_checkbox, LV_STATE_DISABLED);
+        else lv_obj_add_state(pane->sliced_checkbox, LV_STATE_DISABLED);
+        idr_refresh_state_update(pane);
+        if (hdr_ok && app_configuration->hdr) lv_obj_add_state(pane->full_range_checkbox, LV_STATE_DISABLED);
+        else lv_obj_clear_state(pane->full_range_checkbox, LV_STATE_DISABLED);
+    }
+
     if (hdr_ok) {
         lv_obj_clear_state(pane->hdr_checkbox, LV_STATE_DISABLED);
     } else {
@@ -234,6 +321,7 @@ static void hdr_state_update(basic_pane_t *pane) {
 }
 
 static void hdr_state_update_cb(lv_event_t *e) {
+    reconnect_cb(e);
     hdr_state_update(lv_event_get_user_data(e));
 }
 
@@ -248,6 +336,7 @@ static void codec_checkbox_cb(lv_event_t *e) {
         app_configuration->av1 = false;
         lv_obj_clear_state(pane->av1_checkbox, LV_STATE_CHECKED);
     }
+    pane->parent->needs_stream_reconnect = true;
     hdr_state_update(pane);
 }
 
@@ -256,4 +345,99 @@ static void module_changed_cb(lv_event_t *e) {
     settings_controller_t *parent = pane->parent;
     parent->needs_stream_reconnect = true;
     hdr_state_update(pane);
+}
+
+static void reconnect_cb(lv_event_t *e) {
+    basic_pane_t *pane = lv_event_get_user_data(e);
+    if (pane->parent) {
+        pane->parent->needs_stream_reconnect = true;
+    }
+}
+
+static void abr_state_update(basic_pane_t *pane) {
+    if (app_configuration->auto_adjust_bitrate) {
+        lv_obj_clear_state(pane->abr_dropdown, LV_STATE_DISABLED);
+    } else {
+        lv_obj_add_state(pane->abr_dropdown, LV_STATE_DISABLED);
+    }
+}
+
+static void abr_checkbox_cb(lv_event_t *e) {
+    basic_pane_t *pane = lv_event_get_user_data(e);
+    reconnect_cb(e);
+    abr_state_update(pane);
+}
+
+static void idr_refresh_state_update(basic_pane_t *pane) {
+    const bool hevc_on = app_configuration->hevc && !app_configuration->av1 &&
+            (pane->parent->app->ss4s.video_cap.codecs & SS4S_VIDEO_H265);
+    const bool refresh_on = app_configuration->idr_refresh_interval_ms >= 500;
+    if (refresh_on) {
+        lv_obj_add_state(pane->idr_checkbox, LV_STATE_CHECKED);
+    } else {
+        lv_obj_clear_state(pane->idr_checkbox, LV_STATE_CHECKED);
+    }
+    if (!hevc_on) {
+        lv_obj_add_state(pane->idr_checkbox, LV_STATE_DISABLED);
+        lv_obj_add_state(pane->idr_row, LV_STATE_DISABLED);
+        lv_obj_add_state(pane->idr_slider, LV_STATE_DISABLED);
+    } else {
+        lv_obj_clear_state(pane->idr_checkbox, LV_STATE_DISABLED);
+        if (refresh_on) {
+            lv_obj_clear_state(pane->idr_row, LV_STATE_DISABLED);
+            lv_obj_clear_state(pane->idr_slider, LV_STATE_DISABLED);
+        } else {
+            lv_obj_add_state(pane->idr_row, LV_STATE_DISABLED);
+            lv_obj_add_state(pane->idr_slider, LV_STATE_DISABLED);
+        }
+    }
+    if (refresh_on) {
+        lv_label_set_text_fmt(pane->idr_value_label, "%s - %.1f s",
+                              locstr("Refresh interval"),
+                              app_configuration->idr_refresh_interval_ms / 1000.0);
+    } else {
+        lv_label_set_text(pane->idr_value_label, locstr("Refresh interval"));
+    }
+}
+
+static void idr_checkbox_activate(lv_event_t *e) {
+    if (lv_event_get_code(e) != LV_EVENT_CLICKED) {
+        return;
+    }
+    lv_obj_t *cb = lv_event_get_current_target(e);
+    if (lv_obj_has_state(cb, LV_STATE_CHECKED)) {
+        lv_obj_clear_state(cb, LV_STATE_CHECKED);
+    } else {
+        lv_obj_add_state(cb, LV_STATE_CHECKED);
+    }
+    idr_refresh_checkbox_cb(e);
+}
+
+static void idr_refresh_checkbox_cb(lv_event_t *e) {
+    basic_pane_t *pane = lv_event_get_user_data(e);
+    lv_obj_t *cb = lv_event_get_current_target(e);
+    if (lv_obj_has_state(cb, LV_STATE_CHECKED)) {
+        if (pane->idr_refresh_slider_value < 500) {
+            pane->idr_refresh_slider_value = 10000;
+        }
+        app_configuration->idr_refresh_interval_ms = pane->idr_refresh_slider_value;
+        if (pane->parent) {
+            pane->parent->needs_stream_reconnect = true;
+        }
+    } else {
+        app_configuration->idr_refresh_interval_ms = 0;
+    }
+    reconnect_cb(e);
+    idr_refresh_state_update(pane);
+}
+
+static void idr_refresh_slider_cb(lv_event_t *e) {
+    basic_pane_t *pane = lv_event_get_user_data(e);
+    if (app_configuration->idr_refresh_interval_ms >= 500) {
+        app_configuration->idr_refresh_interval_ms = pane->idr_refresh_slider_value;
+        if (pane->parent) {
+            pane->parent->needs_stream_reconnect = true;
+        }
+    }
+    idr_refresh_state_update(pane);
 }

@@ -88,8 +88,10 @@ static lv_obj_t *find_text(lv_obj_t *root, const char *text, bool only_visible) 
             if (strcmp(lv_btnmatrix_get_btn_text(root, i), text) == 0) return root;
         }
     }
-    for (uint32_t i = 0; i < lv_obj_get_child_cnt(root); i++) {
-        lv_obj_t *found = find_text(lv_obj_get_child(root, i), text, only_visible);
+    /* Search foreground children first: a confirmation button can share text
+     * with a section heading behind its modal backdrop (e.g. Reset). */
+    for (uint32_t i = lv_obj_get_child_cnt(root); i > 0; i--) {
+        lv_obj_t *found = find_text(lv_obj_get_child(root, i - 1), text, only_visible);
         if (found) return found;
     }
     return NULL;
@@ -179,6 +181,7 @@ static void dump_tree(FILE *file, lv_obj_t *obj, bool *first, int depth) {
     if (lv_obj_check_type(obj, &lv_checkbox_class)) {
         fputs(",\"text\":", file);
         json_string(file, lv_checkbox_get_text(obj));
+        fprintf(file, ",\"checked\":%s", lv_obj_has_state(obj, LV_STATE_CHECKED) ? "true" : "false");
     }
     if (lv_obj_check_type(obj, &lv_btnmatrix_class)) {
         uint16_t selected = lv_btnmatrix_get_selected_btn(obj);
@@ -310,6 +313,12 @@ int main(int argc, char **argv) {
     setvbuf(stdin, NULL, _IONBF, 0);
     setvbuf(stdout, NULL, _IOLBF, 0);
     if (app_init(&app, load_settings, argc, argv) != 0) return 1;
+    /* Explicit UI policy fixture only; dummy decoding still performs no playback. */
+    if (getenv("AURORA_UI_SIM_VIDEO_FIXTURE")) {
+        app.ss4s.video_cap.codecs |= SS4S_VIDEO_H265 | SS4S_VIDEO_AV1;
+        app.ss4s.video_cap.hdr = true;
+        fprintf(stderr, "SIM: synthetic HEVC/AV1/HDR capabilities for UI policy checks\n");
+    }
     app_ui_open(&app.ui, true, NULL);
     wait_ui(1000);
     puts("AURORA_SIM\tREADY");

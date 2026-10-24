@@ -38,7 +38,7 @@ static const settings_entry_t entries[] = {
         {MAT_SYMBOL_SETTINGS,        translatable("Stream"),       &settings_pane_basic_cls},
         {MAT_SYMBOL_SPORTS_ESPORTS,  translatable("Input"),        &settings_pane_input_cls},
         {MAT_SYMBOL_DESKTOP_WINDOWS, translatable("Host"),         &settings_pane_host_cls},
-        {MAT_SYMBOL_TUNE,            translatable("Experimental"), &settings_pane_experimental_cls},
+        {MAT_SYMBOL_TUNE,            translatable("Other"), &settings_pane_other_cls},
 };
 static const int entries_len = sizeof(entries) / sizeof(settings_entry_t);
 
@@ -97,6 +97,7 @@ static void show_pane(settings_controller_t *controller, const lv_fragment_class
 static void settings_close(lv_event_t *e);
 
 static void settings_finish_close(settings_controller_t *fragment);
+static void settings_finish_close_async(void *userdata);
 
 static bool settings_try_close(settings_controller_t *fragment);
 
@@ -162,7 +163,9 @@ const lv_fragment_class_t settings_controller_cls = {
         .constructor_cb = settings_controller_ctor,
         .create_obj_cb = settings_win_create,
         .obj_created_cb = on_view_created,
-        .obj_deleted_cb = on_destroy_view,
+        /* Pane fragments refer to children of this view; release them before
+         * LVGL frees that tree, including during reset/locale rebuilds. */
+        .obj_will_delete_cb = on_destroy_view,
         .event_cb = on_event,
         .instance_size = sizeof(settings_controller_t),
 };
@@ -174,12 +177,15 @@ static void settings_controller_ctor(lv_fragment_t *self, void *args) {
     fragment->launcher_host = open->launcher;
     fragment->pane_mbox = NULL;
     fragment->pane_fragment = NULL;
+    fragment->stream_pane = NULL;
     fragment->pane_popup_group = NULL;
     fragment->suppress_item_activate = false;
     fragment->embed_root = NULL;
     fragment->embed_appbar = NULL;
     fragment->needs_stream_reconnect = false;
     fragment->needs_locale_reapply = false;
+    fragment->closing = false;
+    fragment->close_pending = false;
     fragment->mini = fragment->pending_mini = UI_IS_MINI(fragment->app->ui.width);
     os_info_get(&fragment->os_info);
 #if TARGET_WEBOS
@@ -266,6 +272,7 @@ static void on_view_created(lv_fragment_t *self, lv_obj_t *view) {
 static void on_destroy_view(lv_fragment_t *self, lv_obj_t *view) {
     settings_controller_t *controller = (settings_controller_t *) self;
     lv_async_call_cancel(settings_reveal_focus_after_resize, controller);
+    if (controller->close_pending) lv_async_call_cancel(settings_finish_close_async, controller);
     LV_UNUSED(view);
     const char *active_id = profile_manager_active_id();
     if (active_id) {
@@ -276,15 +283,9 @@ static void on_destroy_view(lv_fragment_t *self, lv_obj_t *view) {
 
     if (controller->launcher_host) {
         settings_close_pane_popup(controller);
-        if (controller->detail) {
-            uint32_t n = lv_obj_get_child_cnt(controller->detail);
-            for (uint32_t i = 0; i < n; i++) {
-                lv_obj_t *ch = lv_obj_get_child(controller->detail, i);
-                lv_fragment_t *pane = lv_obj_get_user_data(ch);
-                if (pane != NULL) {
-                    lv_fragment_del(pane);
-                }
-            }
+        if (controller->stream_pane) {
+            lv_fragment_del(controller->stream_pane);
+            controller->stream_pane = NULL;
         }
         app_input_remove_modal_group(&controller->app->ui.input, controller->detail_group);
         launcher_restore_nav_focus(controller->launcher_host);
@@ -986,12 +987,24 @@ static void settings_apply_locale_if_needed(settings_controller_t *controller) {
 }
 
 static void settings_finish_close(settings_controller_t *fragment) {
+    if (fragment->closing) return;
+    fragment->closing = true;
+    fragment->close_pending = true;
+    /* Escape also sends CANCEL to the focused object after KEY dispatch.
+     * Keep that object alive until the current input dispatch has finished. */
+    lv_async_call(settings_finish_close_async, fragment);
+}
+
+static void settings_finish_close_async(void *userdata) {
+    settings_controller_t *fragment = userdata;
+    fragment->close_pending = false;
     settings_close_pane_popup(fragment);
     settings_launcher_detach(fragment);
     lv_fragment_del((lv_fragment_t *) fragment);
 }
 
 static bool settings_try_close(settings_controller_t *fragment) {
+    if (fragment->closing) return true;
 #ifdef FEATURE_I18N_LANGUAGE_SETTINGS
     if (fragment->needs_locale_reapply && app_configuration->language != NULL && app_configuration->language[0] != '\0' &&
         strcmp(app_configuration->language, "auto") != 0) {
@@ -1751,8 +1764,8 @@ static void on_launcher_embedded_view_created(settings_controller_t *controller)
     lv_obj_clear_flag(section, LV_OBJ_FLAG_SCROLLABLE);
     lv_obj_add_event_cb(section, embed_section_child_added, LV_EVENT_CHILD_CREATED, controller);
     lv_fragment_t *pane = lv_fragment_create(&settings_pane_basic_cls, controller);
+    controller->stream_pane = pane;
     lv_fragment_create_obj(pane, section);
-    lv_obj_set_user_data(section, pane);
     embed_popup_attach_key_handlers(section, controller);
     embed_popup_add_objs_recursive(section, controller->detail_group);
 

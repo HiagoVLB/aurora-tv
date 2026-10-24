@@ -44,7 +44,7 @@ struct session_t {
     SS4S_Player *player;
     adaptive_bitrate_service_t *abr;
 #if TARGET_WEBOS
-    webos_game_mode_state_t *webos_game_mode;
+    bool webos_hdr; /* protected by mutex; applied only by the session worker */
 #endif
 };
 

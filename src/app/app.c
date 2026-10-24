@@ -35,6 +35,8 @@
 #include "util/diagnostic_reset.h"
 #include "util/path.h"
 #include "stream/video/session_video.h"
+#include "libgamestream/http.h"
+#include "libgamestream/errors.h"
 
 PCONFIGURATION app_configuration = NULL;
 
@@ -53,6 +55,13 @@ static void app_log_listener(commons_log_level level, const char *tag, const cha
 int app_init(app_t *app, app_settings_loader *settings_loader, int argc, char *argv[]) {
     assert(settings_loader != NULL);
     memset(app, 0, sizeof(*app));
+    /* webOS ships curl/resolver versions whose implicit global init is not
+     * thread safe. Do this before SDL, logging, NDL and backend start workers,
+     * including the controller database's independent curl client. */
+    if (http_init() != GS_OK) {
+        fprintf(stderr, "Aurora: failed to initialize HTTP libraries\n");
+        return -1;
+    }
     commons_logging_init("aurora");
     SDL_LogSetOutputFunction(commons_sdl_log, NULL);
     SDL_SetAssertionHandler(app_assertion_handler_abort, NULL);

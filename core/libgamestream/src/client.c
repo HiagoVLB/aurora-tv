@@ -31,6 +31,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
+#include <math.h>
+#include <limits.h>
 #include <mbedtls/md.h>
 #include <mbedtls/aes.h>
 #include <mbedtls/ctr_drbg.h>
@@ -1198,12 +1200,23 @@ int gs_report_abr_feedback(GS_CLIENT hnd, const SERVER_DATA *server, const GS_AB
         return GS_INVALID;
     }
     memset(action, 0, sizeof(*action));
+    /* JSON numbers must retain '.' even when the UI uses a comma locale.
+     * Validate before conversion so NaN/Inf cannot reach JSON or an int cast. */
+    double loss_x100 = (double) feedback->packet_loss * 100.0 + 0.5;
+    double fps_x10 = (double) feedback->decode_fps * 10.0 + 0.5;
+    if (!isfinite(loss_x100) || !isfinite(fps_x10) || feedback->packet_loss < 0 ||
+        feedback->packet_loss > 100 || feedback->decode_fps < 0 || fps_x10 > INT_MAX) {
+        http_data_free(data);
+        return GS_INVALID;
+    }
+    int loss = (int) loss_x100;
+    int fps = (int) fps_x10;
     construct_url(hnd, url, sizeof(url), true, server->serverInfo.address, server_port(server, true),
                   "api/abr/feedback", NULL);
     char payload[256];
     snprintf(payload, sizeof(payload),
-             "{\"packetLoss\":%.2f,\"rttMs\":%d,\"decodeFps\":%.1f,\"droppedFrames\":%d,\"currentBitrate\":%d}",
-             feedback->packet_loss, feedback->rtt_ms, feedback->decode_fps, feedback->dropped_frames,
+             "{\"packetLoss\":%d.%02d,\"rttMs\":%d,\"decodeFps\":%d.%d,\"droppedFrames\":%d,\"currentBitrate\":%d}",
+             loss / 100, loss % 100, feedback->rtt_ms, fps / 10, fps % 10, feedback->dropped_frames,
              feedback->current_bitrate);
     int ret = http_post_json(hnd->http, url, payload, data);
     if (ret == GS_OK && data->memory) {

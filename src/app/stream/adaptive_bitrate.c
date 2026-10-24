@@ -7,6 +7,7 @@
 #include <libgamestream/errors.h>
 #include <SDL.h>
 #include <stdlib.h>
+#include <limits.h>
 #include <string.h>
 
 #include "logging.h"
@@ -28,6 +29,7 @@ struct adaptive_bitrate_service {
     bool recovery_only;
     int server_enable_retries;
     int tick_count;
+    unsigned long last_measurement;
     int stable_seconds;
     int loss_streak;
     Uint32 last_adjust_ticks;
@@ -54,6 +56,11 @@ const char *abr_mode_to_string(abr_mode_t mode) {
     }
 }
 
+static int abr_scale(int kbps, int numerator, int denominator) {
+    int64_t scaled = (int64_t) kbps * numerator / denominator;
+    return scaled > INT_MAX ? INT_MAX : (int) scaled;
+}
+
 static void abr_apply_mode_preset(adaptive_bitrate_service_t *service) {
     switch (service->mode) {
         case ABR_MODE_QUALITY:
@@ -61,22 +68,22 @@ static void abr_apply_mode_preset(adaptive_bitrate_service_t *service) {
             if (service->min_bitrate < 5000) {
                 service->min_bitrate = 5000;
             }
-            service->max_bitrate = service->initial_bitrate * 3 / 2;
+            service->max_bitrate = abr_scale(service->initial_bitrate, 3, 2);
             if (service->max_bitrate > 150000) {
                 service->max_bitrate = 150000;
             }
             break;
         case ABR_MODE_LOW_LATENCY:
             service->min_bitrate = 2000;
-            service->max_bitrate = service->initial_bitrate * 6 / 5;
+            service->max_bitrate = abr_scale(service->initial_bitrate, 6, 5);
             break;
         case ABR_MODE_BALANCED:
         default:
-            service->min_bitrate = service->initial_bitrate * 3 / 10;
+            service->min_bitrate = abr_scale(service->initial_bitrate, 3, 10);
             if (service->min_bitrate < 3000) {
                 service->min_bitrate = 3000;
             }
-            service->max_bitrate = service->initial_bitrate * 2;
+            service->max_bitrate = abr_scale(service->initial_bitrate, 2, 1);
             if (service->max_bitrate > 150000) {
                 service->max_bitrate = 150000;
             }
@@ -95,7 +102,7 @@ static bool abr_set_bitrate(adaptive_bitrate_service_t *service, int kbps, const
         return false;
     }
     Uint32 now = SDL_GetTicks();
-    if (service->set_backoff_until != 0 && now < service->set_backoff_until) {
+    if (service->set_backoff_until != 0 && !SDL_TICKS_PASSED(now, service->set_backoff_until)) {
         return false;
     }
     int from = service->current_bitrate;
@@ -115,6 +122,7 @@ static bool abr_set_bitrate(adaptive_bitrate_service_t *service, int kbps, const
     }
     service->set_fail_streak = 0;
     service->set_backoff_until = 0;
+    if (applied <= 0) return false;
     service->current_bitrate = applied;
     if (applied < kbps && service->max_bitrate > applied) {
         service->max_bitrate = applied;
@@ -126,7 +134,7 @@ static bool abr_set_bitrate(adaptive_bitrate_service_t *service, int kbps, const
 
 static void abr_tick_local(adaptive_bitrate_service_t *service, float packet_loss) {
     Uint32 now = SDL_GetTicks();
-    if (service->hold_until != 0 && now < service->hold_until) {
+    if (service->hold_until != 0 && !SDL_TICKS_PASSED(now, service->hold_until)) {
         return;
     }
     int cooldown = service->mode == ABR_MODE_LOW_LATENCY ? 1500 : 2000;
@@ -136,27 +144,27 @@ static void abr_tick_local(adaptive_bitrate_service_t *service, float packet_los
 
     int target = service->current_bitrate;
     if (packet_loss > 5.0f) {
-        target = (int) (service->current_bitrate * 0.7);
+        target = abr_scale(service->current_bitrate, 70, 100);
         service->stable_seconds = 0;
         service->loss_streak++;
     } else if (packet_loss > 2.0f) {
         service->loss_streak++;
         if (service->loss_streak >= 2) {
-            target = (int) (service->current_bitrate * 0.9);
+            target = abr_scale(service->current_bitrate, 90, 100);
             service->stable_seconds = 0;
         }
     } else if (packet_loss > 0.5f) {
         service->loss_streak++;
         service->stable_seconds = 0;
         if (service->loss_streak >= 4) {
-            target = (int) (service->current_bitrate * 0.95);
+            target = abr_scale(service->current_bitrate, 95, 100);
         }
     } else {
         service->loss_streak = 0;
         service->stable_seconds++;
         int probe_threshold = service->mode == ABR_MODE_QUALITY ? 3 : 5;
         if (service->stable_seconds >= probe_threshold && service->current_bitrate < service->max_bitrate) {
-            target = (int) (service->current_bitrate * 1.05);
+            target = abr_scale(service->current_bitrate, 105, 100);
             service->stable_seconds = 0;
         }
     }
@@ -181,12 +189,12 @@ static void abr_apply_pending_drop(adaptive_bitrate_service_t *service) {
     if (percent <= 0 || percent > 100) {
         return;
     }
-    SDL_AtomicSet(&service->pending_drop_percent, 0);
+    percent = SDL_AtomicSet(&service->pending_drop_percent, 0);
     int hold_ms = SDL_AtomicGet(&service->pending_hold_ms);
     if (hold_ms < 1000) {
         hold_ms = 1000;
     }
-    int target = service->current_bitrate * percent / 100;
+    int target = abr_scale(service->current_bitrate, percent, 100);
     if (target < service->min_bitrate) {
         target = service->min_bitrate;
     }
@@ -238,6 +246,9 @@ static int abr_thread(void *userdata) {
         struct VIDEO_STATS stats_snap;
         vdec_stats_snapshot(&stats_snap);
         const struct VIDEO_STATS *stats = &stats_snap;
+        if (stats->totalFrames == 0 || stats->measurementEndTimestamp == 0 ||
+            stats->measurementEndTimestamp == service->last_measurement) continue;
+        service->last_measurement = stats->measurementEndTimestamp;
         float packet_loss = stats->totalFrames > 0
             ? (float) stats->networkDroppedFrames / (float) stats->totalFrames * 100.0f
             : 0.0f;
@@ -266,7 +277,7 @@ static int abr_thread(void *userdata) {
 
         if (service->server_supported && service->server_enable_retries == 0) {
             Uint32 now = SDL_GetTicks();
-            if (service->hold_until != 0 && now < service->hold_until) {
+            if (service->hold_until != 0 && !SDL_TICKS_PASSED(now, service->hold_until)) {
                 continue;
             }
             GS_ABR_FEEDBACK feedback = {
@@ -297,7 +308,7 @@ static int abr_thread(void *userdata) {
 }
 
 adaptive_bitrate_service_t *adaptive_bitrate_start(const adaptive_bitrate_config_t *config) {
-    if (!config || !config->gs_client || !config->server) {
+    if (!config || !config->gs_client || !config->server || config->initial_bitrate <= 0) {
         return NULL;
     }
     adaptive_bitrate_service_t *service = calloc(1, sizeof(*service));

@@ -59,3 +59,25 @@ if (CMAKE_SYSTEM_NAME STREQUAL "Linux" AND NOT TARGET_WEBOS)
     add_test(NAME test_ndl_serialization COMMAND test_ndl_serialization)
     set_tests_properties(test_ndl_serialization PROPERTIES TIMEOUT 75)
 endif ()
+
+# Test firmware policy without requiring a rooted TV or pbnjson on desktop.
+add_executable(test_game_mode test_game_mode.c ../../src/app/platform/webos/game_mode.c)
+target_include_directories(test_game_mode PRIVATE ../../src/app ../../third_party/commons/util/logging)
+add_test(NAME test_game_mode COMMAND test_game_mode)
+
+add_executable(test_adaptive_bitrate test_adaptive_bitrate.c)
+target_link_libraries(test_adaptive_bitrate PRIVATE moonlight-lib)
+add_test(NAME test_adaptive_bitrate COMMAND test_adaptive_bitrate)
+
+add_executable(test_session_options test_session_options.c)
+target_link_libraries(test_session_options PRIVATE moonlight-lib)
+add_test(NAME test_session_options COMMAND test_session_options)
+
+add_executable(test_fractional_fps test_fractional_fps.c)
+target_link_libraries(test_fractional_fps PRIVATE moonlight-lib)
+add_test(NAME test_fractional_fps COMMAND test_fractional_fps)
+
+add_executable(test_idr_refresh test_idr_refresh.c ../../src/app/stream/video/idr_refresh.c)
+target_include_directories(test_idr_refresh PRIVATE ../../src/app)
+target_compile_options(test_idr_refresh PRIVATE -UNDEBUG)
+add_test(NAME test_idr_refresh COMMAND test_idr_refresh)
