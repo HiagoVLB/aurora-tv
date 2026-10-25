@@ -10,7 +10,7 @@ Write-Host ""
 # Check WSL
 $wslTest = wsl -e bash -c "echo ok" 2>$null
 if ($LASTEXITCODE -ne 0 -or $wslTest -ne "ok") {
-    Write-Host "ERRO: WSL nao encontrado ou nao configurado." -ForegroundColor Red
+    Write-Host "ERROR: WSL was not found or is not configured." -ForegroundColor Red
     Write-Host ""
     Write-Host "To install WSL with Ubuntu:" -ForegroundColor Yellow
     Write-Host "  wsl --install -d Ubuntu" -ForegroundColor White

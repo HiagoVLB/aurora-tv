@@ -1,4 +1,4 @@
 interface:
   display_name: "Aurora × Moonlight Nonary"
-  short_description: "Avalia diferenças do fork Nonary para webOS"
-  default_prompt: "Use $aurora-compare-nonary para comparar o Aurora atual com Nonary/moonlight-qt e registrar o que pode ser adaptado ao webOS da LG C2."
+  short_description: "Assess Nonary fork differences for webOS"
+  default_prompt: "Use $aurora-compare-nonary to compare current Aurora with Nonary/moonlight-qt and record viable adaptations for LG C2 webOS."

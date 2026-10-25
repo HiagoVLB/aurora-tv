@@ -1,64 +1,64 @@
 # AGENTS.md
 
-Orientações para trabalhar no Aurora. Priorize comportamento correto no webOS,
-latência previsível e uma interface utilizável com o controle da TV. Implemente
-o escopo pedido preservando o trabalho local e os contratos de sessão existentes.
+Guidelines for working on Aurora. Prioritize correct webOS behavior, predictable
+latency, and an interface usable with the TV remote. Implement the requested
+scope while preserving local work and existing session contracts.
 
-## Projeto e ponto de partida
+## Project and starting point
 
-Aurora (`com.aurora.gamestream`) é um fork de moonlight-tv, em C11, para LG webOS.
-O build Linux desktop serve ao desenvolvimento. A interface usa LVGL v8 e a API
-SDL2; no webOS essa API roda sobre SDL3 via sdl2-compat, com shims próprios para
-NDL e teclas. O build usa CMake e submódulos. Os alvos de CI são webOS e desktop;
-a presença de scripts antigos de outras plataformas não significa suporte ativo.
+Aurora (`com.aurora.gamestream`) is a C11 fork of moonlight-tv for LG webOS.
+The Linux desktop build supports development. The UI uses LVGL v8 and SDL2;
+on webOS, that API runs on SDL3 through sdl2-compat, with custom NDL and key
+shims. Builds use CMake and submodules. CI targets webOS and desktop; legacy
+scripts for other platforms do not imply active support.
 
-Antes de alterar uma área, consulte o código e `git status --short`. Não reverta
-mudanças que já estavam no checkout nem atualize submódulos incidentalmente.
-HEAD sozinho não identifica uma versão com alterações locais.
+Before changing an area, inspect its code and `git status --short`. Do not revert
+existing checkout changes or update submodules incidentally. HEAD alone does
+not identify a version with local changes.
 
-- [Estado atual](docs/CURRENT_STATE.md): linha de base datada, referências,
-  implementação, lacunas e validações. Consulte em planejamento, investigação
-  e comparação; confirme no código as afirmações que afetarem a tarefa.
-- [Histórico de streaming](docs/WEBOS_STREAMING_HISTORY.md): experimentos e áudio
-  já avaliados na C5. Leia antes de mexer em pacing, PTS, AV1 120 ou mapeamento 5.1.
-- [Integração VibeShine](docs/VIBESHINE_INTEGRATION.md) e
-  [revisão Nonary/webOS](docs/NONARY_MOONLIGHT_WEBOS_REVIEW.md): contratos e análises.
-  A revisão inclui correções posteriores; não trate diagnóstico histórico como
-  defeito ainda presente sem conferir o working tree.
+- [Current state](docs/CURRENT_STATE.md): dated baseline, references,
+  implementation, gaps, and validation. Consult it for planning, investigation,
+  and comparison; verify task-relevant claims against the code.
+- [Streaming history](docs/WEBOS_STREAMING_HISTORY.md): experiments and audio
+  already evaluated on the C5. Read before changing pacing, PTS, AV1 120, or 5.1 mapping.
+- [VibeShine integration](docs/VIBESHINE_INTEGRATION.md) and
+  [Nonary/webOS review](docs/NONARY_MOONLIGHT_WEBOS_REVIEW.md): contracts and analysis.
+  The review includes later corrections; verify the working tree before treating
+  a historical diagnosis as a current defect.
 
-O alvo de interesse atual é a LG C2. Evidência de C5 + eARC deve continuar
-identificada como tal. Versão declarada no CMake, IPK gerado e versão instalada
-na TV são estados diferentes; não presuma que coincidem.
+The current target of interest is the LG C2. Keep C5 + eARC evidence identified
+as such. The CMake version, generated IPK, and version installed on the TV are
+separate states; do not assume they match.
 
-## Mapa do código
+## Code map
 
-| Responsabilidade | Onde trabalhar |
+| Responsibility | Location |
 | --- | --- |
-| Inicialização e loop principal | `src/app/app.c`, `src/main.c` |
-| Protocolo GameStream, XML, pareamento e launch | `core/libgamestream/`; transporte e callbacks Limelight em `core/moonlight-common-c/` |
-| Descoberta, hosts e catálogo | `src/app/backend/pcmanager/`, `src/app/backend/apploader/` |
-| Ciclo de sessão, configuração e ABR | `src/app/stream/session.c`, `session_worker.c`, `adaptive_bitrate.c` |
-| Vídeo, áudio e entrada de streaming | `src/app/stream/video/`, `audio/`, `input/`; saída pelo SS4S em `third_party/ss4s/` |
-| Launcher, configurações e overlay | `src/app/ui/launcher/`, `settings/`, `streaming/` |
-| Preferências e perfis | `src/app/app_settings.{h,c}`, `src/app/profile/` |
-| Integração webOS, SDL/NDL, Game Mode e prioridade | `src/app/platform/webos/`, `third_party/commons/cmake/ExternalSDL3ForWebOS.cmake` |
-| Testes, simulador e empacotamento | `tests/`, `tools/ui-sim/`, `scripts/webos/`, `.github/workflows/` |
+| Startup and main loop | `src/app/app.c`, `src/main.c` |
+| GameStream protocol, XML, pairing, launch | `core/libgamestream/`; Limelight transport and callbacks in `core/moonlight-common-c/` |
+| Discovery, hosts, catalog | `src/app/backend/pcmanager/`, `src/app/backend/apploader/` |
+| Session lifecycle, configuration, ABR | `src/app/stream/session.c`, `session_worker.c`, `adaptive_bitrate.c` |
+| Streaming video, audio, input | `src/app/stream/video/`, `audio/`, `input/`; SS4S output in `third_party/ss4s/` |
+| Launcher, settings, overlay | `src/app/ui/launcher/`, `settings/`, `streaming/` |
+| Preferences and profiles | `src/app/app_settings.{h,c}`, `src/app/profile/` |
+| webOS integration, SDL/NDL, Game Mode, priority | `src/app/platform/webos/`, `third_party/commons/cmake/ExternalSDL3ForWebOS.cmake` |
+| Tests, simulator, packaging | `tests/`, `tools/ui-sim/`, `scripts/webos/`, `.github/workflows/` |
 
-O SS4S escolhe módulos em runtime. Confirme no log o backend selecionado; não
-atribua ao NDL o comportamento do Starfish/SMP ou do decoder dummy do simulador.
+SS4S selects modules at runtime. Confirm the selected backend in the log; do not
+attribute Starfish/SMP or simulator dummy decoder behavior to NDL.
 
-## Build e validação
+## Build and validation
 
-Execute os comandos a partir da raiz do Aurora. Em clone novo, inicialize com
-`git submodule update --init --recursive`; há dependências aninhadas no
-moonlight-common-c. Em checkout existente, examine o estado dos submódulos antes.
+Run commands from the Aurora root. In a fresh clone, initialize with
+`git submodule update --init --recursive`; moonlight-common-c has nested
+dependencies. Inspect submodule state first in an existing checkout.
 
 ### Linux desktop
 
-As dependências Ubuntu estão em
-[build-desktop.yml](.github/workflows/build-desktop.yml); a imagem do simulador
-em Ubuntu 24.04 contém o conjunto ampliado de desenvolvimento. `gettext`
-(`msgfmt`, `xgettext`, `msgmerge`) é obrigatório no configure desktop.
+Ubuntu dependencies are in
+[build-desktop.yml](.github/workflows/build-desktop.yml); the Ubuntu 24.04 simulator
+image includes the expanded development set. Desktop configure requires
+`gettext` (`msgfmt`, `xgettext`, `msgmerge`).
 
 ```sh
 cmake -B build -DCMAKE_BUILD_TYPE=Debug -DTARGET_DESKTOP=ON
@@ -66,30 +66,29 @@ cmake --build build
 xvfb-run ctest --test-dir build --output-on-failure
 ```
 
-`BUILD_TESTS` fica ON por padrão no desktop e OFF no webOS. Escolha o teste
-pertinente, como `ctest --test-dir build -R test_settings --output-on-failure`,
-quando a mudança tiver escopo específico. Os testes principais usam Unity;
-os fixtures de protocolo são um executável isolado.
+`BUILD_TESTS` defaults to ON for desktop and OFF for webOS. Select relevant tests,
+such as `ctest --test-dir build -R test_settings --output-on-failure`, for focused
+changes. Main tests use Unity; protocol fixtures are a standalone executable.
 
-### macOS/Linux com Docker: interface e protocolo
+### macOS/Linux with Docker: UI and protocol
 
 ```sh
 ./tools/ui-sim/run.sh
 ```
 
-O [simulador](tools/ui-sim/README.md) compila a interface real SDL/LVGL com saída
-SS4S dummy. O runtime fica sem rede e usa preferências isoladas. Os resultados
-estão em `.cache/ui-sim-run-*/artifacts/` (`report.json`, `index.html`, PNGs e logs).
-Use cenários para foco, navegação, popups, mouse/roda, controle direcional e resize.
-Isso não emula o firmware LG nem valida decoder, áudio ou streaming real.
+The [simulator](tools/ui-sim/README.md) builds the real SDL/LVGL UI with dummy
+SS4S output. Runtime has no network and uses isolated preferences. Results are
+in `.cache/ui-sim-run-*/artifacts/` (`report.json`, `index.html`, PNGs, logs).
+Use scenarios for focus, navigation, popups, mouse/wheel, directional input, and
+resize. This does not emulate LG firmware or validate real decoding/audio/streaming.
 
-Para contratos VibeShine, em Linux com as dependências de desenvolvimento:
+For VibeShine contracts on Linux with development dependencies:
 
 ```sh
 bash tests/core/run_vibeshine_protocol.sh
 ```
 
-No Mac, depois de criar a imagem do simulador, execute o mesmo fixture em Linux:
+On Mac, after building the simulator image, run the same fixture on Linux:
 
 ```sh
 docker run --rm --network none --volume "$PWD:/source:ro" --workdir /source aurora-ui-sim:local bash tests/core/run_vibeshine_protocol.sh
@@ -97,160 +96,149 @@ docker run --rm --network none --volume "$PWD:/source:ro" --workdir /source auro
 
 ### webOS
 
-Para gerar o instalador local, usar a skill
-[aurora-build-ipk](.agents/skills/aurora-build-ipk/SKILL.md) ou:
+For a local installer, use the
+[aurora-build-ipk](.agents/skills/aurora-build-ipk/SKILL.md) skill or:
 
 ```sh
 python3 scripts/webos/build_ipk.py
 ```
 
-A entrega fixa é **`aurora.ipk` na raiz deste repositório**, substituída apenas
-após build/validação bem-sucedidos. Logs e recibo ficam em `.cache/ipk/`.
-O build não incrementa a versão. Para aumentar a versão, usar a skill
-[aurora-bump-version](.agents/skills/aurora-bump-version/SKILL.md): patch por
-padrão, ou a versão/tipo solicitado. `MOONLIGHT_VERSION` é a fonte única; appinfo,
-UI e marca do ELF devem derivar dela. Não confundir um IPK anterior com a versão
-nova das fontes antes de recompilar.
+The fixed deliverable is **`aurora.ipk` at this repository root**, replaced only
+after a successful build and validation. Logs and receipt are in `.cache/ipk/`.
+Building does not bump the version. Use
+[aurora-bump-version](.agents/skills/aurora-bump-version/SKILL.md) for version
+changes: patch by default, or the requested version/type. `MOONLIGHT_VERSION`
+is the single source; appinfo, UI, and ELF marker must derive from it. An older
+IPK does not acquire the new source version until rebuilt.
 
-Consulte [BUILD_WEBOS.md](docs/BUILD_WEBOS.md), os scripts em `scripts/webos/` e a
-[action de CI](.github/actions/build-webos/action.yml). O SDK usado é buildroot-nc4
-`webos-a38c582`, host x86_64, destino ARM. Em Mac ARM, ele exige ambiente Linux
-x86_64 compatível; o build do simulador ARM64 não substitui esse cross-build.
-Com SDK/ares-package preparados em Linux ou WSL:
+Consult [BUILD_WEBOS.md](docs/BUILD_WEBOS.md), `scripts/webos/`, and the
+[CI action](.github/actions/build-webos/action.yml). The SDK is buildroot-nc4
+`webos-a38c582`, x86_64 host, ARM target. ARM Macs need a compatible Linux x86_64
+environment; the ARM64 simulator build does not replace this cross-build.
+With SDK/ares-package ready on Linux or WSL:
 
 ```sh
-CI=1 TOOLCHAIN_FILE=/caminho/do/sdk/share/buildroot/toolchainfile.cmake ./scripts/webos/easy_build.sh -DCMAKE_BUILD_TYPE=RelWithDebInfo
+CI=1 TOOLCHAIN_FILE=/path/to/sdk/share/buildroot/toolchainfile.cmake ./scripts/webos/easy_build.sh -DCMAKE_BUILD_TYPE=RelWithDebInfo
 ```
 
-`CI=1` evita a atualização automática dos submódulos nesse script; inicialize-os
-antes. `TARGET_WEBOS` é detectado pelo toolchain/compiler e altera fontes,
-bibliotecas e recursos. O build webOS converte `.po` em `cstrings.json` no pacote.
+`CI=1` skips automatic submodule updates in that script; initialize them first.
+`TARGET_WEBOS` is detected from the toolchain/compiler and changes sources,
+libraries, and resources. webOS builds convert `.po` files to packaged `cstrings.json`.
 
-Os wrappers WSL contêm caminhos legados `/mnt/c/Projetos/...`: confira-os antes
-de reutilizar; `run_wsl_build.py` não é um entrypoint portátil. Builds podem
-produzir IPKs em diretórios temporários. Localize/copie o artefato para um caminho
-persistente antes de encerrar o ambiente e informe o arquivo efetivamente gerado.
-Build/empacotamento e instalação são etapas distintas; instalar não é consequência
-automática de uma tarefa de documentação, revisão ou build.
+Use the maintained IPK helper for reproducible local delivery. Builds can produce IPKs in
+temporary directories. Copy the artifact to a persistent location before closing
+the environment, and report the actual generated file. Build/packaging and
+installation are separate steps; documentation, review, or build tasks do not
+automatically authorize TV installation.
 
-## UI, preferências e tradução
+## UI, preferences, localization
 
-- A UI é baseada em fragments LVGL v8. Preserve ownership, callbacks e grupos de
-  foco. Cancele callbacks assíncronos que guardem um fragment ao destruí-lo.
-  Valide Back/Escape e retorno de foco ao fechar dropdowns, popups e overlay.
-- A lista `entries[]` de `settings.controller.c` determina os painéis acessíveis:
-  Stream, Input, Host e Other (Outros). Compilar um pane não o torna visível.
-  Vídeo e bitrate pertencem a Stream (`basic.pane.c`); idioma, logs, Game Mode
-  e reset ficam em `other.pane.c`. Não recrie panes de vídeo/áudio inacessíveis.
-- Uma preferência nova precisa de campo, default, leitura/escrita INI, UI acessível
-  e consumidor real. Decida se pertence ao perfil ou é global; confira os dois
-  sentidos de conversão em `profile_manager.c`. Checkbox salvo não prova efeito.
-  `app_configuration` referencia `&app->settings`; a sessão recebe uma cópia efetiva.
-- Distinga alteração ao vivo de configuração aplicada na próxima sessão. Atualize
-  `needs_stream_reconnect` quando necessário e explique o valor efetivo após clamps.
-  Não acrescente opções sem capacidade/efeito demonstrável no backend selecionado.
-- Ao retirar uma chave, mantenha compatibilidade no bloco compartilhado de chaves
-  legadas ignoradas em `app_settings.c`. Não apague preferências ou pareamentos
-  como forma de contornar uma migração.
-- Textos de UI usam `locstr`/`translatable` e catálogos `src/i18n/`. Atualize as
-  traduções afetadas, especialmente pt-BR, preservando placeholders e o fluxo
-  gettext desktop / cstrings webOS.
-  Para atualização/revisão dos idiomas existentes, usar a skill
-  [aurora-update-languages](.agents/skills/aurora-update-languages/SKILL.md):
-  adaptar ao contexto de cada língua, validar os dois formatos e inspecionar
-  a UI com o idioma efetivamente carregado, incluindo fontes e cortes de texto.
+- Use LVGL v8 fragments. Preserve ownership, callbacks, and focus groups. Cancel
+  asynchronous callbacks retaining a fragment when destroying it. Validate
+  Back/Escape and focus restoration after dropdowns, popups, and overlay close.
+- `entries[]` in `settings.controller.c` defines accessible panes: Stream, Input,
+  Host, Other. Compiling a pane does not expose it. Video/bitrate belong in Stream
+  (`basic.pane.c`); language, logs, Game Mode, and reset in `other.pane.c`.
+  Do not recreate inaccessible video/audio panes.
+- New preferences need a field, default, INI read/write, accessible UI, and a
+  real consumer. Decide profile/global scope and check both conversion directions
+  in `profile_manager.c`. A saved checkbox does not prove an effect.
+  `app_configuration` references `&app->settings`; sessions receive an effective copy.
+- Distinguish live changes from next-session settings. Set `needs_stream_reconnect`
+  when needed and explain effective clamped values. Do not add options without
+  demonstrated capability/effect in the selected backend.
+- When removing a key, preserve compatibility in the shared ignored legacy-key
+  block in `app_settings.c`. Do not delete preferences/pairing to bypass migration.
+- UI strings use `locstr`/`translatable` and `src/i18n/` catalogs. Update affected
+  translations, especially pt-BR, preserving placeholders and the desktop gettext /
+  webOS cstrings pipeline. For existing-language updates/review, use
+  [aurora-update-languages](.agents/skills/aurora-update-languages/SKILL.md): adapt to
+  each language's context, validate both formats, and inspect the UI with the
+  language actually loaded, including fonts and truncation.
 
-## Invariantes de sessão e latência
+## Session and latency invariants
 
-- Preserve a cadência atual do loop: `app_process_events`, `lv_task_handler` e
-  `SDL_Delay(1)`, com `LV_INDEV_DEF_READ_PERIOD=1`. Aumentar o intervalo afeta entrada.
-- A dispatch de eventos passa por `SDL_FilterEvents`, sob mutex da fila SDL.
-  Não faça rede, disco, joins ou esperas longas nesse callback. Encaminhe trabalho
-  entre threads pelo bus existente e respeite a vida útil de seus dados.
-- Vídeo usa `CAPABILITY_DIRECT_SUBMIT`: feed bloqueante também bloqueia a recepção
-  RTP. Áudio webOS não usa direct submit para evitar que transcode Opus 5.1
-  monopolize a thread de recepção. Não altere isso como otimização sem medição.
-- Timestamps de decode units e Limelight usam microssegundos com epoch comum na
-  implementação atual de `PltGetMicroseconds`. Revalide unidades/epoch ao atualizar
-  moonlight-common-c; NDL recebe PTS em milissegundos.
-- Pare/junte ABR antes de `LiStopConnection`. Não restaure bitrate de uma sessão
-  encerrada nem envie ajustes após `/cancel`. Preserve teto do backend, clamp do
-  host e configuração efetiva ao renegociar.
-- Disconnect deixa a aplicação no host; End session solicita `/cancel` com a
-  confirmação existente. Remote Monitor e Remote Input não são jogos comuns:
-  use UUID/papel e regras do host, não nomes de cartões. HTTP 200 e XML 410
-  precisam de interpretação de protocolo; não repita Terminate automaticamente.
-- Preserve `surroundParams=642014523` e o passthrough Opus 5.1 correspondente.
-  Não acrescente `surround-params` do Sunshine nem force PCM/RemapPcm51 como correção
-  genérica. O histórico C5 + eARC e as convenções de canais estão no documento
-  de streaming; valide outro modelo/caminho de áudio separadamente.
-- Game Mode e ajustes de prioridade/root têm ciclo de entrada/restauração de
-  sessão. Preserve o cleanup nos caminhos de erro. Não trate isso como HDMI ALLM.
+- Preserve main-loop cadence: `app_process_events`, `lv_task_handler`, `SDL_Delay(1)`,
+  and `LV_INDEV_DEF_READ_PERIOD=1`. Longer intervals affect input.
+- Event dispatch runs through `SDL_FilterEvents` under the SDL queue mutex. Do not
+  perform network/disk I/O, joins, or long waits there. Use the existing bus for
+  cross-thread work and respect data lifetime.
+- Video uses `CAPABILITY_DIRECT_SUBMIT`: blocking feed also blocks RTP reception.
+  webOS audio avoids direct submit so Opus 5.1 transcoding cannot monopolize the
+  receive thread. Do not change this as an optimization without measurement.
+- Decode-unit and Limelight timestamps use microseconds with a shared epoch in
+  the current `PltGetMicroseconds`. Recheck units/epoch on moonlight-common-c
+  updates; NDL receives PTS in milliseconds.
+- Stop/join ABR before `LiStopConnection`. Do not restore bitrate for an ended
+  session or send adjustments after `/cancel`. Preserve backend ceiling, host
+  clamp, and effective configuration during renegotiation.
+- Disconnect leaves the application on the host; End session requests `/cancel`
+  with the existing confirmation. Remote Monitor/Input are special roles: use
+  UUID/role and host rules, not card titles. Interpret HTTP 200 and XML 410 at
+  protocol level; never automatically repeat Terminate.
+- Preserve `surroundParams=642014523` and matching Opus 5.1 passthrough. Do not add
+  Sunshine `surround-params` or force PCM/RemapPcm51 as a generic fix. Consult
+  streaming history for C5 + eARC/channel conventions; validate other models/audio
+  paths separately.
+- Game Mode and priority/root adjustments have session entry/restoration lifecycles.
+  Preserve cleanup on error paths. This is distinct from HDMI ALLM.
 
-## Diagnóstico e compatibilidade webOS
+## webOS diagnostics and compatibility
 
-Registre modelo, firmware, backend, codec efetivo, resolução, FPS, HDR,
-bitrate solicitado/aplicado, conexão e configuração do host em experimentos.
-Um relato de C5 não valida C2; uma capacidade HDMI não prova suporte do decoder
-interno. VRR do host/display virtual, pacing, V-Sync e VRR físico são distintos.
+Record model, firmware, backend, effective codec, resolution, FPS, HDR,
+requested/applied bitrate, connection, and host configuration in experiments.
+C5 reports do not validate C2; HDMI capability does not prove internal decoder
+support. Host/virtual-display VRR, pacing, V-Sync, and physical VRR are distinct.
 
-O FPS atual do overlay mede submit, não scanout. Tempo de `Play` não é tempo de
-decode, e fila estimada não é latência física. Compare movimento com uma carga
-reproduzível e isole variáveis. Leia o
-[histórico de pacing/AV1](docs/WEBOS_STREAMING_HISTORY.md) antes de testar outra
-variação de PTS; confira env e condições de ativação no código atual.
+Overlay FPS measures submission, not scanout. `Play` duration is not decode time;
+estimated queues are not physical latency. Compare motion with a reproducible
+workload and isolate variables. Read [pacing/AV1 history](docs/WEBOS_STREAMING_HISTORY.md)
+before another PTS experiment; check current environment and activation conditions.
 
-Logs persistentes usam a infraestrutura em `src/app/util/file_log.*`, com filas
-limitadas e escrita fora do caminho de feed. Não registre chaves de entrada,
-credenciais ou URLs completas de launch com segredos. Preferências/log ficam em
-`$HOME/conf` quando gravável, com fallback temporário em `/tmp/moonlight-tv/conf`;
-confirme o caminho emitido no startup. Logs não substituem stack trace nem provam,
-sozinhos, a causa de um host ter ficado offline.
+Persistent logs use `src/app/util/file_log.*`, bounded queues, and writes outside
+the feed path. Do not log input keys, credentials, or complete secret-bearing
+launch URLs. Preferences/logs use `$HOME/conf` when writable, with temporary
+fallback `/tmp/moonlight-tv/conf`; confirm the startup path. Logs do not replace
+stack traces or alone establish why a host went offline.
 
-Por preferência do usuário, **cada instalação deve começar com logs limpos**.
-Todo IPK inclui `aurora-logs-reset.pending`, consumido na primeira abertura antes
-dos writers: limpa somente `aurora.log`, `aurora-crash.log` e `aurora-run.state`
-nos diretórios de diagnóstico persistente e temporário. Isso inclui reinstalar
-o mesmo IPK/versão. Reabrir o app depois preserva os logs da instalação atual,
-inclusive o último crash. Não usar mudança de versão como único gatilho e não
-apagar configurações, perfis ou pareamentos. O helper de IPK valida o marcador.
+User preference: **every installation must start with clean logs**. Every IPK
+includes `aurora-logs-reset.pending`, consumed on first launch before writers:
+it clears only `aurora.log`, `aurora-crash.log`, `aurora-run.state` in persistent
+and temporary diagnostic directories. This includes reinstalling the same
+IPK/version. Later launches preserve current-installation logs, including the
+last crash. Do not use version change as the sole trigger or delete settings,
+profiles, or pairing. The IPK helper validates the marker.
 
-## Dependências e comparação com outros projetos
+## Dependencies and project comparisons
 
-LVGL é o fork v8 de mariotaku; atualizar para v9 não é manutenção rotineira.
-SS4S/commons e moonlight-common-c têm contratos com a aplicação; alterações devem
-identificar commits e patches locais. Não aumente caps de vídeo SS4S com base
-apenas nas especificações do painel. O parser de dimensões em commons suporta
-H.264/HEVC; ausência de dimensões AV1 nas estatísticas não prova falha do stream.
+LVGL is mariotaku's v8 fork; v9 migration is not routine maintenance. SS4S/commons
+and moonlight-common-c have application contracts; changes must identify commits
+and local patches. Do not raise SS4S video caps solely from panel specifications.
+The commons dimensions parser supports H.264/HEVC; absent AV1 dimensions in stats
+do not prove stream failure.
 
-Use a skill correspondente quando a tarefa pedir comparação ou investigação
-substancial de compatibilidade:
+Use the relevant skill for substantial compatibility comparisons/investigations:
 
-- [aurora-compare-vibeshine](.agents/skills/aurora-compare-vibeshine/SKILL.md)
-  (`$aurora-compare-vibeshine`): contrato cliente/host, catálogo, sessões remotas,
-  HDR/SDR, entrada/áudio e bitrate.
-- [aurora-compare-nonary](.agents/skills/aurora-compare-nonary/SKILL.md)
-  (`$aurora-compare-nonary`): diferenças do cliente Qt e adaptações viáveis para
-  webOS/C2, incluindo apresentação, codecs e telemetria.
+- [aurora-compare-vibeshine](.agents/skills/aurora-compare-vibeshine/SKILL.md): client/host
+  contracts, catalog, remote sessions, HDR/SDR, input/audio, bitrate.
+- [aurora-compare-nonary](.agents/skills/aurora-compare-nonary/SKILL.md): Qt client
+  differences and viable webOS/C2 adaptations, presentation, codecs, telemetry.
 
-Leia o SKILL.md selecionado. Referências usuais são `../vibeshine` e um checkout
-identificado de Nonary/moonlight-qt; não dependa de um clone antigo em `/tmp`.
-A captura local de commits, diffs e submódulos pode ser feita com
-`scripts/dev/comparison_snapshot.py`. Não é necessário comparar os três projetos
-para uma edição rotineira. Não transforme conclusão de análise em feature validada.
+Read the selected SKILL.md. Usual references are `../vibeshine` and an identified
+Nonary/moonlight-qt checkout; do not depend on old `/tmp` clones. Capture local
+commits/diffs/submodules with `scripts/dev/comparison_snapshot.py`. Routine edits
+do not require comparing all three projects. Analysis is not a validated feature.
 
-## Encerramento do trabalho
+## Completing work
 
-Execute os checks adequados ao escopo: documentação/links para docs, simulador
-para UI, fixtures para protocolo, build para integração de fontes e teste físico
-para afirmações sobre streaming real. Registre o que passou e o que não foi
-executado; compilação, testes de política e simulação não comprovam scanout,
-áudio físico ou limpeza do host numa TV real.
+Run scope-appropriate checks: docs/links for documentation, simulator for UI,
+fixtures for protocol, builds for source integration, physical tests for real
+streaming claims. Record passed and unexecuted checks; compilation, policy tests,
+and simulation do not prove scanout, physical audio, or host cleanup on a real TV.
 
-Ao mudar comportamento, resolver uma pendência ou atualizar uma referência,
-atualize a área correspondente de [CURRENT_STATE.md](docs/CURRENT_STATE.md).
-Mantenha aqui os invariantes e a orientação de trabalho; deixe versões, resultados
-mutáveis e pendências na linha de base, e experimentos detalhados nos relatórios.
-A resposta final deve dizer o que mudou, por quê, como foi verificado e qualquer
-limitação material. Não declare deploy, versão instalada ou compatibilidade de
-hardware que não foram verificados.
+When changing behavior, resolving an issue, or updating a reference, update the
+relevant area of [CURRENT_STATE.md](docs/CURRENT_STATE.md). Keep invariants and
+working guidance here; mutable versions/results/issues belong in the baseline,
+detailed experiments in reports. The final response must state what changed,
+why, validation, and material limitations. Do not claim unverified deployment,
+installed version, or hardware compatibility.

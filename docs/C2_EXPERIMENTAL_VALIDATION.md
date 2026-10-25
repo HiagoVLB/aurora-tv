@@ -1,106 +1,100 @@
-# Validação física das opções revisadas na C2
+# Physical validation of reviewed options on C2
 
-Estado em 24/10/2026: **rodada iniciada**. IPK atualizado na C2 e aplicação
-reaberta inicialmente às **19:57 São Paulo**, com segunda instalação às 20:08
-para corrigir o intervalo do refresh HEVC. AV1/HEVC, três modos ABR, slices,
-refresh e ativação HDR foram exercitados no cliente real. Observação de imagem,
-áudio, cores e navegação pelo usuário continua pendente; esta rodada ainda não
-certifica a estabilidade de todas as opções.
+Status on 2026-10-24: **round started**. Updated IPK installed on C2; application
+first reopened at **19:57 São Paulo**, with a second installation at 20:08 to
+correct the HEVC refresh interval. AV1/HEVC, three ABR modes, slices, refresh,
+and HDR activation were exercised on the real client. User observation of
+image, audio, colors, and navigation remains pending; this round does not yet
+certify stability of every option.
 
-## Artefato e ponto de partida
+## Artifact and starting point
 
-- Arquivo: `../aurora.ipk`, Aurora **1.3.3**, ARM, RelWithDebInfo.
+- File: `aurora.ipk` at the Aurora repository root, **1.3.3**, ARM, RelWithDebInfo.
 - SHA-256: `dc2e20ccf82a56d462c980937983dcfab8c83da4e2783d26539ce5dfca584c51`.
-  Segundo pacote da rodada, gerado às 20:08 São Paulo, 2.385.978 bytes.
-- Recibo: `.cache/ipk/run-hfluctai/package-feature-audit.json` e
-  `.cache/ipk/latest.json`. Menu Outros e os 14 bundles empacotados conferidos,
-  incluindo `Other → Outros` em pt-BR; versão/ELF/marcador de logs aprovados.
-- Acesso SSH obtido pelo Docker no endpoint cadastrado. A falha `errno 65` do
-  processo nativo do Mac às 19:43 não significava indisponibilidade da TV.
-- Antes da atualização, exportados os logs, configurações e hashes dos arquivos
-  de pareamento. Backup local restrito em
-  `.cache/experimental-physical/before-update.tar`; pacote anterior preservado.
-- Serviço de instalação retornou `state=installed`, `update=true`.
-  ELF instalado confere com o contido no IPK:
+  Second package of the round, generated at 20:08 São Paulo, 2,385,978 bytes.
+- Receipt: `.cache/ipk/run-hfluctai/package-feature-audit.json`,
+  `.cache/ipk/latest.json`. Other menu and all 14 packaged bundles checked,
+  including `Other → Outros` in pt-BR; version/ELF/log marker passed.
+- SSH access obtained through Docker at the registered endpoint. Native Mac
+  process failure `errno 65` at 19:43 did not mean the TV was unavailable.
+- Before updating, exported logs, settings, and pairing-file hashes. Restricted
+  local backup: `.cache/experimental-physical/before-update.tar`; old package kept.
+- Installation service returned `state=installed`, `update=true`.
+  Installed ELF matches the package:
   `d1c5e52a694d7089824a4f1f4629444f87bf24b053ef8455df06ddf96a2bb548`.
-- Launch retornou sucesso; primeiro PID 9739 no pacote inicial, 11808 no pacote
-  com temporizador corrigido e 12641 após restaurar as preferências. Startup
-  identifica Aurora 1.3.3.
-  Marcador de reset consumido e log novo confirma limpeza por instalação.
-  Crash log vazio nas coletas. Hashes dos arquivos de pareamento idênticos.
-  As configurações temporárias da rodada foram restauradas; perfis e lista de
-  hosts conferem byte a byte com os arquivos preservados. Uma mudança de AV1
-  para `true` foi observada entre o startup inicial e a primeira sessão; sua
-  origem não foi determinada e o valor em uso antes da matriz foi preservado.
-- Recibo específico da instalação e evidências:
+- Launch succeeded; initial package PID 9739, corrected-timer package PID 11808,
+  and PID 12641 after preference restoration. Startup identifies Aurora 1.3.3.
+  Reset marker consumed; new log confirms per-installation cleanup. Crash log
+  empty in captures. Pairing-file hashes identical. Temporary round settings
+  restored; profiles/host list match preserved files byte for byte. AV1 changed
+  to `true` between initial startup and first session; origin undetermined.
+  The value in use before the matrix was preserved.
+- Installation receipt/evidence:
   `.cache/experimental-physical/timer-fix-installation-receipt.json`,
-  `timer-package-runtime-review.json` e `install-timer-fix.txt`. A primeira
-  instalação e os testes ABR/slices estão preservados separadamente em
-  `installation-receipt.json` e `first-package-runtime-review.json`.
-  O recibo de build permanece distinto da validação em execução.
+  `timer-package-runtime-review.json`, `install-timer-fix.txt`. Initial install
+  and ABR/slices tests preserved separately in `installation-receipt.json` and
+  `first-package-runtime-review.json`. Build receipt remains distinct from
+  runtime validation.
 
-## Dados da rodada
+## Round data
 
-Dados observados nas duas instalações e sessões desta rodada:
+Observed across both installations and their sessions:
 
-| Campo | Valor observado |
+| Field | Observed value |
 | --- | --- |
-| Modelo / firmware da C2 | OLED42C2PSA / 33.31.68; webOS SDK 10.3.1 |
-| Aurora instalado / hash do pacote | 1.3.3, IPK e ELF conferidos conforme hashes acima |
-| Backend SS4S selecionado no log | Vídeo e áudio `ndl-webos5`; load/playing e primeiro feed confirmados |
-| Host e versão / encoder | DESKTOP-HO7UDGJ, `serverinfo` anuncia protocolo `7.1.431.-1` e compatibilidade GFE `3.23.0.74`; versão real do host/encoder pendentes |
-| Rede e caminho de áudio | TV pela rota `wlan0`, Ethernet inativa; sessão estéreo NDL; saída física de áudio pendente |
-| Codec efetivo / resolução / FPS / HDR | AV1 8-bit SDR e HEVC SDR/HDR; 2560×1440 a 90 FPS solicitados. Desktop frequentemente enviou cerca de 16 FPS; scanout não medido |
-| Bitrate solicitado / aplicado / teto do backend | Perfil 400000 kbps; sessão limitada a 95000 kbps pelo NDL; ABR variou abaixo desse teto |
-| Homebrew/root disponível | Serviço Homebrew inexistente; SSH root :22 recusado; Game Mode indisponível nesta instalação |
+| C2 model / firmware | OLED42C2PSA / 33.31.68; webOS SDK 10.3.1 |
+| Installed Aurora / package hash | 1.3.3, IPK and ELF checked against hashes above |
+| SS4S backend selected in log | Video/audio `ndl-webos5`; load/playing and first feed confirmed |
+| Host/version / encoder | DESKTOP-HO7UDGJ; `serverinfo` advertises protocol `7.1.431.-1`, GFE compatibility `3.23.0.74`; actual host/encoder version pending |
+| Network / audio path | TV through `wlan0`, Ethernet inactive; NDL stereo session; physical audio output pending |
+| Effective codec / resolution / FPS / HDR | AV1 8-bit SDR and HEVC SDR/HDR; requested 2560×1440 at 90 FPS. Desktop often sent roughly 16 FPS; scanout unmeasured |
+| Requested/applied bitrate / backend ceiling | Profile 400000 kbps; session clamped to 95000 kbps by NDL; ABR varied below that ceiling |
+| Homebrew/root availability | Homebrew service absent; root SSH :22 refused; Game Mode unavailable in this installation |
 
-A consulta HTTP pública de `serverinfo` não usa a identidade do cliente; seu
-`PairStatus=0` não é evidência de perda de pareamento. A cópia dos arquivos e o
-status do host no Aurora são evidências separadas. Catálogo autenticado e sessões
-Desktop foram abertos com sucesso durante esta rodada.
+Public HTTP `serverinfo` does not use client identity; its `PairStatus=0` is not
+evidence of lost pairing. File copies and Aurora host status are separate
+evidence. Authenticated catalog and Desktop sessions opened successfully.
 
-Manter a mesma cena e o restante da configuração, alterando uma opção por vez.
-Começar com uma configuração de streaming já funcional nessa TV e confirmar o
-codec efetivo. Repetir saída normal e reconexão; em caso de falha, guardar logs do
-cliente e do host, horário e o passo que a provocou. Não usar FPS de submit do
-overlay como prova de apresentação física.
+Keep the same scene and other settings, changing one option at a time. Start
+with a known working configuration on this TV; confirm the effective codec.
+Repeat normal exit/reconnection. On failure, retain client/host logs, time, and
+triggering step. Overlay submit FPS does not prove physical presentation.
 
-## Casos e critérios
+## Cases and criteria
 
-| Caso | Ação e evidência necessária | Critério para encerrar | Resultado |
+| Case | Action and required evidence | Completion criterion | Result |
 | --- | --- | --- | --- |
-| Idioma | Em Outros, alternar pt-BR/inglês, navegar, fechar/reabrir e reiniciar o app. Conferir fontes e textos completos com o controle real. | Idioma persistido, labels coerentes, sem perda de foco, glifos ausentes ou queda na reconstrução da UI. | Pendente |
-| Logs | Ligar/desligar Mostrar logs; exercitar Live/Frozen/Off com Yellow durante streaming e reabrir configurações. | Estado e captura respondem ao controle; congelamento permanece ao reabrir; sem travamento ou regressão perceptível durante feed. | Streaming com show_logs=true abriu e manteve feed sem crash na coleta; ciclo Yellow/Live/Frozen/Off e leitura na tela pendentes |
-| Game Mode | Somente quando root/Homebrew estiver disponível: anotar picture/sound antes, ativar, reconectar, alternar SDR/HDR e sair. Guardar logs de aplicação e restauração. | Ajustes com snapshot válido são aplicados e restaurados; nenhuma alteração sem valor anterior; HDR não causa queda. Sem root, registrar indisponível, sem contar como teste aprovado. | Indisponível nesta C2: serviço Homebrew inexistente; rollback físico não exercitado |
-| Full range SDR | Comparar desligado/ligado, reconectando, com a mesma imagem de níveis de preto/branco; registrar negociação do host e resultado visual. Repetir com HDR ligado. | Preferência tem efeito no SDR compatível sem clipping indevido; controle fica indisponível em HDR e a sessão HDR mantém range limitado. | HEVC SDR com preferência ligada e sessão HDR abriram sem erro de feed/crash; negociação de range coberta pelo fixture. Calibração de níveis/cores na tela pendente |
-| Slices HEVC | Ligar, reconectar em HEVC e guardar o log de capacidades SDP. Comparar a mesma cena; depois selecionar AV1 e voltar a HEVC. | Hint corresponde ao modo resolvido, sem falhas de feed/decodificação; controles HEVC ficam indisponíveis em AV1. Host ignorar o hint não prova benefício de latência. | SDP mudou 1→6 slices/frame em HEVC; feed aceito. AV1 anunciou 1 slice/no RFI com preferência persistida. Slicing real do encoder e efeito físico não medidos |
-| Refresh HEVC | Ativar com intervalo conhecido, reconectar e observar pedidos de IDR e apresentação. Alterar/desligar e reconectar; repetir em AV1. | Intervalo e desligamento obedecem à nova sessão; não há pedidos periódicos em AV1. Registrar qualquer hitch: IDR periódico pode provocá-lo e isso não deve ser apresentado como suavidade comprovada. | Corrigida dependência de contagem de frames; novo pacote gerou pedidos com intervalos de ~2,04–2,12 s numa sequência de 2000 ms, também com separações maiores; a política reinicia a referência ao receber IDRs. Desligado e AV1: zero pedidos periódicos nos trechos coletados. Hitches físicos pendentes |
-| ABR | Exercitar Balanced/Quality/Low latency, reconectando. Comparar cena e condição de rede conhecidas, logs de amostra/decisão e valor aceito pelo host. Sair e iniciar outra sessão. | Ajustes respeitam host/backend; não aumentam por ausência de amostra; sem ajuste depois de encerrar a sessão, hang no teardown ou estado reaproveitado indevidamente. | Três modos ajustaram valores aceitos pelo host e completaram Stop, sem atividade ABR posterior na coleta. Respeitado teto 95000; perdas de rede/áudio ainda observadas. Comparação controlada de movimento e qualidade pendente |
-| Reset | Alterar opções, cancelar o reset e conferir preservação. Confirmar depois, reabrir e reiniciar, conferindo defaults e pareamento. | Cancelar conserva valores; confirmar atualiza interface e persistência; pareamento continua; Voltar e reabertura funcionam sem queda. | Pendente |
-| Menus e controle | Percorrer Stream/Input/Host/Outros, sliders, dropdowns, popups e confirmações usando D-pad e ponteiro real. | Vídeo/ABR em Stream; preferências gerais em Outros; foco/rolagem/Voltar acessíveis e previsíveis. | Pendente |
+| Language | In Other, switch pt-BR/English, navigate, close/reopen, restart app. Check fonts/full text with the real remote. | Language persists, consistent labels, no focus loss, missing glyphs, or UI-rebuild crash. | Pending |
+| Logs | Toggle Show logs; exercise Live/Frozen/Off with Yellow while streaming; reopen settings. | State/capture responds to remote; frozen state survives reopening; no hang or perceptible feed regression. | Streaming with show_logs=true opened and continued feeding without a captured crash; Yellow/Live/Frozen/Off cycle and screen readability pending |
+| Game Mode | Only with root/Homebrew: record initial picture/sound, enable, reconnect, switch SDR/HDR, exit. Keep application/restoration logs. | Settings with valid snapshots apply/restore; no changes without previous values; HDR does not crash. Without root, record unavailable rather than pass. | Unavailable on this C2: no Homebrew service; physical rollback untested |
+| Full range SDR | Compare off/on after reconnecting with the same black/white-level image; record host negotiation/visual result. Repeat with HDR. | Preference affects compatible SDR without improper clipping; control disabled in HDR, HDR session remains limited range. | HEVC SDR with preference on and HDR session opened without feed errors/crashes; range negotiation covered by fixture. On-screen levels/colors pending |
+| HEVC slices | Enable, reconnect in HEVC, retain SDP capability log. Compare same scene; select AV1, then HEVC again. | Hint matches resolved mode, no feed/decode failure; HEVC controls disabled in AV1. Host ignoring a hint does not prove latency benefit. | SDP changed 1→6 slices/frame in HEVC; feed accepted. AV1 advertised 1 slice/no RFI with preference persisted. Actual encoder slicing/physical effect unmeasured |
+| HEVC refresh | Enable a known interval, reconnect, observe IDR requests/presentation. Change/disable and reconnect; repeat AV1. | Interval/off apply next session; no periodic AV1 requests. Record hitches: periodic IDR can cause them and is not proof of smoothness. | Frame-count dependency fixed; new package requested at ~2.04–2.12 s in a 2000 ms sequence, also with longer gaps; policy resets reference on received IDRs. Off/AV1: zero periodic requests in collected segments. Physical hitches pending |
+| ABR | Exercise Balanced/Quality/Low latency after reconnecting. Compare known scene/network conditions, sample/decision logs, host-accepted value. Exit/start another session. | Respects host/backend; no increases without samples; no post-session adjustments, teardown hang, or stale state reuse. | Three modes adjusted host-accepted values and completed Stop, without later ABR activity in captures. 95000 ceiling respected; network/audio loss still observed. Controlled motion/quality comparison pending |
+| Reset | Change options, cancel reset, check preservation. Then confirm, reopen/restart, check defaults/pairing. | Cancel preserves values; confirm updates UI/persistence; pairing survives; Back/reopen works without crashing. | Pending |
+| Menus/remote | Traverse Stream/Input/Host/Other, sliders, dropdowns, popups, confirmations with actual D-pad/pointer. | Video/ABR in Stream; general settings in Other; accessible, predictable focus/scroll/Back. | Pending |
 
-## Evidências e limite da rodada
+## Evidence and limits
 
-O primeiro pacote (`94dc5af2…`, ELF `ef8a0e52…`) registrou a integração ABR e
-HEVC slices. O segundo (`dc2e20cc…`, ELF `d1c5e52a…`) incluiu somente a correção
-posterior do temporizador HEVC e repetiu refresh, desligamento, SDR full range,
-HDR e gating em AV1, além da abertura final com a configuração restaurada.
-Seis CTests e o fixture do temporizador com ASan/UBSan passaram; os testes
-anteriores de UI localizada/protocolo continuam registrados no relatório de revisão.
+The first package (`94dc5af2…`, ELF `ef8a0e52…`) recorded ABR/HEVC slices
+integration. The second (`dc2e20cc…`, ELF `d1c5e52a…`) added only the later HEVC
+timer fix and repeated refresh/off, SDR full range, HDR, AV1 gating, and final
+launch with restored configuration. Six CTests and timer fixture ASan/UBSan
+passed; earlier localized UI/protocol results remain in the review report.
 
-Os logs de HDR confirmam sinal do host e metadados NDL com
+HDR logs confirm host signaling and NDL metadata:
 `transferCharacteristics=16`, `colorPrimaries=9`, `matrixCoeffs=9`.
-Isso não mede cores na tela. Perdas de frames/áudio foram observadas nesta rede;
-a causa não foi isolada. O usuário ainda não respondeu à solicitação de confirmar
-imagem, áudio, controle e menu Outros; nenhum desses resultados foi presumido.
+This does not measure on-screen colors. Frame/audio loss occurred on this
+network; cause not isolated. The user had not yet answered the request to
+confirm image, audio, remote, and Other menu; no such results were assumed.
 
-## Registro de resultado
+## Recording results
 
-Para cada falha, registrar configuração efetiva, reprodução mínima e anexos de
-log; corrigir e repetir o caso afetado e a navegação de saída/reabertura. Uma
-observação sem o backend/codec efetivo não valida a opção. Critério ainda sem
-resultado ou inconclusivo permanece pendente.
+For every failure, record effective configuration, minimal reproduction, and
+logs; fix and repeat the affected case and exit/reopen navigation. Observations
+without effective backend/codec do not validate an option. Missing/inconclusive
+results remain pending.
 
-Os resultados locais e as correções de código estão em
-[EXPERIMENTAL_FEATURE_REVIEW.md](EXPERIMENTAL_FEATURE_REVIEW.md). A estabilidade
-física só pode ser encerrada depois da execução e conferência desta rodada.
+Local results/code fixes are in
+[EXPERIMENTAL_FEATURE_REVIEW.md](EXPERIMENTAL_FEATURE_REVIEW.md). Physical
+stability can only be signed off after this round is executed and reviewed.

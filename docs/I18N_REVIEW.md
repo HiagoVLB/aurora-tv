@@ -1,16 +1,16 @@
-# Revisão dos idiomas do Aurora — 19/10/2026
+# Aurora language review — 2026-10-19
 
-Os 16 catálogos existentes foram sincronizados com o código e revisados por
-contexto. A base inicial tinha 210 mensagens extraídas; localizar o indicador
-`%d * %d (Native)` elevou a base final a **211**. Textos removidos do código
-permanecem como entradas obsoletas, sem substituir traduções atuais.
+All 16 existing catalogs were synchronized with the code and reviewed in context.
+The initial baseline had 210 extracted messages; localizing the
+`%d * %d (Native)` indicator brought the final count to **211**. Strings removed
+from code remain obsolete entries and do not replace current translations.
 
-## Cobertura
+## Coverage
 
-Contagem de mensagens atuais preenchidas e sem fuzzy no início e ao final.
-Nomes técnicos, identificadores de botões e siglas podem coincidir com o inglês.
+Counts of current, filled, non-fuzzy messages before and after the review.
+Technical names, button identifiers, and acronyms may match English.
 
-| Idioma | Inicial | Final | Idioma | Inicial | Final |
+| Language | Before | After | Language | Before | After |
 | --- | ---: | ---: | --- | ---: | ---: |
 | cs | 67 | 211 | de | 46 | 211 |
 | es-ES | 39 | 211 | fr | 77 | 211 |
@@ -21,68 +21,66 @@ Nomes técnicos, identificadores de botões e siglas podem coincidir com o ingl�
 | tr | 39 | 211 | uk | 0 | 211 |
 | zh-CN | 72 | 211 | zh-TW | 0 | 211 |
 
-A adaptação usa o inglês do código como fonte e mantém terminologia consistente
-por idioma entre ajuda, menus e configurações. As variantes chinesas foram
-adaptadas separadamente. Disconnect mantém o aplicativo aberto no host; End
-session solicita encerramento após confirmação. Essas ações continuam distintas
-nas traduções. Nomes de teclas/combinações, placeholders e unidades técnicas
-preservam os contratos dos consumidores.
+Adaptation uses English source strings and consistent per-language terminology
+across help, menus, and settings. Chinese variants were adapted separately.
+Disconnect leaves the application running on the host; End session requests
+termination after confirmation. Translations preserve that distinction. Key/chord
+names, placeholders, and technical units preserve consumer contracts.
 
-O coreano já constava no seletor, mas não era empacotado: agora integra os 14
-catálogos de `I18N_LOCALES`. Os catálogos `uk` e `zh-TW` foram atualizados e
-exercitados no simulador, sem habilitação no produto. A opção de japonês continua
-condicionada a DEBUG. Inglês permanece como idioma fonte e fallback.
+Korean was already selectable but not packaged: it now joins the 14 catalogs in
+`I18N_LOCALES`. `uk` and `zh-TW` were updated and exercised in the simulator
+without enabling them in the product. Japanese remains conditional on DEBUG.
+English remains the source and fallback language.
 
-## Validação executada
+## Validation performed
 
-- Auditor da skill: 16 catálogos aprovados, sem mensagens atuais ausentes,
-  vazias ou fuzzy; `msgfmt --check --check-format` aprovado, sem duplicatas,
-  contextos/plurais incompatíveis ou diferenças na saída do AWK real do webOS.
-- Cada placeholder printf das mensagens extraídas possui `c-format`. Os tipos,
-  quantidade e ordem dos argumentos foram preservados.
-- Interface SDL/LVGL real, com backends dummy e runtime sem rede: **80 etapas por
-  idioma**, cobrindo ajuda, rolagem, configurações, dropdown de resolução, painéis
-  Input/Host/Experimental, confirmação de reset cancelada, adicionar PC cancelado,
-  confirmação de saída cancelada e retorno por Escape. Cada roteiro passa por
-  1920×1080 e 1280×720 e encerra o processo normalmente: **1.280 etapas aprovadas**.
-- Após localizar a resolução nativa, **8 etapas adicionais por idioma** verificam
-  o valor traduzido do dropdown em 720p e a navegação/saída: **128 etapas aprovadas**.
-- Capturas de cada idioma foram abertas para inspeção de quebra de linhas,
-  sobreposições, acentos, cirílico e CJK. A cobertura Fontconfig de fonte principal
-  e fallback não apontou caracteres ausentes nas traduções do ambiente Linux.
-- Oito testes de `tests/scripts/test_release_helpers.py`, sintaxe do wrapper Bash
-  e `git diff --check` aprovados.
+- Skill auditor: all 16 catalogs passed, with no missing, empty, or fuzzy current
+  messages; `msgfmt --check --check-format` passed, with no duplicates,
+  incompatible contexts/plurals, or differences from the real webOS AWK output.
+- Each extracted printf placeholder has `c-format`. Argument types, counts,
+  and order were preserved.
+- Real SDL/LVGL UI, dummy backends, offline runtime: **80 steps per language**,
+  covering help, scrolling, settings, resolution dropdown, Input/Host/Experimental
+  panes, cancelled reset/Add PC/exit, and Escape return. Every scenario uses
+  1920×1080 and 1280×720 and exits normally: **1,280 steps passed**.
+- After localizing native resolution, **8 additional steps per language** checked
+  the translated dropdown value at 720p and navigation/exit: **128 steps passed**.
+- Captures from each language were opened to inspect wrapping, overlap, accents,
+  Cyrillic, and CJK. Fontconfig coverage for primary/fallback fonts found no
+  missing translated characters in the Linux environment.
+- Eight `tests/scripts/test_release_helpers.py` tests, Bash wrapper syntax, and
+  `git diff --check` passed.
 
-Os testes revelaram e motivaram as correções da barra superior compacta e do
-estado de Voltar após um dropdown. O caso de truncamento também confirmou que
-`LV_LABEL_LONG_DOT` precisa de texto copiado: sua implementação escreve pontos
-no buffer, o que não é permitido em strings estáticas/read-only do gettext.
+Tests exposed and prompted fixes for the compact toolbar and Back state after
+a dropdown. The truncation case also confirmed that `LV_LABEL_LONG_DOT` requires
+copied text: it writes dots into the buffer, which is invalid for static/read-only
+gettext strings.
 
-## Reprodução e artefatos locais
+## Reproduction and local artifacts
 
-Na raiz do Aurora, com Docker disponível:
+From the Aurora root with Docker available:
 
 ```sh
 AURORA_UI_SIM_LANGUAGE=pt-BR ./tools/ui-sim/run.sh tools/ui-sim/localization.json
 ```
 
-Trocar `pt-BR` pelo código do catálogo desejado. O runner traduz as expectativas
-com o MO real e o log registra `UI locale` e o nome localizado do idioma.
+Replace `pt-BR` with the desired catalog code. The runner translates expectations
+using the real MO; the log records `UI locale` and the localized language name.
 
-Os artefatos desta revisão ficam em `.cache/i18n/`, ignorada pelo Git:
+Review artifacts are in Git-ignored `.cache/i18n/`:
 
-- `before.json`, `after.json`: auditoria dos catálogos;
-- `visual-complete/matrix.json`: resultados e caminhos por idioma, com relatório,
-  capturas, árvores de UI e logs de cada execução;
-- `native-check/matrix.json`: validação do indicador de resolução nativa;
-- `contacts/`: painéis de capturas usados na inspeção visual;
-- `font-coverage.json`: cobertura das fontes do ambiente Linux.
+- `before.json`, `after.json`: catalog audits;
+- `visual-complete/matrix.json`: per-language results/paths, reports, captures,
+  UI trees, and logs;
+- `native-check/matrix.json`: native-resolution indicator validation;
+- `contacts/`: capture sheets used for visual inspection;
+- `font-coverage.json`: Linux font coverage.
 
-## Limites
+## Limits
 
-Os testes não executaram o firmware LG nem uma sessão real com host. Não
-comprovam fontes disponíveis na C2, carregamento de `ResBundleC`, seletor de
-idioma específico de webOS, envio físico dos atalhos, pareamento com PC, erros
-de host reais ou o overlay durante streaming. A ajuda e os contratos desses
-textos foram revisados no código; os cenários sem fixture acessível continuam
-dependentes de validação na TV. Não houve IPK, instalação ou mudança de versão.
+Tests ran neither LG firmware nor a real host session. They do not establish
+C2 font availability, `ResBundleC` loading, the webOS-specific language selector,
+physical shortcut delivery, PC pairing, actual host errors, or streaming overlay
+behavior. Help and string contracts were reviewed in code; cases without an
+accessible fixture still require TV validation. No IPK, installation, or version
+change was performed.

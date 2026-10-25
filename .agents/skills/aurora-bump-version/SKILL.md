@@ -1,18 +1,18 @@
 ---
 name: aurora-bump-version
-description: "Incrementa a versão central do Aurora em CMakeLists.txt e confere a derivação da versão no appinfo, APP_VERSION e marca do ELF. Use quando pedirem aumento/troca de versão; patch por padrão, sem gerar IPK, criar tag ou publicar release automaticamente."
+description: "Bump Aurora's central CMakeLists.txt version and check version derivation in appinfo, APP_VERSION, and the ELF marker. Use for requested version increases or changes; defaults to patch, without automatically building an IPK, creating tags, or publishing releases."
 ---
 
-# Incrementar a versão do Aurora
+# Bump Aurora version
 
-Localizar a raiz Aurora e ler [AGENTS.md](../../../AGENTS.md). Usar
-`MOONLIGHT_VERSION` no `CMakeLists.txt` como única versão editável do produto.
-`deploy/webos/appinfo.json` usa `@PROJECT_VERSION@`, a UI usa `APP_VERSION`, e
-a marca `aurora-v` do executável deve concatenar `APP_VERSION`.
+Locate Aurora root and read [AGENTS.md](../../../AGENTS.md). Treat
+`MOONLIGHT_VERSION` in `CMakeLists.txt` as the only editable product version.
+`deploy/webos/appinfo.json` uses `@PROJECT_VERSION@`, UI uses `APP_VERSION`,
+and executable `aurora-v` marker must concatenate `APP_VERSION`.
 
-## Aplicar o incremento solicitado
+## Apply the requested increment
 
-Na raiz Aurora, conferir e aplicar:
+From Aurora root, check and apply:
 
 ```sh
 python3 scripts/dev/aurora_version.py --check
@@ -20,8 +20,8 @@ python3 scripts/dev/aurora_version.py --part patch --apply
 python3 scripts/dev/aurora_version.py --check
 ```
 
-Se o usuário disser apenas "incrementar a versão", usar **patch**. Respeitar
-minor/major ou uma versão exata quando especificados:
+Default to **patch** when only a version bump is requested. Honor explicit
+minor/major or exact versions:
 
 ```sh
 python3 scripts/dev/aurora_version.py --part minor --apply
@@ -29,28 +29,27 @@ python3 scripts/dev/aurora_version.py --part major --apply
 python3 scripts/dev/aurora_version.py --set 1.4.0 --apply
 ```
 
-Esses são exemplos alternativos, não uma sequência de incrementos. Omitir
-`--apply` para apenas simular. Usar números `X.Y.Z`, sem prefixo `v`, sufixos
-ou zeros iniciais. Rejeitar a mesma versão ou um downgrade. Não incrementar
-duas vezes por repetir a validação: `--check` não altera arquivos.
+These are alternatives, not sequential increments. Omit `--apply` for a dry run.
+Use numeric `X.Y.Z` without `v`, suffixes, or leading zeroes. Reject same-version
+and downgrade requests. Do not bump twice when repeating validation: `--check`
+does not modify files.
 
-Se o check acusar contrato quebrado (versão duplicada, appinfo literal ou marca
-do ELF desatualizada), inspecionar/corrigir esse contrato no escopo do pedido.
-Não substituir versões por busca global: patches históricos, relatórios,
-submódulos e ferramentas de recursos têm versões independentes.
+If checking finds a broken contract (duplicate version, literal appinfo version,
+stale ELF marker), inspect/fix that contract within scope. Do not globally replace
+versions: historical reports, submodules, resource tools have independent versions.
 
-## Registrar e compor com o build
+## Record and combine with builds
 
-Conferir o diff: a operação normal altera apenas `MOONLIGHT_VERSION`. Atualizar
-a versão declarada e o registro de alterações em
-[CURRENT_STATE.md](../../../docs/CURRENT_STATE.md), sem reescrever a identidade
-dos pacotes históricos. Informar versão anterior e nova.
+Inspect the diff: normal operation changes only `MOONLIGHT_VERSION`. Update
+current declared version and change record in
+[CURRENT_STATE.md](../../../docs/CURRENT_STATE.md) without rewriting historical
+package identities. Report old/new versions.
 
-Um IPK anterior, inclusive `aurora.ipk`, continua com a versão antiga até ser
-recompilado. Se o pedido incluir gerar instalador, executar depois a skill
-[aurora-build-ipk](../aurora-build-ipk/SKILL.md); ela substitui o arquivo fixo
-somente após verificar a versão nova. Não editar o conteúdo de IPK pronto.
+Existing IPKs, including `aurora.ipk`, retain their old version until rebuilt.
+If an installer is requested, run
+[aurora-build-ipk](../aurora-build-ipk/SKILL.md) afterward; it replaces the fixed
+file only after validating the new version. Do not edit an already built IPK.
 
-Não criar commit/tag, release, push ou instalar na TV como efeito colateral do
-incremento. Não incrementar agora quando o pedido for apenas criar/manter esta
-skill; validar seu comportamento em cópia temporária nesses casos.
+Do not create commits/tags/releases, push, or install on TV as bump side effects.
+For skill creation/maintenance only, validate in a temporary copy without
+bumping the actual project version.

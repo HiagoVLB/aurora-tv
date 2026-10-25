@@ -1,32 +1,32 @@
-# Mapa e comandos de localização
+# Localization map and commands
 
-## Arquivos que determinam o comportamento
+## Behavior-defining files
 
-| Contrato | Arquivos |
+| Contract | Files |
 | --- | --- |
-| Catálogos e fonte | `src/i18n/*/messages.po`, `src/i18n/messages.pot`, usos de `locstr`/`translatable` em `src/` |
-| Lista empacotada | `I18N_LOCALES` em `CMakeLists.txt` |
-| Seletor e normalização | `src/app/platform/common/i18n_common.c` |
+| Catalogs/source | `src/i18n/*/messages.po`, `src/i18n/messages.pot`, `locstr`/`translatable` uses in `src/` |
+| Packaging list | `I18N_LOCALES` in `CMakeLists.txt` |
+| Selector/normalization | `src/app/platform/common/i18n_common.c` |
 | Desktop gettext | `cmake/MoonlightI18n.cmake`, `src/app/platform/common/{app_common,i18n_gettext}.c` |
 | webOS JSON/runtime | `cmake/PackageWebOS.cmake`, `scripts/webos/po2json.awk`, `src/app/platform/webos/i18n_webos.c` |
-| Fontes e fallback | `src/app/util/font.c`, `FONT_FAMILY`/`FONT_FAMILY_FALLBACK` e Fontconfig |
-| UI real para revisão | `tools/ui-sim/{README.md,main.c,run.sh,run.py,Dockerfile}` |
+| Fonts/fallback | `src/app/util/font.c`, `FONT_FAMILY`/`FONT_FAMILY_FALLBACK`, Fontconfig |
+| Real UI review | `tools/ui-sim/{README.md,main.c,run.sh,run.py,Dockerfile}` |
 
-Inventário inicial (18/10/2026; reconfirmar): 16 catálogos, mas somente 13 em
-`I18N_LOCALES`. `ko` está no seletor e tem catálogo, mas não está nessa lista;
-`uk` e `zh-TW` têm catálogos sem entrada no seletor. `ja` está condicionado a
-DEBUG no seletor. Inglês é a fonte, sem PO separado. Não confundir atualização
-dos catálogos existentes com habilitação de novos idiomas.
+Initial inventory (2026-10-18; historical): 16 catalogs, only 13 in
+`I18N_LOCALES`; `ko` selectable but not packaged; `uk`/`zh-TW` catalog-only;
+`ja` DEBUG-only selector. The 2026-10-19 review added Korean to packaging,
+bringing the packaged set to 14. Reconfirm current lists. English is source,
+without a separate PO. Updating existing catalogs does not enable new languages.
 
-O webOS usa JSON flat, não a semântica completa de gettext. O AWK atual junta
-linhas, ignora traduções vazias, mas não filtra fuzzy nem implementa contextos
-e plurais. Remover fuzzy sem revisar mascara uma divergência entre desktop/TV.
-O auditor acusa esses casos e compara o JSON efetivo ao conteúdo esperado do PO.
+webOS uses flat JSON rather than full gettext semantics. Current AWK joins
+lines/ignores empty translations but does not filter fuzzy or implement contexts/
+plurals. Removing fuzzy without review hides desktop/TV divergence. Auditor
+flags these cases and compares effective JSON against expected PO content.
 
-## Preparar ferramentas
+## Prepare tools
 
-Usar gettext (`xgettext`, `msgmerge`, `msgfmt`), AWK e Python com `polib`.
-Reutilizar ambiente existente; se necessário, criar venv local ignorado:
+Use gettext (`xgettext`, `msgmerge`, `msgfmt`), AWK, Python with `polib`.
+Reuse existing environment or create a local ignored venv:
 
 ```sh
 python3 -m venv .cache/i18n/venv
@@ -35,14 +35,14 @@ python3 -m venv .cache/i18n/venv
   --repo . --output .cache/i18n/before.json
 ```
 
-Sem gettext no Mac, usar um ambiente Linux já preparado, como a imagem
-`aurora-ui-sim:local`, se disponível. `msgfmt` ausente é check pendente e saída 2,
-não aprovação. Não instalar dependências no Python global nem usar `sudo` como
-primeira opção. O auditor também exige AWK e `polib` nesse ambiente.
+Without Mac gettext, use prepared Linux environment such as
+`aurora-ui-sim:local` if available. Missing `msgfmt` means pending check and exit 2,
+not pass. Do not install into global Python or use `sudo` as first choice.
+Auditor also requires AWK/`polib` in that environment.
 
-## Extrair e mesclar
+## Extract and merge
 
-Na raiz Aurora, com Python e gettext no mesmo ambiente, gerar POT temporário:
+From Aurora root with Python/gettext in the same environment, generate temporary POT:
 
 ```sh
 mkdir -p .cache/i18n
@@ -56,41 +56,39 @@ subprocess.run(['xgettext', '--from-code=UTF-8', '--keyword=locstr',
 PY
 ```
 
-Comparar com o POT versionado, preservar entradas locais legítimas e atualizar
-o arquivo fonte depois da inspeção. Mesclar cada PO do escopo separadamente:
+Compare tracked POT, preserve legitimate local entries, update source file after
+inspection. Merge each in-scope PO separately:
 
 ```sh
 msgmerge --update --backup=none src/i18n/pt-BR/messages.po src/i18n/messages.pot
 msgfmt --check --check-format -o .cache/i18n/pt_BR.mo src/i18n/pt-BR/messages.po
 ```
 
-Não executar este exemplo apenas em pt-BR quando o pedido cobrir todos os idiomas.
-Para auditar contra extração temporária, usar `--template .cache/i18n/current.pot`.
-Comparar antes/depois pelo mesmo POT atual para medir cobertura com a mesma base.
-Examinar stderr inclusive com exit code zero: headers podem gerar warnings.
+Do not run only pt-BR for an all-language request. Use
+`--template .cache/i18n/current.pot` to audit temporary extraction. Compare before/
+after against the same current POT for consistent coverage. Inspect stderr even
+on exit zero: headers may cause warnings.
 
-## Preparar verificação visual localizada
+## Prepare localized visual checks
 
-O desktop carrega o domínio `moonlight-tv`. Os MO ficam em
-`<raiz-mo>/<locale_com_underscore>/LC_MESSAGES/moonlight-tv.mo`.
-Apontar `TEXTDOMAINDIR` para `<raiz-mo>` e garantir que o locale UTF-8 exista no
-Linux (`locale -a`). O alvo `aurora-ui-sim` isolado pode não compilar o alvo
-`moonlight-i18n`; conferir e compilar/gerar explicitamente os MO do teste.
+Desktop domain: `moonlight-tv`. MO paths:
+`<mo-root>/<underscore_locale>/LC_MESSAGES/moonlight-tv.mo`.
+Set `TEXTDOMAINDIR` to `<mo-root>` and ensure UTF-8 locale exists on Linux
+(`locale -a`). Standalone `aurora-ui-sim` target may not build `moonlight-i18n`;
+check and explicitly build/generate test MOs.
 
-No estado inicial, a imagem não prepara locales nem fontes CJK e o wrapper não
-encaminha opções de idioma/TEXTDOMAINDIR. Implementar o suporte necessário quando
-executar uma atualização, em vez de anunciar opções ainda inexistentes. Conferir
-a ordem real: `main.c` fixa a preferência em `en`, mas `app_common.c` inicia o
-desktop com `setlocale("")`, usando o ambiente. Os controladores de configurações
-também chamam `i18n_setlocale` com a preferência. Alinhar ambiente e preferência
-para evitar mudança de idioma ao navegar. Trocar preferências depois de criar
-widgets pode exigir reinicialização da UI.
+Current wrapper supports `AURORA_UI_SIM_LANGUAGE`, prepares locales/CJK fonts,
+and loads compiled MO files; confirm in the checked-out README/scripts. At skill
+creation, this support was absent, preference fixed to `en`, and desktop startup
+used environment `setlocale("")`. Settings controllers also call `i18n_setlocale`
+with preference. Align environment/preference to avoid language changes during
+navigation. Changing preferences after widget creation may require UI rebuild.
 
-Reaproveitar as ações abstratas (`settings`, `help`, `add_host`), mas traduzir
-`click_text` e `expect` por idioma. Criar asserção para texto exclusivo traduzido;
-siglas iguais ao inglês não provam carregamento do catálogo. Inspecionar PNGs
-e logs em `.cache/ui-sim-run-*/artifacts/`.
+Reuse abstract actions (`settings`, `help`, `add_host`), translating `click_text`
+and `expect` through each actual catalog. Assert a unique translated string;
+English-identical acronyms do not prove loading. Inspect PNGs/logs in
+`.cache/ui-sim-run-*/artifacts/`.
 
-Para ko/ja/zh e cirílico, verificar glifos efetivamente renderizados. Fontes
-adicionais no Docker validam o simulador, não a cobertura das fontes da LG.
-Manter tabela de idioma → tela → resolução → captura → resultado/pendência.
+For ko/ja/zh and Cyrillic, check actually rendered glyphs. Additional Docker
+fonts validate simulator coverage, not LG fonts. Maintain language → screen →
+resolution → capture → result/pending table.

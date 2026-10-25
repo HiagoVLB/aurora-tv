@@ -1,65 +1,64 @@
 ---
 name: aurora-build-ipk
-description: "Compila, empacota e valida o Aurora para webOS ARM, entregando sempre aurora.ipk na raiz do projeto. Use para gerar/regerar o instalador IPK atual; preserva o pacote anterior em falhas e não incrementa a versão nem instala na TV."
+description: "Build, package, and validate Aurora for ARM webOS, always delivering aurora.ipk at the project root. Use to generate or regenerate the current IPK installer; preserves the previous package on failure and does not bump the version or install on the TV."
 ---
 
-# Gerar o IPK do Aurora
+# Build the Aurora IPK
 
-Localizar a raiz Aurora por `AGENTS.md` e `CMakeLists.txt`; ler
-[AGENTS.md](../../../AGENTS.md) e a seção de versão/build do
-[estado atual](../../../docs/CURRENT_STATE.md). Entregar **`aurora.ipk` nessa
-raiz**, não na pasta que contém os repositórios irmãos. Manter o mesmo nome a
-cada build; a versão interna continua sendo a versão central do projeto.
+Locate Aurora root using `AGENTS.md` and `CMakeLists.txt`; read
+[AGENTS.md](../../../AGENTS.md) and version/build sections in
+[current state](../../../docs/CURRENT_STATE.md). Deliver **`aurora.ipk` at that
+root**, not in the directory containing sibling repositories. Keep the same
+filename for each build; internal version remains the central project version.
 
-## Executar
+## Run
 
-Na raiz Aurora:
+From Aurora root:
 
 ```sh
 python3 scripts/dev/aurora_version.py --check
 python3 scripts/webos/build_ipk.py
 ```
 
-Usar Python 3.9 ou posterior. O helper seleciona Docker Linux/amd64 no Mac e em
-ambientes sem SDK configurado; em Linux com `TOOLCHAIN_FILE` válido, seleciona
-build nativo. Para escolher explicitamente:
+Use Python 3.9+. The helper selects Docker Linux/amd64 on Mac and without a
+configured SDK; on Linux with valid `TOOLCHAIN_FILE`, it selects native build.
+To choose explicitly:
 
 ```sh
 python3 scripts/webos/build_ipk.py --backend docker --jobs 6
 python3 scripts/webos/build_ipk.py --backend native --build-type Release
 ```
 
-O SDK nativo deve fornecer também `cmake`, `cpack`, `ares-package`, toolchain ARM
-e dependências de build. No Docker, o helper reutiliza/cria a imagem
-`aurora-webos-builder:local` e o volume `aurora-webos-build-cache`; downloads
-iniciais usam as versões fixadas pelo projeto. O source é montado somente para
-leitura; SDK e compilação permanecem no volume, artefatos/logs em `.cache/ipk/`.
-Não executar dois builds ao mesmo tempo no mesmo volume/diretório de compilação.
+Native SDK environment must provide `cmake`, `cpack`, `ares-package`, ARM
+toolchain, and build dependencies. Docker reuses/creates image
+`aurora-webos-builder:local` and volume `aurora-webos-build-cache`; initial
+downloads use project-pinned versions. Source is mounted read-only; SDK/build
+remain in the volume, artifacts/logs in `.cache/ipk/`. Do not run two builds
+concurrently in the same build volume/directory.
 
-Se faltarem submódulos, inicializá-los recursivamente em clone novo. Em checkout
-existente, examinar patches antes; o helper não faz pull/reset/update de fontes.
-Se Docker não estiver disponível, usar um SDK Linux existente ou relatar a
-dependência concreta; não substituir o cross-build pelo simulador de UI.
+Initialize missing submodules recursively in fresh clones. Inspect patches
+first in existing checkouts; helper does not pull/reset/update sources. If Docker
+is unavailable, use an existing Linux SDK or report the concrete dependency;
+do not substitute the UI simulator for cross-compilation.
 
-## Aceitar somente a entrega verificada
+## Accept only verified delivery
 
-O helper gera o pacote numa pasta nova por execução, valida control/appinfo,
-ID `com.aurora.gamestream`, versão, arquitetura ARM e marca de versão do ELF.
-Compara o estado das fontes antes/depois para rejeitar build durante mudanças.
-Somente depois substitui `aurora.ipk` atomicamente. Falha de compilação ou
-validação preserva o instalador anterior; não o apresentar como um build novo.
+The helper builds in a new per-run directory, validates control/appinfo,
+ID `com.aurora.gamestream`, version, ARM architecture, ELF version marker.
+It compares source state before/after to reject builds during changes.
+Only then does it atomically replace `aurora.ipk`. Build/validation failure
+preserves the old installer; do not present it as newly built.
 
-Consultar `.cache/ipk/latest.json`: versão, SHA-256, commit/estado local,
-backend, tipo de build e diretório dos logs. Em erro, ler o `build.log` da
-execução indicada e corrigir a causa antes de repetir. Não escolher um IPK
-antigo de `dist` pelo mtime nem renomeá-lo como se fosse compilado agora.
+Inspect `.cache/ipk/latest.json`: version, SHA-256, commit/local state, backend,
+build type, log directory. On error, read that run's `build.log` and fix the
+cause before retrying. Do not choose an old `dist` IPK by mtime and rename it
+as if freshly built.
 
-Não incrementar a versão como efeito colateral de gerar o IPK. Se o pedido
-incluir incremento, executar primeiro
-[aurora-bump-version](../aurora-bump-version/SKILL.md). Não criar tags, release,
-push ou instalar na TV como etapa automática deste fluxo.
+Do not bump the version as a build side effect. If requested, first run
+[aurora-bump-version](../aurora-bump-version/SKILL.md). Do not automatically
+create tags/releases, push, or install on the TV.
 
-Informar caminho clicável de `aurora.ipk`, versão interna, hash e resultado da
-validação. Distinguir pacote compilado de funcionamento na C2: verificação de
-ELF/metadados não valida streaming, áudio nem instalação. Atualizar a área de
-build do estado atual com o resultado efetivamente obtido.
+Report a clickable `aurora.ipk` path, internal version, hash, validation result.
+Distinguish package compilation from C2 operation: ELF/metadata checks validate
+neither streaming, audio, nor installation. Update current state's build area
+with the actual result.

@@ -1,98 +1,97 @@
-# Simulador visual do Aurora
+# Aurora visual simulator
 
-Executa **a interface real SDL/LVGL do Aurora** em Linux no Docker, com decoder
-SS4S dummy, entrada por teclado/mouse e capturas PNG de 1920 × 1080. Funciona no
-Mac pelo Docker Desktop. Validado em Linux ARM64 dentro do Docker no Mac.
+Runs **Aurora's real SDL/LVGL UI** on Linux in Docker, with a dummy SS4S decoder,
+keyboard/mouse input, and 1920 × 1080 PNG captures. Works on Mac with Docker
+Desktop; validated on Linux ARM64 inside Docker on Mac.
 
-A arquitetura segue o [simulador do PlxNative](https://github.com/GLinnik21/plx-native/blob/3ac9e03fd4ef8b3c3bf1061c6eb372d970a6a3da/docs/building.md):
-executável de desenvolvimento separado, estado isolado por execução, envio de
-comandos, capturas e validação automática. A referência foi consultada no commit
-`3ac9e03fd4ef8b3c3bf1061c6eb372d970a6a3da`, incluindo `tools/sim-smoke.py`.
-Este adaptador é uma implementação própria para o Aurora; não executa o cliente
-Plex nem o firmware da LG.
+The architecture follows the [PlxNative simulator](https://github.com/GLinnik21/plx-native/blob/3ac9e03fd4ef8b3c3bf1061c6eb372d970a6a3da/docs/building.md):
+a separate development executable, isolated per-run state, commands, captures,
+and automated validation. The reference was examined at commit
+`3ac9e03fd4ef8b3c3bf1061c6eb372d970a6a3da`, including `tools/sim-smoke.py`.
+This adapter is an independent Aurora implementation; it does not run the Plex
+client or LG firmware.
 
-## Executar no Mac
+## Run on Mac
 
-Com o Docker Desktop em execução, a partir da raiz do repositório:
+With Docker Desktop running, from the repository root:
 
 ```sh
 ./tools/ui-sim/run.sh
 ```
 
-Para conferir traduções em 1920×1080 e 1280×720, usar o roteiro de localização:
+To review translations at 1920×1080 and 1280×720, use the localization scenario:
 
 ```sh
 AURORA_UI_SIM_LANGUAGE=pt-BR ./tools/ui-sim/run.sh tools/ui-sim/localization.json
 ```
 
-O wrapper aceita os códigos dos catálogos existentes, prepara o locale UTF-8
-correspondente e usa os MO compilados em `/build/mo`. A imagem inclui fontes CJK
-para a inspeção de japonês, coreano e chinês. Os textos de `expect`, `absent`,
-`click_text` e `scroll_text` são traduzidos pelo catálogo real do teste; um idioma
-sem MO faz a execução falhar. O relatório registra idioma/locale, e o log do app
-mostra o catálogo carregado. Os catálogos inativos `uk` e `zh-TW` também podem ser
-examinados no simulador; isso não os habilita no seletor nem no pacote webOS.
+The wrapper accepts existing catalog codes, prepares the corresponding UTF-8
+locale, and uses compiled MO files in `/build/mo`. The image includes CJK fonts
+for Japanese, Korean, and Chinese inspection. `expect`, `absent`, `click_text`,
+and `scroll_text` strings are translated through the actual test catalog;
+a missing MO fails the run. The report records language/locale, and the app log
+identifies the loaded catalog. Inactive `uk` and `zh-TW` catalogs can also be
+examined; this does not enable them in the selector or webOS package.
 
-As fontes Linux não comprovam os glifos disponíveis na TV. Abrir as capturas
-para conferir cortes e glifos; expectativas de texto sozinhas não validam layout.
+Linux fonts do not establish glyph availability on the TV. Open captures to
+check truncation and glyphs; text expectations alone do not validate layout.
 
-A primeira execução cria a imagem Ubuntu 24.04 e compila o aplicativo. As seguintes
-reutilizam a imagem e um volume de compilação por arquitetura. Ubuntu 24.04 fornece
-SDL 2.30; a versão de SDL do Ubuntu 22.04 não contém todos os tipos de controle
-usados pelo Aurora.
+The first run builds the Ubuntu 24.04 image and application. Later runs reuse
+the image and an architecture-specific build volume. Ubuntu 24.04 supplies
+SDL 2.30; Ubuntu 22.04's SDL lacks some controller types Aurora uses.
 
-O comando imprime o diretório de resultados em `.cache/ui-sim-run-*/artifacts/`:
+The command prints the results directory, `.cache/ui-sim-run-*/artifacts/`:
 
-- `index.html`: relatório visual, com uma captura por etapa;
-- `report.json`: resultado das ações e verificações, incluindo falhas na finalização;
-- `step-NNN.png`: captura do renderer real;
-- `step-NNN.json`: elementos visíveis, textos, coordenadas, foco e estado desabilitado;
-- `process.log`: stdout/stderr do processo;
-- `state/`: preferências, perfis e `aurora.log` exclusivos da execução.
+- `index.html`: visual report with one capture per step;
+- `report.json`: action/check results, including shutdown failures;
+- `step-NNN.png`: capture from the real renderer;
+- `step-NNN.json`: visible elements, text, coordinates, focus, disabled state;
+- `process.log`: process stdout/stderr;
+- `state/`: per-run preferences, profiles, and `aurora.log`.
 
-Os logs da imagem e compilação ficam um nível acima, em `image-build.log` e
-`compile.log`. O roteiro padrão verifica as configurações de Stream, Input, Host
-e Other, o cancelamento de adicionar PC e o cancelamento da saída por
-mouse e pela tecla Escape. As opções de Stream ficam na lista principal de
-configurações; as outras três abrem painéis secundários.
+Image/build logs are one level above, in `image-build.log` and `compile.log`.
+The default scenario checks Stream, Input, Host, and Other settings, cancelling
+Add PC, and cancelling Exit with mouse and Escape. Stream options occupy the
+main settings list; the other three open secondary panes.
 
-O runtime usa `--network none`, fonte e compilação montadas somente para leitura,
-e nenhum dispositivo/credencial da TV. Nenhum host real pode receber `/cancel`
-nesses testes. O próprio aplicativo e seu backend continuam executando: uma falha
-de mDNS pela ausência de rede, por exemplo, é exercitada de verdade.
+Runtime uses `--network none`, read-only source/build mounts, and no TV devices
+or credentials. These tests cannot send `/cancel` to a real host. The application
+and its backend still execute: for example, mDNS failure without a network is
+exercised through the actual implementation.
 
-## Opções de streaming
+## Streaming options
 
-`tools/ui-sim/stream-options.json` percorre YUV SDR, slices HEVC, atualização
-periódica, ABR, troca de codec, logs e reset confirmado/cancelado. Esse roteiro
-requer `AURORA_UI_SIM_VIDEO_FIXTURE=1` no container de runtime: o driver anuncia
-HEVC/AV1/HDR sintéticos para testar habilitação e preferências. A saída continua
-dummy; isso não valida decodificação. As árvores JSON incluem `checked` nos
-checkboxes para conferir as transições, além do estado `disabled`.
+`tools/ui-sim/stream-options.json` exercises SDR YUV, HEVC slices, periodic
+refresh, ABR, codec changes, logs, and confirmed/cancelled reset. It requires
+`AURORA_UI_SIM_VIDEO_FIXTURE=1` in the runtime container: the driver advertises
+synthetic HEVC/AV1/HDR to test enablement and preferences. Output remains dummy;
+this does not validate decoding. JSON trees include checkbox `checked` values
+to verify transitions, alongside `disabled` state.
 
-`tools/ui-sim/dependent-options.json` confere as explicações de dependências,
-troca AV1/HEVC, refresh e ABR, a ajuda de Home/Numpad e o foco nas quatro ações
-do menu da sessão. Também requer `AURORA_UI_SIM_VIDEO_FIXTURE=1` no runtime.
-A ação `stream_menu` monta a view real, com navegação, sobre fundo preto e sem
-estatísticas ou sessão. Seus botões não têm callbacks de ação: não inicia stream
-nem envia Disconnect/End session a um host. Escape fecha a fixture e restaura
-o grupo de foco anterior. Isso valida apresentação e navegação, não o envio de
-teclas pela TV; `test_remote_home` exercita o mapeador webOS de Home e Numpad.
+`tools/ui-sim/dependent-options.json` checks dependency explanations, AV1/HEVC
+switching, refresh and ABR, Home/Numpad help, and focus across the four session
+menu actions. It also requires `AURORA_UI_SIM_VIDEO_FIXTURE=1` at runtime.
+The `stream_menu` action mounts the real view and navigation over a black
+background without statistics or a session. Buttons have no action callbacks:
+it does not start streaming or send Disconnect/End session to a host. Escape
+closes the fixture and restores the previous focus group. This validates
+presentation/navigation; `test_remote_home` exercises webOS Home/Numpad mapping.
+Physical key delivery from the TV still requires hardware validation.
 
-## Roteiros
+## Scenarios
 
 ```sh
-./tools/ui-sim/run.sh /caminho/roteiro.json
+./tools/ui-sim/run.sh /path/to/scenario.json
 
-# Inicializa a interface e as fontes na resolução escolhida (até 3840x2160).
+# Initialize UI and fonts at the chosen resolution (up to 3840x2160).
 AURORA_UI_SIM_SIZE=1280x720 ./tools/ui-sim/run.sh
 ```
 
-Exemplo:
+Example:
 
 ```json
 {
-  "name": "configuracoes",
+  "name": "settings",
   "steps": [
     {"action": "settings"},
     {"expect": "Resolution"},
@@ -104,32 +103,31 @@ Exemplo:
 }
 ```
 
-Comandos de roteiro:
+Scenario commands:
 
-| Comando | Argumento |
+| Command | Argument |
 | --- | --- |
-| `action` | `settings`, `add_host`, `help` ou `exit`; clica no botão real da barra. `stream_menu` abre a fixture isolada do menu de sessão |
-| `click_text` | Texto exato, em inglês; rola até o item e clica, inclusive em botões de diálogos |
-| `scroll_text` | Rola até o texto sem clicar; útil para inspecionar seções e mensagens |
-| `click` | Coordenadas, por exemplo `"100 200"` |
-| `key` | Nome SDL: `Down`, `Up`, `Return`, `Escape`, etc. |
-| `text` | Evento SDL de texto curto, até 31 bytes UTF-8, para o campo em foco |
-| `wait` | Tempo de 0 a 10.000 ms; mantém o loop da interface processando |
-| `wheel` | Número de passos da rodinha SDL; negativo desce, positivo sobe |
-| `resize` | Nova área da janela, por exemplo `"1280 720"`; preserva o menu aberto |
-| `expect` | Texto que precisa estar visível |
-| `absent` | Texto que não pode estar visível |
+| `action` | `settings`, `add_host`, `help`, or `exit`; clicks the real toolbar button. `stream_menu` opens the isolated session-menu fixture |
+| `click_text` | Exact English text; scrolls to and clicks the item, including dialog buttons |
+| `scroll_text` | Scrolls to text without clicking; useful for inspecting sections/messages |
+| `click` | Coordinates, for example `"100 200"` |
+| `key` | SDL name: `Down`, `Up`, `Return`, `Escape`, etc. |
+| `text` | Short SDL text event, up to 31 UTF-8 bytes, for the focused field |
+| `wait` | 0–10,000 ms; keeps processing the UI loop |
+| `wheel` | SDL wheel steps; negative scrolls down, positive up |
+| `resize` | New window area, for example `"1280 720"`; preserves the open menu |
+| `expect` | Text that must be visible |
+| `absent` | Text that must not be visible |
 
-Cada ação produz captura e árvore de elementos. Falhas devolvem status de processo
-não zero e preservam os resultados; não são convertidas em teste aprovado.
-Capturas precisam ser PNG válido, ter a resolução da execução (ou do último
-`resize`) e conteúdo não uniforme.
-Expectativas verificam o estado real do LVGL; não fazem apenas comparação de pixels.
-O processo deve encerrar normalmente para a execução ser aprovada.
+Each action produces a capture and element tree. Failures return a nonzero
+process status and preserve results; they are never converted to passes.
+Captures must be valid PNGs at the run resolution (or last `resize`) with
+nonuniform content. Expectations check actual LVGL state, beyond pixel
+comparisons. The process must exit normally for a run to pass.
 
-## Compilação local Linux
+## Local Linux build
 
-Com as dependências do Dockerfile instaladas:
+With Dockerfile dependencies installed:
 
 ```sh
 cmake -S . -B build/ui-sim -DBUILD_UI_SIM=ON -DBUILD_TESTS=OFF
@@ -138,27 +136,27 @@ python3 tools/ui-sim/run.py --binary build/ui-sim/tools/ui-sim/aurora-ui-sim \
   --output /tmp/aurora-ui-run
 ```
 
-O diretório de saída deve estar vazio. O runner requer Python, Pillow, Xvfb e
-xauth. O executável não abre servidor HTTP nem porta de controle: o driver usa
-stdin/stdout. `BUILD_UI_SIM` é OFF por padrão e é recusado em builds webOS;
-os comandos do simulador não são incluídos no IPK.
+The output directory must be empty. The runner requires Python, Pillow, Xvfb,
+and xauth. The executable opens no HTTP server/control port: the driver uses
+stdin/stdout. `BUILD_UI_SIM` defaults to OFF and is rejected for webOS builds;
+simulator commands are excluded from the IPK.
 
-## Limites e defeito encontrado
+## Limits and discovered defect
 
-O ambiente valida navegação, foco, painéis, diálogos e seu ciclo de vida. Não
-valida o decoder NDL/Starfish, AV1/HDR, sincronismo de vídeo/áudio, permissões do
-jail nem transmissão e encerramento contra um VibeShine real. Também não há
-seletores DOM do Playwright: a interface nativa é controlada pelo adaptador SDL.
+This environment validates navigation, focus, panes, dialogs, and lifecycle.
+It does not validate NDL/Starfish decoding, AV1/HDR, video/audio synchronization,
+jail permissions, or streaming/termination against real VibeShine. Native UI
+is controlled through the SDL adapter; there are no Playwright DOM selectors.
 
-O roteiro inicial passou pelas ações, mas travou ao encerrar. O mDNS havia
-falhado por falta de interface de rede; sua thread liberava `discovery_task_t`,
-mas `discovery->task` continuava apontando para a memória liberada. A parada
-acessava o mutex dessa estrutura. A versão anterior reproduziu
-`AddressSanitizer: heap-use-after-free` em `discovery_worker_stop`.
+The initial scenario passed its actions but hung on shutdown. mDNS had failed
+because there was no network interface; its thread freed `discovery_task_t`,
+while `discovery->task` still pointed to the freed memory. Stop accessed that
+structure's mutex. The previous version reproduced
+`AddressSanitizer: heap-use-after-free` in `discovery_worker_stop`.
 
-A correção mantém as tarefas sob propriedade do gerenciador até a thread ser
-recolhida. A parada normal permanece assíncrona, e a destruição final aguarda as
-threads antes de liberar as dependências de callbacks. O teste
-`test_discovery_lifecycle` força saída antecipada, parada repetida, reinício e
-finalização com callback em andamento. Esse defeito foi reproduzido no ambiente
-de testes; não estabelece a causa da falha anteriormente observada na C2.
+The fix keeps tasks owned by the manager until their threads are joined.
+Normal stop remains asynchronous; final destruction waits for threads before
+freeing callback dependencies. `test_discovery_lifecycle` forces early exit,
+repeated stop, restart, and destruction with an active callback. This defect
+was reproduced in the test environment; it does not establish the cause of the
+failure previously observed on C2.

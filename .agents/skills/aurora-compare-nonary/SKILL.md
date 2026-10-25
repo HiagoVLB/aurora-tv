@@ -1,89 +1,83 @@
 ---
 name: aurora-compare-nonary
-description: "Compara o Aurora atual com Nonary/moonlight-qt para avaliar comportamento, recursos e viabilidade de adaptação ao webOS/LG C2, incluindo pacing, VRR, codecs e diagnóstico; atualiza a linha de base com evidências e limitações."
+description: "Compare current Aurora with Nonary/moonlight-qt to assess behavior, features, and viable webOS/LG C2 adaptations, including pacing, VRR, codecs, and diagnostics; update the baseline with evidence and limitations."
 ---
 
-# Comparar Aurora com Moonlight Qt do Nonary
+# Compare Aurora with Nonary Moonlight Qt
 
-Avalie o que o cliente desktop oferece, o que o Aurora já implementa e quais
-adaptações são justificáveis no backend real da LG. O fork de referência é
-`https://github.com/Nonary/moonlight-qt`, não apenas o Moonlight Qt upstream.
+Assess desktop features, existing Aurora equivalents, and adaptations justified
+by the real LG backend. Reference fork: `https://github.com/Nonary/moonlight-qt`,
+rather than only upstream Moonlight Qt.
 
-## Identificar os dois estados
+## Identify both states
 
-Localize a raiz Aurora pelo `AGENTS.md`/`CMakeLists.txt` e leia
-[AGENTS.md](../../../AGENTS.md), [CURRENT_STATE.md](../../../docs/CURRENT_STATE.md)
-e as partes relevantes de
-[NONARY_MOONLIGHT_WEBOS_REVIEW.md](../../../docs/NONARY_MOONLIGHT_WEBOS_REVIEW.md).
-O estado atual é uma linha de base datada, não comprovação de que a branch remota
-continua no mesmo commit.
+Locate Aurora root through `AGENTS.md`/`CMakeLists.txt`; read
+[AGENTS.md](../../../AGENTS.md), [CURRENT_STATE.md](../../../docs/CURRENT_STATE.md),
+relevant [NONARY_MOONLIGHT_WEBOS_REVIEW.md](../../../docs/NONARY_MOONLIGHT_WEBOS_REVIEW.md)
+sections. Current state is a dated baseline, not proof of unchanged remote HEAD.
 
-Use o checkout de referência informado pelo usuário; alternativamente,
-`../moonlight-qt` se pertencer ao fork Nonary, ou um clone isolado em
-`.cache/references/nonary-moonlight-qt`. Não dependa de um caminho antigo em
-`/tmp`. Não faça reset/pull sobre trabalho existente. Se o pedido exigir a
-última versão, consulte o SHA da branch padrão remota e examine um checkout
-isolado desse commit. Em comparação local, registre a ausência de verificação
-de atualização remota. Informe o commit efetivamente lido em todos os casos.
+Use the user-provided reference checkout; otherwise use `../moonlight-qt` if it
+belongs to Nonary, or an isolated clone in `.cache/references/nonary-moonlight-qt`.
+Do not depend on old `/tmp` paths or reset/pull over existing work. If latest is
+requested, query remote default-branch SHA and inspect an isolated checkout of
+that commit. For local comparisons, record that remote freshness was not checked.
+Always report the commit actually read.
 
-Na raiz Aurora, com o caminho real da referência:
+From Aurora root with the real reference path:
 
 ```sh
 python3 scripts/dev/comparison_snapshot.py --reference nonary=../moonlight-qt --output .cache/comparisons/nonary-state.json
 ```
 
-O helper registra também alterações ainda sem commit e submódulos; ele não
-atualiza referências pela rede.
+The helper records uncommitted changes/submodules; it does not update remote references.
 
-## Comparar comportamento e dependências de plataforma
+## Compare behavior and platform dependencies
 
-Rastreie opção → armazenamento → configuração efetiva → protocolo → decoder →
-apresentação. Identifique defaults, exclusões entre opções, campos ausentes em
-perfis, fallback e ajustes que só se aplicam ao reconectar.
+Trace option → storage → effective configuration → protocol → decoder →
+presentation. Identify defaults, mutually exclusive options, missing profile
+fields, fallback, and next-connection changes.
 
-| Tema | Fork Nonary | Aurora |
+| Topic | Nonary fork | Aurora |
 | --- | --- | --- |
-| Preferências e interface | `app/gui/SettingsView.qml`, `app/settings/streamingpreferences.*` | `src/app/app_settings.c`, `src/app/profile/`, `src/app/ui/settings/settings.controller.c`, `panes/` |
-| Sessão/protocolo | `app/backend/nvhttp.cpp`, `app/streaming/session.cpp`, `moonlight-common-c/` | `core/libgamestream/`, `core/moonlight-common-c/`, `src/app/stream/session{,_worker}.c` |
-| VRR e apresentação | `app/streaming/vrrratepolicy.*`, `app/settings/vrrtimingoptions.h`, `app/streaming/video/ffmpeg-renderers/ivrrframepresenter.h`, `pacer/` e renderers concretos | `src/app/stream/video/`, `third_party/ss4s/modules/webos/ndl/`, `smp/` |
-| Telemetria | `app/diagnostics/`, `docs/vrr-diagnostics.md` e estudos atuais em `docs/` | `src/app/stream/video/session_video.c`, `src/app/ui/streaming/`, `docs/FRAME_DIAG.md` |
-| Codecs/novos caminhos | `docs/pyrowave-protocol.md`, implementações/negociação em `app/` | negociação em `session.c` e capacidades/feed SS4S |
+| Preferences/UI | `app/gui/SettingsView.qml`, `app/settings/streamingpreferences.*` | `src/app/app_settings.c`, `src/app/profile/`, `src/app/ui/settings/settings.controller.c`, `panes/` |
+| Session/protocol | `app/backend/nvhttp.cpp`, `app/streaming/session.cpp`, `moonlight-common-c/` | `core/libgamestream/`, `core/moonlight-common-c/`, `src/app/stream/session{,_worker}.c` |
+| VRR/presentation | `app/streaming/vrrratepolicy.*`, `app/settings/vrrtimingoptions.h`, `app/streaming/video/ffmpeg-renderers/ivrrframepresenter.h`, `pacer/`, concrete renderers | `src/app/stream/video/`, `third_party/ss4s/modules/webos/ndl/`, `smp/` |
+| Telemetry | `app/diagnostics/`, `docs/vrr-diagnostics.md`, current `docs/` studies | `src/app/stream/video/session_video.c`, `src/app/ui/streaming/`, `docs/FRAME_DIAG.md` |
+| Codecs/new paths | `docs/pyrowave-protocol.md`, implementation/negotiation in `app/` | `session.c` negotiation, SS4S capabilities/feed |
 
-Compare conceitos e contratos; não proponha copiar QML/C++/DXGI diretamente
-para LVGL/C11/NDL. Leia o backend concreto e as condições de ativação, além
-do texto da UI. Confira se opções descritas em estudos antigos foram retiradas.
+Compare concepts/contracts; do not propose copying QML/C++/DXGI directly into
+LVGL/C11/NDL. Read concrete backends/activation conditions alongside UI labels.
+Check whether options described in older studies have been removed.
 
-Para cada recurso, classifique: já equivalente; adaptação viável; depende de
-configuração do host; pesquisa de backend necessária; ou incompatível com o
-caminho atual. Indique custo de latência, memória/rede, fallback e observação
-necessária para decidir. Um benefício em desktop é hipótese até medir na LG.
+Classify each feature: already equivalent; viable adaptation; host configuration
+dependency; backend research required; incompatible with current path. State
+latency/memory/network cost, fallback, observations needed. Desktop benefit
+remains a hypothesis until measured on LG.
 
-Cuidados específicos desta comparação:
+Specific cautions:
 
-- Pacing, V-Sync, VRR e refresh de captura do host não são sinônimos. Exija um
-  contrato de apresentação que o backend webOS realmente possa cumprir.
-- 120 submits/s não provam 120 frames distintos exibidos. Não chamar tempo de
-  `Play` de decode nem fila estimada de latência física.
-- Respeite o histórico de tentativas e os invariantes em `AGENTS.md`, incluindo
-  direct submit, áudio 5.1 e experimentos de PTS já descartados na C5. Resultados
-  da C5 não são testes da C2; uma nova hipótese precisa explicar a diferença.
-- Capacidade HDMI, capacidade de codec/NDL e taxas do compositor são distintas.
-  Não elevar limites SS4S apenas com base em especificações do painel.
-- Se a conclusão depende de SDR Main10, controles sintéticos ou flags de
-  launch, confira o lado VibeShine; use a skill irmã quando a investigação do
-  host for substancial. O nome de uma flag sozinho não define seu efeito.
+- Pacing, V-Sync, VRR, host capture refresh are distinct. Require a presentation
+  contract webOS backend can actually fulfill.
+- 120 submits/s do not prove 120 distinct displayed frames. `Play` duration is not
+  decoding time; estimated queues are not physical latency.
+- Respect historical attempts/AGENTS.md invariants: direct submit, 5.1 audio,
+  rejected C5 PTS experiments. C5 results do not test C2; explain what makes a
+  new hypothesis different.
+- HDMI/codec/NDL capabilities and compositor rates differ. Do not raise SS4S
+  limits solely from panel specifications.
+- If conclusions depend on SDR Main10, synthetic controls, launch flags, inspect
+  VibeShine; use the sibling skill for substantial host investigation. Flag names
+  alone do not define effects.
 
-## Evidências e manutenção da linha de base
+## Evidence and baseline maintenance
 
-Registre commits/estado local, arquivos e símbolos dos dois clientes, comportamento
-efetivo, compatibilidade webOS e prioridade justificada. Execute testes pertinentes
-quando eles puderem verificar o contrato em questão; um teste de algoritmo ou
-simulador de UI não valida apresentação física. Se a comparação não incluir TV,
-descreva o teste de hardware que falta sem declarar o recurso validado.
+Record both clients' commits/local state, files/symbols, effective behavior,
+webOS compatibility, justified priority. Run relevant tests when they verify
+contracts; algorithm/UI simulator tests do not validate physical presentation.
+Without TV testing, describe the missing hardware test without claiming validation.
 
-Atualize as áreas examinadas de `docs/CURRENT_STATE.md`: data, referências,
-diferenças desde o estado anterior, resultados realmente executados, limitações
-e próximos passos. Corrija premissas superadas com uma nota de correção; preserve
-evidências e conclusões da comparação VibeShine. Uma revisão extensa pode ficar
-em `docs/comparisons/AAAA-MM-DD-nonary.md`, resumida e ligada no estado atual.
-Uma análise não deve aparecer como funcionalidade já implementada ou instalada.
+Update inspected `docs/CURRENT_STATE.md` areas: date, references, changes since
+baseline, actual results, limits, next steps. Explicitly correct superseded
+premises; preserve VibeShine comparison evidence/conclusions. Extensive reviews
+may live in `docs/comparisons/YYYY-MM-DD-nonary.md`, summarized/linked from current
+state. Analysis must not appear as an implemented/installed feature.

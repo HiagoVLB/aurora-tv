@@ -1,19 +1,19 @@
-# Histórico de streaming webOS — C5/NDL
+# webOS streaming history — C5/NDL
 
-Preservado do AGENTS.md em 18/10/2026. Este documento reúne os relatos de
-hardware e tentativas anteriores; não é um novo teste nem uma especificação
-universal de webOS. Os registros abaixo pertencem à C5/NDL e ao setup de áudio
-C5 + eARC. A LG C2 precisa de validação própria.
+Preserved from AGENTS.md on 2026-10-18. This document collects earlier hardware
+reports and experiments; it is not a new test or a universal webOS specification.
+These records concern C5/NDL and the C5 + eARC audio setup. LG C2 requires its
+own validation.
 
-Consulte os invariantes atuais no [AGENTS.md](../AGENTS.md) e a linha de base
-em [CURRENT_STATE.md](CURRENT_STATE.md). A palavra HEAD nos registros antigos
-refere-se ao estado descrito naquele histórico, não garante o checkout futuro.
-Uma nova tentativa deve identificar o que mudou na hipótese, backend, firmware
-ou carga, em vez de repetir as mesmas alterações de PTS com outro nome.
+See current invariants in [AGENTS.md](../AGENTS.md) and the baseline in
+[CURRENT_STATE.md](CURRENT_STATE.md). HEAD in older records refers to the state
+described there, not any future checkout. A new experiment should identify what
+changed in the hypothesis, backend, firmware, or workload instead of repeating
+the same PTS changes under another name.
 
-Os números de bitrate são observações do setup testado, não novos limites de
-capacidade. O teste histórico 120/119.94 Hz também não redefine os presets NTSC
-atuais de 59.94/119.88 Hz no código.
+Bitrate figures are observations from the tested setup, not new capability
+limits. The historical 120/119.94 Hz test also does not redefine the current
+59.94/119.88 Hz NTSC presets in code.
 
 ## 5.1 audio (C5 + eARC) — verified, do not invert
 

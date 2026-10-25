@@ -1,4 +1,4 @@
 interface:
   display_name: "Aurora × VibeShine"
-  short_description: "Compara Aurora e contratos do host VibeShine"
-  default_prompt: "Use $aurora-compare-vibeshine para comparar o Aurora atual com o VibeShine, verificar os contratos e atualizar a linha de base com evidências."
+  short_description: "Compare Aurora with VibeShine host contracts"
+  default_prompt: "Use $aurora-compare-vibeshine to compare current Aurora with VibeShine, verify contracts, and update the baseline with evidence."

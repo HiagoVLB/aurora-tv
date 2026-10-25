@@ -1,89 +1,82 @@
 ---
 name: aurora-compare-vibeshine
-description: "Compara o Aurora atual com o host Nonary/VibeShine para revisar contratos de sessão, catálogo, vídeo, áudio, entrada e bitrate; registra diferenças e atualiza a linha de base do projeto. Use em revisões de compatibilidade ou integração com VibeShine."
+description: "Compare current Aurora with the Nonary/VibeShine host to review session, catalog, video, audio, input, and bitrate contracts; record differences and update the project baseline. Use for VibeShine compatibility or integration reviews."
 ---
 
-# Comparar Aurora com VibeShine
+# Compare Aurora with VibeShine
 
-O resultado é um diagnóstico entre cliente e host, com versões reproduzíveis,
-evidências dos dois lados e próximos passos para webOS. Não comparar os projetos
-como se fossem dois clientes equivalentes.
+Produce a client/host diagnosis with reproducible versions, evidence from both
+sides, and next steps for webOS. These projects are not equivalent clients.
 
-## Encontrar o projeto e a referência
+## Find project and reference
 
-Localize a raiz Aurora pelo `AGENTS.md` e `CMakeLists.txt`; não dependa do cwd.
-Leia [AGENTS.md](../../../AGENTS.md) e [CURRENT_STATE.md](../../../docs/CURRENT_STATE.md).
-Use [VIBESHINE_INTEGRATION.md](../../../docs/VIBESHINE_INTEGRATION.md) para o
-histórico da integração e a seção VibeShine de
+Locate Aurora root through `AGENTS.md`/`CMakeLists.txt`, independently of cwd.
+Read [AGENTS.md](../../../AGENTS.md), [CURRENT_STATE.md](../../../docs/CURRENT_STATE.md).
+Use [VIBESHINE_INTEGRATION.md](../../../docs/VIBESHINE_INTEGRATION.md) for integration
+history and VibeShine sections in
 [NONARY_MOONLIGHT_WEBOS_REVIEW.md](../../../docs/NONARY_MOONLIGHT_WEBOS_REVIEW.md)
-quando o tema envolver HDR, sessões remotas ou captura.
+for HDR, remote sessions, capture.
 
-A referência usual é `../vibeshine`, repositório
-`https://github.com/Nonary/vibeshine`. Aceite outro checkout indicado pelo usuário.
-Se ausente, use um clone isolado em `.cache/references/vibeshine`; não substitua
-um checkout existente. Quando o pedido exigir a versão remota mais recente,
-verifique a branch padrão/SHA no remoto e obtenha esse commit em um checkout
-isolado. Caso contrário, compare o checkout disponível e informe que não houve
-verificação de atualização remota. Uma referência antiga registrada no estado
-atual não significa que continua sendo o HEAD remoto.
+Usual reference: `../vibeshine`, `https://github.com/Nonary/vibeshine`. Accept
+another user-provided checkout. If absent, use isolated clone
+`.cache/references/vibeshine`; never replace existing checkout. For latest remote
+requests, check default branch/SHA and obtain that commit in an isolated checkout.
+Otherwise compare available checkout and report no remote-freshness verification.
+An old baseline SHA does not establish current remote HEAD.
 
-Na raiz Aurora, capture o estado real, incluindo mudanças locais:
+Capture actual local state from Aurora root:
 
 ```sh
 python3 scripts/dev/comparison_snapshot.py --reference vibeshine=../vibeshine --output .cache/comparisons/vibeshine-state.json
 ```
 
-Ajuste o caminho do checkout. O helper é local, não acessa a rede e registra
-HEAD, hashes de diffs, arquivos novos e submódulos. Omitir arquivos sem commit
-produziria uma descrição incorreta da versão atual.
+Adjust reference path. Helper is local/offline and records HEAD, diff hashes,
+new files, submodules. Omitting uncommitted files would misidentify current version.
 
-## Rastrear o comportamento
+## Trace behavior
 
-Selecione os fluxos pedidos e siga UI/configuração → launch/resume/SDP → decisão
-do host → encoder/captura → resposta → efeito no cliente. Use `rg` por símbolos
-e parâmetros; um diff textual entre C e C++ não demonstra compatibilidade.
+Select requested flows; follow UI/configuration → launch/resume/SDP → host
+policy → encoder/capture → response → client effect. Search symbols/parameters
+with `rg`; textual C/C++ diffs do not establish compatibility.
 
-| Tema | Aurora | VibeShine |
+| Topic | Aurora | VibeShine |
 | --- | --- | --- |
-| Catálogo, UUID, XML e 410 | `core/libgamestream/src/{xml,client}.c`, `src/app/ui/launcher/apps.controller.c` | `src/nvhttp.cpp`, `src/remote_session.{h,cpp}`, `src/process.cpp` |
-| Desconectar, encerrar, monitor retido | `src/app/stream/session{,_worker}.c`, `src/app/ui/streaming/streaming.controller.c` | `src/stream.cpp`, `src/rtsp.cpp`, `src/remote_display_topology.cpp` |
-| HDR, Main10, cor e modo do host | `src/app/stream/session.c`, `src/app/app_settings.c` | `src/hdr_request_policy.h`, `src/rtsp.{h,cpp}`, `src/video_colorspace.cpp`, preferências de dispositivo/aplicação em `nvhttp.cpp`/`process.cpp` |
-| FPS, captura e filas | `src/app/stream/video/`, `third_party/ss4s/modules/webos/` | `src/framegen_policy.h`, `src/config.h`, `src/platform/windows/display_wgc.cpp`, `wgc_capture_policy.h`, `display_vram.cpp` |
-| ABR | `src/app/stream/adaptive_bitrate.c`, `core/libgamestream/src/client.c` | `/bitrate` e `/api/abr/capabilities` em `src/nvhttp.cpp` |
+| Catalog, UUID, XML, 410 | `core/libgamestream/src/{xml,client}.c`, `src/app/ui/launcher/apps.controller.c` | `src/nvhttp.cpp`, `src/remote_session.{h,cpp}`, `src/process.cpp` |
+| Disconnect, terminate, retained monitor | `src/app/stream/session{,_worker}.c`, `src/app/ui/streaming/streaming.controller.c` | `src/stream.cpp`, `src/rtsp.cpp`, `src/remote_display_topology.cpp` |
+| HDR, Main10, color, host mode | `src/app/stream/session.c`, `src/app/app_settings.c` | `src/hdr_request_policy.h`, `src/rtsp.{h,cpp}`, `src/video_colorspace.cpp`, device/app preferences in `nvhttp.cpp`/`process.cpp` |
+| FPS, capture, queues | `src/app/stream/video/`, `third_party/ss4s/modules/webos/` | `src/framegen_policy.h`, `src/config.h`, `src/platform/windows/display_wgc.cpp`, `wgc_capture_policy.h`, `display_vram.cpp` |
+| ABR | `src/app/stream/adaptive_bitrate.c`, `core/libgamestream/src/client.c` | `/bitrate`, `/api/abr/capabilities` in `src/nvhttp.cpp` |
 
-Verifique defaults, precedência de aplicação/dispositivo/global, permissões,
-casos de erro e retomada. Estes pontos já causaram conclusões incompletas:
+Check defaults, application/device/global precedence, permissions, errors, resume.
+These points previously led to incomplete conclusions:
 
-- `hdrMode=1` também pode negociar Main10 SDR; siga `prefer_10bit_sdr`,
-  `effective_hdr_requested` e `effective_10bit_sdr_requested` até a cor final.
-- `currentgame=0` pode ser uma projeção para cliente secundário. Títulos iguais
-  podem ter UUIDs/papéis distintos. Remote Input e Remote Monitor têm ciclos,
-  captura e áudio diferentes; verifique a versão examinada.
-- HTTP 200 não garante sucesso XML. XML 410 pode indicar conclusão ou pedido
-  de confirmação. Não repetir uma ação destrutiva para "testar" uma hipótese.
-- Refresh de monitor virtual/captura do host, FPS do stream e refresh do painel
-  LG são grandezas diferentes. `clientVrrRequested` não prova VRR na TV.
-- Preferências administrativas do host não usam automaticamente a autenticação
-  de pareamento do GameStream.
+- `hdrMode=1` can also negotiate Main10 SDR; follow `prefer_10bit_sdr`,
+  `effective_hdr_requested`, `effective_10bit_sdr_requested` to final colorspace.
+- `currentgame=0` can be a secondary-client projection. Identical titles can
+  have distinct UUIDs/roles. Input/Monitor have different lifecycles/capture/audio;
+  verify the inspected version.
+- HTTP 200 does not ensure XML success. XML 410 can mean completion or confirmation.
+  Do not repeat a destructive action to test a hypothesis.
+- Host virtual-monitor/capture refresh, stream FPS, LG panel refresh are distinct.
+  `clientVrrRequested` does not prove TV VRR.
+- Host administrative preferences do not automatically use GameStream pairing auth.
 
-## Registrar conclusão e validação
+## Record conclusions and validation
 
-Para cada achado, apresente comportamento Aurora, regra do host, evidência por
-arquivo/símbolo/commit, impacto no webOS e ação proposta. Identifique se é bug
-demonstrado, diferença intencional, configuração do host ou hipótese pendente.
-Confirme no código as premissas dos documentos anteriores; corrija conclusões
-superadas e mantenha a referência ao que mudou.
+For each finding, state Aurora behavior, host rule, file/symbol/commit evidence,
+webOS impact, proposed action. Classify demonstrated bug, intentional difference,
+host configuration, or pending hypothesis. Verify previous-document premises in
+code; explicitly correct superseded conclusions and retain change references.
 
-Escolha testes existentes pertinentes: fixtures do Aurora em
-`tests/core/run_vibeshine_protocol.sh`; componentes VibeShine em
+Select relevant existing tests: Aurora
+`tests/core/run_vibeshine_protocol.sh`; VibeShine
 `tests/unit/test_remote_session.cpp`, `test_hdr_request_policy.cpp`,
-`test_framegen_policy.cpp` e `test_video_colorspace.cpp`, conforme o tema.
-Compilação/fixtures/replay não comprovam execução WGC real ou scanout na C2.
-Registre comando, ambiente, resultado e limites. Comparação não implica deploy.
+`test_framegen_policy.cpp`, `test_video_colorspace.cpp`, as appropriate.
+Compilation/fixtures/replay do not prove actual WGC execution or C2 scanout.
+Record command, environment, result, limits. Comparison does not imply deployment.
 
-Atualize `docs/CURRENT_STATE.md` apenas nas áreas examinadas: data, HEADs e
-estado sujo, diferenças desde a linha de base, evidências e pendências. Não
-marque uma correção apenas proposta como implementada. Preserve as conclusões
-da outra comparação e evidências de hardware já registradas. Para uma revisão
-extensa, use `docs/comparisons/AAAA-MM-DD-vibeshine.md` e deixe um resumo/link no
-estado atual; em revisão pequena, atualizar a linha de base basta.
+Update only inspected areas of `docs/CURRENT_STATE.md`: date, HEADs/dirty state,
+baseline differences, evidence, pending work. Proposed fixes are not implemented
+fixes. Preserve the other comparison's conclusions and existing hardware evidence.
+For extensive reviews, use `docs/comparisons/YYYY-MM-DD-vibeshine.md` and a
+baseline summary/link; small reviews can update baseline directly.

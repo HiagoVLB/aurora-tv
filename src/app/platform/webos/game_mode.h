@@ -5,7 +5,7 @@
 /**
  * webOS Game picture/sound + Instant Game Response (app path; not HDMI ALLM).
  * Only works on webosbrew-rooted TVs via Homebrew Channel exec + luna-send.
- * See docs/superpowers/specs/2026-08-16-webos-game-mode-design.md
+ * See docs/EXPERIMENTAL_FEATURE_REVIEW.md
  */
 
 bool webos_game_mode_is_rooted(void);

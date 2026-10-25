@@ -1,4 +1,4 @@
 interface:
-  display_name: "Aurora: atualizar idiomas"
-  short_description: "Traduções naturais com conferência visual e técnica"
-  default_prompt: "Use $aurora-update-languages para atualizar todos os idiomas existentes do Aurora, adaptar os textos ao contexto de cada língua e conferir catálogos, recursos webOS e exibição na interface."
+  display_name: "Aurora: update languages"
+  short_description: "Natural translations with visual and technical checks"
+  default_prompt: "Use $aurora-update-languages to update all existing Aurora languages, adapt text to each language context, and check catalogs, webOS resources, and UI rendering."

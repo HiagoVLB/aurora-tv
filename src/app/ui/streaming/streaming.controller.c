@@ -691,7 +691,7 @@ static void open_keyboard(lv_event_t *event) {
     if (kbd_group) {
         app_input_set_group(&controller->global->ui.input, kbd_group);
     }
-    /* Mostrar cursor e liberar mouse para Magic Remote / ponteiro funcionarem */
+    /* Show the cursor and release the mouse for Magic Remote / pointer input */
     app_set_mouse_grab(&controller->global->input, false);
 }
 

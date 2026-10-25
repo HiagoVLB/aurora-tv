@@ -1,4 +1,4 @@
 interface:
-  display_name: "Aurora: incrementar versão"
-  short_description: "Incrementa a versão central do Aurora com consistência"
-  default_prompt: "Use $aurora-bump-version para incrementar a versão patch do Aurora e verificar a consistência do versionamento."
+  display_name: "Aurora: bump version"
+  short_description: "Bump the central Aurora version consistently"
+  default_prompt: "Use $aurora-bump-version to increment the Aurora patch version and verify version consistency."
