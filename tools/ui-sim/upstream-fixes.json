@@ -1,0 +1,191 @@
+{
+  "name": "settings-remote-close-and-dropdown-back-1080p-720p",
+  "steps": [
+    {
+      "resize": "1920 1080"
+    },
+    {
+      "action": "settings"
+    },
+    {
+      "scroll_text": "Resolution"
+    },
+    {
+      "expect": "Resolution"
+    },
+    {
+      "key": "Up"
+    },
+    {
+      "key": "Return"
+    },
+    {
+      "absent": "Resolution"
+    },
+    {
+      "action": "settings"
+    },
+    {
+      "scroll_text": "Resolution"
+    },
+    {
+      "expect": "Resolution"
+    },
+    {
+      "click_text": "Input"
+    },
+    {
+      "expect": "Mouse"
+    },
+    {
+      "click_text": "Send as touchpad"
+    },
+    {
+      "wait": 150
+    },
+    {
+      "key": "Escape"
+    },
+    {
+      "expect": "Mode"
+    },
+    {
+      "wait": 200
+    },
+    {
+      "key": "Escape"
+    },
+    {
+      "absent": "Mode"
+    },
+    {
+      "scroll_text": "Resolution"
+    },
+    {
+      "expect": "Resolution"
+    },
+    {
+      "key": "Escape"
+    },
+    {
+      "absent": "Resolution"
+    },
+    {
+      "action": "settings"
+    },
+    {
+      "click_text": "Input"
+    },
+    {
+      "expect": "Mouse"
+    },
+    {
+      "key": "Escape"
+    },
+    {
+      "scroll_text": "Resolution"
+    },
+    {
+      "expect": "Resolution"
+    },
+    {
+      "key": "Escape"
+    },
+    {
+      "absent": "Resolution"
+    },
+    {
+      "resize": "1280 720"
+    },
+    {
+      "action": "settings"
+    },
+    {
+      "scroll_text": "Resolution"
+    },
+    {
+      "expect": "Resolution"
+    },
+    {
+      "key": "Up"
+    },
+    {
+      "key": "Return"
+    },
+    {
+      "absent": "Resolution"
+    },
+    {
+      "action": "settings"
+    },
+    {
+      "scroll_text": "Resolution"
+    },
+    {
+      "expect": "Resolution"
+    },
+    {
+      "click_text": "Input"
+    },
+    {
+      "expect": "Mouse"
+    },
+    {
+      "click_text": "Send as touchpad"
+    },
+    {
+      "wait": 150
+    },
+    {
+      "key": "Escape"
+    },
+    {
+      "expect": "Mode"
+    },
+    {
+      "wait": 200
+    },
+    {
+      "key": "Escape"
+    },
+    {
+      "absent": "Mode"
+    },
+    {
+      "scroll_text": "Resolution"
+    },
+    {
+      "expect": "Resolution"
+    },
+    {
+      "key": "Escape"
+    },
+    {
+      "absent": "Resolution"
+    },
+    {
+      "action": "settings"
+    },
+    {
+      "click_text": "Input"
+    },
+    {
+      "expect": "Mouse"
+    },
+    {
+      "key": "Escape"
+    },
+    {
+      "scroll_text": "Resolution"
+    },
+    {
+      "expect": "Resolution"
+    },
+    {
+      "key": "Escape"
+    },
+    {
+      "absent": "Resolution"
+    }
+  ]
+}

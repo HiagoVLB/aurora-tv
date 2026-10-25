@@ -2,6 +2,21 @@ add_subdirectory(e2e)
 
 add_unit_test(test_settings test_settings.c)
 
+add_executable(test_connection_notice test_connection_notice.c)
+target_compile_options(test_connection_notice PRIVATE -UNDEBUG)
+target_link_libraries(test_connection_notice PRIVATE moonlight-lib)
+add_test(NAME test_connection_notice COMMAND test_connection_notice)
+
+if (NOT TARGET_WEBOS)
+    add_executable(test_i18n_webos test_i18n_webos.c
+        ../../src/app/platform/webos/i18n_webos.c ../../src/app/util/path.c)
+    target_include_directories(test_i18n_webos PRIVATE webos_mocks ../../src/app
+        ../../third_party/commons/util/logging ${SDL2_INCLUDE_DIRS})
+    target_compile_options(test_i18n_webos PRIVATE -UNDEBUG)
+    target_link_libraries(test_i18n_webos PRIVATE ${SDL2_LIBRARIES})
+    add_test(NAME test_i18n_webos COMMAND test_i18n_webos)
+endif ()
+
 add_subdirectory(backend)
 add_subdirectory(ui)
 # Compile the writer directly with a small cap to exercise many rollovers.

@@ -1,4 +1,12 @@
 add_unit_test(ml_plat_crypto_tests platform_crypto_tests.c)
+
+# Guard the nanors work buffer, including recovery of every data shard.
+add_executable(test_nanors test_nanors.c ../../core/moonlight-common-c/nanors/rs.c)
+target_include_directories(test_nanors PRIVATE ../../core/moonlight-common-c/nanors
+    ../../core/moonlight-common-c/nanors/deps ../../core/moonlight-common-c/nanors/deps/obl)
+target_compile_definitions(test_nanors PRIVATE OBLAS_TINY)
+target_compile_options(test_nanors PRIVATE -UNDEBUG)
+add_test(NAME test_nanors COMMAND test_nanors)
 target_link_libraries(ml_plat_crypto_tests PRIVATE moonlight-common-c Threads::Threads)
 target_include_directories(ml_plat_crypto_tests PRIVATE ${CMAKE_SOURCE_DIR}/core/moonlight-common-c/src)
 

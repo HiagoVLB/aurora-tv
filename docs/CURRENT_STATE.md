@@ -34,6 +34,39 @@ ignore cases passed. Nine release-helper tests, version consistency (1.3.3),
 maintained Bash entry-point syntax, and `git diff --check` passed. No IPK build,
 TV installation, or physical streaming test was performed for this cleanup.
 
+## Version 1.3.5 (2026-10-25)
+
+At the user's request, bumped the central source version from **1.3.4** to
+**1.3.5** for the selective upstream stability fixes below. The version contract
+check confirms appinfo, `APP_VERSION` and the ELF marker derive from that
+central value. Build/release helper tests passed after the bump; the earlier
+compile, sanitizer and UI results below were obtained before this version-only
+change. No new IPK, tag, release or TV installation was requested or produced.
+Pre-existing dirty SS4S source edits remain local and outside this commit.
+
+## Selective Aurora upstream fixes (2026-10-25)
+
+Compared local `bb693bf9` with freshly fetched GuiDev1994/Aurora `main`
+`916f3810` (v1.3.2). Ported the nanors packet-recovery buffer-overrun fix
+(moonlight-common-c `9ae7cbb0` → `b86ffb75`, exactly one commit), webOS
+translation cache/lifetime fix, main-thread connection notices, quit-worker
+server snapshot/client cleanup, SDL/NDL window-ID self-copy guard, embedded
+settings Close/Back fixes, and CMake argument quoting. The review used local
+version 1.3.4; the subsequent version bump is recorded above. Existing dirty
+SS4S patch is preserved byte-for-byte; audio, pacing,
+protocol/session policy, remote mappings, settings migration, SDK and theme
+changes were not imported.
+
+Linux Debug and webOS ARM RelWithDebInfo builds passed. Four new CTests passed;
+packet-recovery and translation regressions reproduced against old code and
+passed ASan/UBSan/leak checks after the port. Full CTest passed 35/37; existing
+`test_pref_fps`/`test_pref_res` fixture failures also reproduce with the pre-port
+settings controller. Ten Python helper tests passed. No new IPK or TV deployment.
+The SDL/LVGL simulator passed 124 steps in English/pt-BR at 1080p/720p for Close,
+dropdown Back, pane dismissal and reopening; captures inspected.
+Commit selection, deferred changes, validation and limits are recorded in the
+[upstream review](UPSTREAM_REVIEW_2026-10-25.md).
+
 ## Identity of the inspected version
 
 The following identities record the original comparison/automation inspection;
@@ -47,7 +80,7 @@ they do not identify every later working-tree change described in this file.
 
 Reference SHAs identify the code read. Remote HEAD was not rechecked during skill
 creation; these are not guaranteed latest versions. `CMakeLists.txt` declares
-**1.3.4**; that alone does not prove which IPK is installed. User target:
+**1.3.5**; that alone does not prove which IPK is installed. User target:
 **LG C2**. Historical **C5 + eARC** evidence in
 [streaming history](WEBOS_STREAMING_HISTORY.md) does not validate C2.
 
@@ -208,7 +241,7 @@ reviews did not change streaming.
   APP_VERSION, ELF `aurora-v` marker derive from it.
 - Default increment: `python3 scripts/dev/aurora_version.py --part patch --apply`.
   Without `--apply`, dry run only. Version at skill creation: **1.3.1**; current
-  central version **1.3.4**. Build/increment are separate operations.
+  central version **1.3.5**. Build/increment are separate operations.
 - Generating a package neither installs it nor proves C2 operation.
 - **2026-10-19** validation: real Linux/amd64 Docker build, ARM target,
   RelWithDebInfo, helper completed. `aurora.ipk` **1.3.1**, metadata/ELF/version
