@@ -4,6 +4,7 @@
 #include "app_settings.h"
 #include "ui/root.h"
 #include "ui/launcher/launcher.controller.h"
+#include "ui/streaming/streaming.controller.h"
 #include "util/path.h"
 #include <SDL_image.h>
 #include <poll.h>
@@ -14,6 +15,41 @@
 
 static app_t app;
 static const char *artifact_dir;
+static streaming_controller_t menu_fixture;
+static lv_group_t *menu_previous_group;
+
+static void close_menu_fixture(void) {
+    if (!menu_fixture.detached_root) return;
+    app_input_set_group(&app.ui.input, menu_previous_group);
+    lv_obj_del(menu_fixture.detached_root);
+    lv_group_del(menu_fixture.group);
+    streaming_styles_reset(&menu_fixture);
+    memset(&menu_fixture, 0, sizeof(menu_fixture));
+}
+
+static void menu_cancel_cb(lv_event_t *event) {
+    LV_UNUSED(event);
+    close_menu_fixture();
+}
+
+static bool open_menu_fixture(void) {
+    if (menu_fixture.detached_root || app.session) return false;
+    menu_previous_group = app_input_get_group(&app.ui.input);
+    menu_fixture.global = &app;
+    streaming_styles_init(&menu_fixture);
+    streaming_scene_create(&menu_fixture.base, lv_layer_top());
+    lv_obj_set_style_bg_color(menu_fixture.detached_root, lv_color_black(), 0);
+    lv_obj_set_style_bg_opa(menu_fixture.detached_root, LV_OPA_COVER, 0);
+    lv_obj_add_flag(menu_fixture.stats, LV_OBJ_FLAG_HIDDEN);
+    lv_obj_add_flag(menu_fixture.hint, LV_OBJ_FLAG_HIDDEN);
+    lv_obj_clear_flag(menu_fixture.overlay, LV_OBJ_FLAG_HIDDEN);
+    lv_obj_add_event_cb(menu_fixture.overlay, menu_cancel_cb, LV_EVENT_CANCEL, NULL);
+    app_input_set_group(&app.ui.input, menu_fixture.group);
+    lv_group_focus_obj(menu_fixture.kbd_btn);
+    /* Production view/navigation only: no session or action callbacks, so
+     * Disconnect/End session cannot reach a host from this fixture. */
+    return true;
+}
 
 static int load_settings(app_settings_t *settings) {
     bool persistent;
@@ -291,6 +327,11 @@ static bool command(char *line) {
     if (strcmp(line, "shot") == 0) return screenshot(argument);
     if (strcmp(line, "tree") == 0) return tree(argument);
     if (strcmp(line, "action") == 0) {
+        if (strcmp(argument, "stream_menu") == 0) {
+            bool opened = open_menu_fixture();
+            wait_ui(250);
+            return opened;
+        }
         launcher_fragment_t *launcher = launcher_instance();
         if (!launcher) return false;
         lv_obj_t *button = NULL;
@@ -333,6 +374,7 @@ int main(int argc, char **argv) {
         bool ok = command(line);
         printf("AURORA_SIM\t%s\n", ok ? "OK" : "ERROR");
     }
+    close_menu_fixture();
     app_deinit(&app);
     return 0;
 }

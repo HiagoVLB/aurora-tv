@@ -19,6 +19,16 @@
 
 bool stream_input_webos_intercept_remote_keys(stream_input_t *input, const SDL_KeyboardEvent *event, short *keyCode) {
     session_t *session = input->session;
+    /* The TV remote's number buttons arrive as ordinary SDL digit scancodes.
+     * USB keyboards grabbed through evdev retain their physical key mapping. */
+    if (event->keysym.scancode >= SDL_SCANCODE_1 && event->keysym.scancode <= SDL_SCANCODE_9) {
+        *keyCode = VK_NUMPAD1 + event->keysym.scancode - SDL_SCANCODE_1;
+        return false;
+    }
+    if (event->keysym.scancode == SDL_SCANCODE_0) {
+        *keyCode = VK_NUMPAD0;
+        return false;
+    }
     switch ((unsigned int) event->keysym.scancode) {
         case SDL_SCANCODE_WEBOS_EXIT: {
             if (event->state == SDL_PRESSED) {
@@ -27,9 +37,9 @@ bool stream_input_webos_intercept_remote_keys(stream_input_t *input, const SDL_K
             return true;
         }
         case SDL_SCANCODE_WEBOS_HOME: {
-            /* During streaming, forward Home to the host (e.g. Reshade); ribbon when idle/view-only. */
+            /* The remote's Home opens the host's Start menu; ribbon when idle/view-only. */
             if (session != NULL && !input->view_only) {
-                *keyCode = VK_HOME;
+                *keyCode = VK_LWIN;
                 return false;
             }
             if (event->state == SDL_RELEASED) {

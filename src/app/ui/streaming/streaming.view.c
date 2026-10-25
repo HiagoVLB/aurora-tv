@@ -21,6 +21,20 @@ static lv_obj_t *gfn_section_title(lv_obj_t *parent, const char *title);
 
 static lv_obj_t *gfn_kv_row(lv_obj_t *parent, const char *key);
 
+static void overlay_key_cb(lv_event_t *e) {
+    streaming_controller_t *controller = lv_event_get_user_data(e);
+    switch (lv_event_get_key(e)) {
+        case LV_KEY_LEFT:
+            lv_group_focus_prev(controller->group);
+            break;
+        case LV_KEY_RIGHT:
+            lv_group_focus_next(controller->group);
+            break;
+        default:
+            break;
+    }
+}
+
 lv_obj_t *streaming_scene_create(lv_fragment_t *self, lv_obj_t *parent) {
     streaming_controller_t *controller = (streaming_controller_t *) self;
     lv_obj_t *obj = lv_obj_create(parent);
@@ -40,6 +54,7 @@ lv_obj_t *streaming_scene_create(lv_fragment_t *self, lv_obj_t *parent) {
     controller->overlay = overlay;
 
     controller->group = lv_group_create();
+    lv_obj_add_event_cb(overlay, overlay_key_cb, LV_EVENT_KEY, controller);
     lv_obj_add_event_cb(overlay, cb_child_group_add, LV_EVENT_CHILD_CREATED, controller->group);
 
     lv_obj_clear_flag(overlay, LV_OBJ_FLAG_SCROLLABLE);
@@ -75,7 +90,7 @@ lv_obj_t *streaming_scene_create(lv_fragment_t *self, lv_obj_t *parent) {
     lv_obj_clear_flag(actions, LV_OBJ_FLAG_CLICKABLE);
     lv_obj_set_layout(actions, LV_LAYOUT_FLEX);
     lv_obj_set_flex_align(actions, LV_FLEX_ALIGN_SPACE_BETWEEN, LV_FLEX_ALIGN_END, LV_FLEX_ALIGN_END);
-    lv_obj_set_style_pad_gap(actions, LV_DPX(15), 0);
+    lv_obj_set_style_pad_gap(actions, LV_DPX(24), 0);
     lv_obj_set_style_pad_all(actions, LV_DPX(20), 0);
     static const lv_grad_dsc_t actions_grad = {
             .dir = LV_GRAD_DIR_VER,
@@ -94,8 +109,9 @@ lv_obj_t *streaming_scene_create(lv_fragment_t *self, lv_obj_t *parent) {
     lv_obj_t *kbd_btn = lv_btn_create(actions);
     lv_obj_add_flag(kbd_btn, LV_OBJ_FLAG_EVENT_BUBBLE);
     lv_obj_add_style(kbd_btn, &controller->overlay_button_style, 0);
-    lv_obj_add_style(kbd_btn, &controller->overlay_button_style_focused, LV_STATE_FOCUS_KEY);
+    lv_obj_add_style(kbd_btn, &controller->overlay_button_style_focused, LV_STATE_FOCUSED);
     lv_obj_set_style_bg_color(kbd_btn, lv_palette_main(LV_PALETTE_BLUE), 0);
+    lv_obj_set_style_bg_color(kbd_btn, lv_palette_lighten(LV_PALETTE_BLUE, 2), LV_STATE_FOCUSED);
     lv_obj_t *kbd_label = lv_label_create(kbd_btn);
     lv_obj_add_style(kbd_label, &controller->overlay_button_label_style, 0);
     lv_label_set_text(kbd_label, locstr("Full keyboard"));
@@ -103,8 +119,9 @@ lv_obj_t *streaming_scene_create(lv_fragment_t *self, lv_obj_t *parent) {
     lv_obj_t *vmouse_btn = lv_btn_create(actions);
     lv_obj_add_flag(vmouse_btn, LV_OBJ_FLAG_EVENT_BUBBLE);
     lv_obj_add_style(vmouse_btn, &controller->overlay_button_style, 0);
-    lv_obj_add_style(vmouse_btn, &controller->overlay_button_style_focused, LV_STATE_FOCUS_KEY);
+    lv_obj_add_style(vmouse_btn, &controller->overlay_button_style_focused, LV_STATE_FOCUSED);
     lv_obj_set_style_bg_color(vmouse_btn, lv_palette_main(LV_PALETTE_GREEN), 0);
+    lv_obj_set_style_bg_color(vmouse_btn, lv_palette_lighten(LV_PALETTE_GREEN, 2), LV_STATE_FOCUSED);
     lv_obj_t *vmouse_label = lv_label_create(vmouse_btn);
     lv_obj_add_style(vmouse_label, &controller->overlay_button_label_style, 0);
     lv_label_set_text(vmouse_label, locstr("Virtual Mouse"));
@@ -116,8 +133,9 @@ lv_obj_t *streaming_scene_create(lv_fragment_t *self, lv_obj_t *parent) {
     lv_obj_t *suspend_btn = lv_btn_create(actions);
     lv_obj_add_flag(suspend_btn, LV_OBJ_FLAG_EVENT_BUBBLE);
     lv_obj_add_style(suspend_btn, &controller->overlay_button_style, 0);
-    lv_obj_add_style(suspend_btn, &controller->overlay_button_style_focused, LV_STATE_FOCUS_KEY);
+    lv_obj_add_style(suspend_btn, &controller->overlay_button_style_focused, LV_STATE_FOCUSED);
     lv_obj_set_style_bg_color(suspend_btn, lv_palette_main(LV_PALETTE_AMBER), 0);
+    lv_obj_set_style_bg_color(suspend_btn, lv_palette_lighten(LV_PALETTE_AMBER, 2), LV_STATE_FOCUSED);
     lv_obj_t *suspend_lbl = lv_label_create(suspend_btn);
     lv_obj_add_style(suspend_lbl, &controller->overlay_button_label_style, 0);
     lv_label_set_text(suspend_lbl, locstr("Disconnect"));
@@ -125,11 +143,24 @@ lv_obj_t *streaming_scene_create(lv_fragment_t *self, lv_obj_t *parent) {
     lv_obj_t *exit_btn = lv_btn_create(actions);
     lv_obj_add_flag(exit_btn, LV_OBJ_FLAG_EVENT_BUBBLE);
     lv_obj_add_style(exit_btn, &controller->overlay_button_style, 0);
-    lv_obj_add_style(exit_btn, &controller->overlay_button_style_focused, LV_STATE_FOCUS_KEY);
+    lv_obj_add_style(exit_btn, &controller->overlay_button_style_focused, LV_STATE_FOCUSED);
     lv_obj_set_style_bg_color(exit_btn, lv_palette_main(LV_PALETTE_RED), 0);
+    lv_obj_set_style_bg_color(exit_btn, lv_palette_lighten(LV_PALETTE_RED, 2), LV_STATE_FOCUSED);
     lv_obj_t *exit_lbl = lv_label_create(exit_btn);
     lv_obj_add_style(exit_lbl, &controller->overlay_button_label_style, 0);
     lv_label_set_text(exit_lbl, locstr("End session"));
+
+    lv_obj_t *buttons[] = {kbd_btn, vmouse_btn, suspend_btn, exit_btn};
+    for (size_t i = 0; i < sizeof(buttons) / sizeof(buttons[0]); i++) {
+        /* Replace the theme's keyboard-only ring with the same visible focus
+         * for the remote, gamepad and pointer. Local theme props override styles. */
+        lv_obj_remove_local_style_prop(buttons[i], LV_STYLE_OUTLINE_WIDTH, LV_STATE_FOCUS_KEY);
+        lv_obj_remove_local_style_prop(buttons[i], LV_STYLE_OUTLINE_PAD, LV_STATE_FOCUS_KEY);
+        lv_obj_remove_local_style_prop(buttons[i], LV_STYLE_OUTLINE_COLOR, LV_STATE_FOCUS_KEY);
+        lv_obj_remove_local_style_prop(buttons[i], LV_STYLE_OUTLINE_OPA, LV_STATE_FOCUS_KEY);
+        lv_obj_add_style(buttons[i], &controller->overlay_button_style_focused, LV_STATE_FOCUS_KEY);
+        lv_obj_set_style_text_color(buttons[i], lv_color_black(), 0);
+    }
 
     lv_obj_t *stats = lv_obj_create(overlay);
     lv_obj_remove_style_all(stats);
@@ -255,8 +286,13 @@ void streaming_styles_init(streaming_controller_t *controller) {
     lv_style_set_radius(&controller->overlay_button_style, LV_DPX(8));
     lv_style_set_pad_hor(&controller->overlay_button_style, LV_DPX(15));
     lv_style_set_pad_ver(&controller->overlay_button_style, LV_DPX(10));
+    lv_style_set_outline_width(&controller->overlay_button_style, 0);
     lv_style_init(&controller->overlay_button_style_focused);
-    lv_style_set_outline_color(&controller->overlay_button_style_focused, lv_palette_lighten(LV_PALETTE_BLUE, 3));
+    lv_style_set_outline_color(&controller->overlay_button_style_focused, lv_color_white());
+    lv_style_set_outline_width(&controller->overlay_button_style_focused, LV_DPX(3));
+    lv_style_set_outline_pad(&controller->overlay_button_style_focused, LV_DPX(4));
+    lv_style_set_outline_opa(&controller->overlay_button_style_focused, LV_OPA_COVER);
+    lv_style_set_transform_zoom(&controller->overlay_button_style_focused, 272);
 
     lv_style_init(&controller->overlay_button_label_style);
     lv_style_set_text_font(&controller->overlay_button_label_style, theme->font_small);

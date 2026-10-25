@@ -30,13 +30,111 @@ Screenshots illustrate the interface and may differ from the current build.
 
 ## Get started
 
-1. Set up a GameStream-compatible host on your PC and expose the games or desktop you want to stream.
-2. Install Aurora on the TV using one of the methods below.
-3. Open Aurora, select a discovered PC or add its IP address, then complete pairing on the host.
-4. Open Settings and choose a resolution, frame rate, codec, and bitrate that your TV and network can sustain.
-5. Select an application to start streaming. Open the **?** button on the home screen for the built-in controls guide.
+### Pair the TV with your PC
+
+1. Start a GameStream-compatible host on the PC, such as Sunshine or VibeShine. Add the games or desktop you want to access to its application list.
+2. Install Aurora on the TV using one of the [installation methods](#install) below. For the first connection, put the PC and TV on the same local network.
+3. Open Aurora and choose your PC from **Select server**. If it does not appear, use the **+** button and enter the PC's local IP address.
+4. Start pairing. Aurora displays a PIN on the TV; enter that PIN in the host's pairing screen on the PC.
+5. After pairing, select the PC to see its applications. Open **?** for the controls guide or the gear button for **Settings**.
+
+### Start a stream and adjust it
+
+1. In **Settings → Stream**, choose a resolution and frame rate. Keep **Video backend** on **Auto** unless you are testing a specific decoder.
+2. Choose HEVC or AV1 if supported, or turn both off to request H.264. Selecting HEVC turns AV1 off, and vice versa.
+3. Set **Bitrate** and **Audio**. Use the channel layout that matches your speakers or audio receiver. Leave optional video tweaks off for the first comparison.
+4. Close Settings to save, then select a game or Desktop from the PC's application list.
+5. During the stream, hold **Back** on the Magic Remote, press **Red / Exit**, or use the [gamepad shortcut](#gamepad-during-streaming) to open the stream menu. Use **Left/Right** to select an action and **OK / A** to activate it; **Back / B** returns to the stream.
+6. Choose **Disconnect** to return to Aurora and resume later, or **End session** to ask the host to close the application after confirmation.
 
 Start with **60 FPS** and a moderate bitrate, then increase one setting at a time. Higher bitrate is useful only when the network, host, and decoder can sustain it. Compare 60 and 120 FPS where supported; a high-refresh panel alone does not establish support for decoding every stream at 120 FPS. The older 3584 × 2016 recommendation came from C5 experiments and is not a universal C2 preset.
+
+### Save changes and resume
+
+Settings are saved when you close the settings screen. Stream format and session options generally take effect on the **next connection**. If Aurora offers **Reconnect streaming**, use it to leave the current stream, then open the application again with the new settings. **Later** keeps the current session running with its existing configuration.
+
+Changing **Virtual Mouse** in the stream menu affects the current session. The option in **Settings → Input** chooses whether it starts enabled in future sessions. **Show logs** takes effect immediately; changing language rebuilds the interface and may also prompt you to reopen Aurora.
+
+The profile selector on the home screen recalls saved resolution, frame rate, bitrate, HDR and HEVC preferences. Those values are saved to the active profile when Settings closes. Other settings, including AV1, are shared between profiles. The **Profile** under adaptive bitrate is a separate choice, explained below.
+
+## Settings guide
+
+These descriptions explain what to change in Aurora and when to use it. Labels below use the English interface; translated menus have the same organization. **Stream** is the main settings list; **Input**, **Host** and **Other** open additional panels. Some controls depend on the TV, selected decoder or connected device.
+
+### Stream: picture, sound and bitrate
+
+| Option | What it does / when to use it |
+| --- | --- |
+| **Resolution** | Requests the stream's image size. Lower it to reduce the workload or compare stability. The host's desktop or game may need a matching resolution. |
+| **Frame rate** | Requests the streaming FPS. Increase it only after the lower rate works reliably; available choices depend on the TV and decoder. |
+| **Bitrate** | Sets the requested video data rate in Mbps. Higher values give the encoder more room for image detail, but also require more bandwidth. The decoder or host can limit the applied value. With adaptive bitrate enabled, this is the starting request, not a fixed ceiling. |
+| **Video backend** | Chooses Aurora's video decoder implementation. **Auto** lets Aurora select one. Change it when comparing compatibility or investigating playback problems. |
+| **HEVC / AV1** | Selects a preferred video format. Only one can be enabled at a time; AV1 is available only when the decoder advertises support. With both off, Aurora requests H.264. The host must also support the chosen format. |
+| **HDR** | Requests HDR streaming. Requires HEVC or AV1 and support from the decoder and host setup. Turn it off when checking an SDR setup or investigating incorrect colors. |
+| **10-bit SDR** | Requests 10-bit video while HDR is off. Requires HEVC or AV1 and host/decoder support. It does not turn HDR on. |
+| **Audio** | Chooses stereo, 5.1 or 7.1 where offered. Match the channel layout supported by the entire TV/speaker/receiver path. |
+| **Full range YUV (SDR only)** | Requests full-range SDR video. Use it when the host and display path expect that range; compare black and white detail after changing it. Disabled while HDR is enabled. |
+| **HEVC sliced frames** | Requests that HEVC frames be encoded in smaller sections. Use it to compare HEVC delivery and latency on a compatible host; improvement is not guaranteed. Unavailable with AV1 or HEVC off. |
+| **Periodic decoder refresh (HEVC)** | Periodically requests a fresh full frame. Use it to investigate recurring HEVC image corruption; each refresh can cause a brief hitch. It is off by default and has no effect with AV1. |
+| **Refresh interval** | Sets the time between periodic refresh requests. Requires HEVC and periodic decoder refresh enabled. Shorter intervals request refreshes more often. |
+| **Adaptive bitrate** | Adjusts bitrate during streaming as conditions change. Requires a host that accepts live bitrate adjustments. Leave it off for a fixed-bitrate comparison. |
+| **Profile** under adaptive bitrate | **Balanced** uses a general adjustment range; **Quality** keeps a higher minimum and recovers upward sooner; **Low latency** allows a lower minimum and limits upward growth more. These change bitrate policy, not resolution or FPS. Requires adaptive bitrate enabled. |
+
+**Why is an option grayed out?** Check the explanation below it. For example, enabling AV1 disables HEVC slices and periodic HEVC refresh; HDR needs HEVC or AV1; the refresh interval needs periodic refresh enabled; the bitrate profile needs adaptive bitrate enabled. A disabled control can retain its saved checkmark or value without being active in that mode.
+
+### Input: remote, mouse and gamepad
+
+| Option | What it does / when to use it |
+| --- | --- |
+| **View-only mode** | Shows the stream without forwarding your controls to the PC. Turn it off to interact with the game or desktop. |
+| **Capture system keys** | Forwards supported system keys, such as Windows/Meta, from the keyboard to the PC. Availability also depends on the TV's keyboard handling. The remote's Home shortcut is handled separately. |
+| **Use mouse hardware**, when available | Reads a supported mouse through the direct device path. Requires device access; unavailable builds omit this control. Enabling it disables the separate absolute mouse mode option. |
+| **Absolute mouse mode** | Sends pointer positions instead of relative movement. Useful for desktop pointing; relative movement is usually needed for games that capture the mouse. |
+| **Analog stick deadzone** | Ignores small movements around the stick's center. Increase it if the pointer or game moves while the stick is untouched; higher values require more movement before input begins. |
+| **Virtual mouse** | Starts each stream with gamepad mouse controls enabled. The stream menu can toggle them for the current session. See the [mouse controls](#virtual-mouse-and-on-screen-keyboard). |
+| **Swap ABXY buttons** | Swaps A/B and X/Y mappings, including Aurora's gamepad navigation, to suit your controller layout. |
+| **Gamepad touchpad → Mode** | **Send as touchpad** forwards controller touch contacts for the host to handle. **Send as mouse** turns the touchpad into a pointer with local mouse gestures. Requires a controller with a supported touchpad. |
+| **Pointer speed** | Changes touchpad pointer sensitivity in **Send as mouse** mode. It does not change analog stick sensitivity. |
+| **Multi-touch gestures** | Allows multiple touch contacts. In mouse mode, this enables gestures such as two-finger scrolling; native touchpad mode forwards the supported contacts to the host. |
+| **Natural scrolling** | Changes touchpad scrolling direction in mouse mode. Toggle it if scrolling feels reversed. |
+| **Report battery to host** | Sends available controller battery information to a compatible host. Requires a controller that exposes its battery level. |
+| **Detect connected gamepads** | Refreshes the controller list and its detected capabilities. Use it to check whether Aurora sees a connected gamepad. |
+| **Test rumble** | Sends a short vibration test to the first connected gamepad. A successful send does not guarantee that the controller physically vibrated. |
+
+### Host: PC and session behavior
+
+| Option | What it does / when to use it |
+| --- | --- |
+| **Optimize for streaming (SOPS)** | Asks the host to apply its streaming optimizations. The host determines whether this request is supported and what it changes. |
+| **Mute PC while streaming** | Requests that audio play through the stream without also playing locally on the PC. Turn it off if you want local PC audio too; behavior depends on the host. |
+| **Quit the game when the stream ends** | Currently saved but not connected to automatic session cleanup. Use **End session** in the stream menu to close the application on the host. |
+| **Resume a running game automatically** | Attempts to resume an application already running on the host when Aurora opens or returns to the foreground. Turn it off if you prefer to choose an application manually. |
+| **Stats overlay on start** | Shows pinned performance stats when streaming begins. |
+| **Compact stats** | Uses a slim stats bar instead of the larger performance panel. Applied when the streaming interface is created. |
+| **NTSC refresh (59.94 / 119.88)**, on webOS | Uses fractional refresh targets for the corresponding 60/120 FPS choices. Use it when matching a 59.94/119.88 setup; it does not enable VRR. |
+
+### Other: language, logs and reset
+
+| Option | What it does / when to use it |
+| --- | --- |
+| **Language** | Chooses the interface language. **System Language** follows the TV/system language. |
+| **Show logs** | Shows live diagnostic messages over the interface. Turn it on while reproducing a problem; turning it off hides the overlay while file logging continues. **Yellow** can also cycle its display mode. |
+| **Game mode**, on supported rooted webOS setups | Tries to apply game picture/sound settings for the session and restore the previous values afterward. Appears only when the required root service is detected; it does not enable HDMI ALLM or VRR. |
+| **Reset all settings to defaults** | Restores preferences after confirmation, keeping PC pairing. This also resets language and stream settings; reconnect an active stream to use the defaults. |
+
+### Make a useful comparison
+
+Use the same game or desktop scene, change one setting, reconnect, then compare. This makes it easier to tell whether a change helped.
+
+| What you notice | What to try in Aurora |
+| --- | --- |
+| Movement breaks up or the stream stalls | Lower bitrate first. Compare a lower frame rate or resolution separately. |
+| Playback works with one codec but fails with another | Return to the working codec. Check the selected video backend and the host's codec support. |
+| Blacks look washed out or dark detail disappears | For SDR, compare the full-range YUV setting with the host/display range configuration. For HDR, check the HDR setup before changing SDR-only controls. |
+| HEVC repeatedly develops a corrupted image | Compare periodic decoder refresh, keeping the rest of the settings unchanged. Check whether the refresh hitch is preferable to the original problem. |
+| The controller is connected but input does nothing | Check **View-only mode**, then use **Detect connected gamepads**. Check whether **Virtual Mouse** is enabled if you expected normal gamepad input. |
+
+For a reproducible problem, use **Show logs** and follow the [diagnostics guide](#diagnostics). The **?** guide also shows the app version and selected backends, which help identify the setup being tested.
 
 ## Install
 
@@ -60,6 +158,8 @@ The **?** button opens a scrollable guide inside Aurora, with controls first and
 | **OK**, short press | Send Enter to the PC. |
 | **Hold OK for at least 0.6 seconds**, then release | Right-click on the PC. |
 | **Channel Up / Down** | Send Page Up / Page Down to the PC. |
+| **Home** | Send the Windows key to the PC during an interactive stream. Outside an interactive stream, keep the TV's Home behavior. |
+| **0–9** | Send Numpad 0–9 to the PC. The host's Num Lock state affects how applications interpret them. |
 | **Yellow** | Cycle the diagnostic log overlay: Off → Live → Frozen → Off. |
 
 ### Gamepad during streaming

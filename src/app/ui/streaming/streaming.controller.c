@@ -51,8 +51,6 @@ static void constructor(lv_fragment_t *self, void *args);
 
 static void controller_dtor(lv_fragment_t *self);
 
-static void overlay_key_cb(lv_event_t *e);
-
 static void update_buttons_layout(streaming_controller_t *controller);
 
 static void pin_toggle(lv_event_t *e);
@@ -528,7 +526,6 @@ static void on_view_created(lv_fragment_t *self, lv_obj_t *view) {
     lv_obj_add_event_cb(controller->kbd_btn, open_keyboard, LV_EVENT_CLICKED, self);
     lv_obj_add_event_cb(controller->vmouse_btn, toggle_vmouse, LV_EVENT_CLICKED, self);
     lv_obj_add_event_cb(controller->base.obj, hide_overlay, LV_EVENT_CLICKED, self);
-    lv_obj_add_event_cb(controller->overlay, overlay_key_cb, LV_EVENT_KEY, controller);
     lv_obj_add_event_cb(controller->base.obj, on_cancel_key, LV_EVENT_CANCEL, controller);
 
     lv_obj_t *notice = lv_obj_create(lv_layer_sys());
@@ -717,6 +714,7 @@ bool show_overlay(streaming_controller_t *controller) {
     }
     overlay_showing = true;
     lv_obj_clear_flag(controller->base.obj, LV_OBJ_FLAG_HIDDEN);
+    lv_group_focus_obj(controller->kbd_btn);
 
     lv_area_t coords = controller->video->coords;
     streaming_enter_overlay(controller->global->session, coords.x1, coords.y1, lv_area_get_width(&coords),
@@ -753,21 +751,6 @@ static void hide_overlay_impl(streaming_controller_t *controller) {
 
 static void hide_overlay(lv_event_t *event) {
     hide_overlay_impl((streaming_controller_t *) lv_event_get_user_data(event));
-}
-
-static void overlay_key_cb(lv_event_t *e) {
-    streaming_controller_t *controller = lv_event_get_user_data(e);
-    lv_group_t *group = controller->group;
-    switch (lv_event_get_key(e)) {
-        case LV_KEY_LEFT:
-            lv_group_focus_prev(group);
-            break;
-        case LV_KEY_RIGHT:
-            lv_group_focus_next(group);
-            break;
-        default:
-            break;
-    }
 }
 
 static void update_buttons_layout(streaming_controller_t *controller) {

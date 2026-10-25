@@ -73,6 +73,11 @@ add_executable(test_session_options test_session_options.c)
 target_link_libraries(test_session_options PRIVATE moonlight-lib)
 add_test(NAME test_session_options COMMAND test_session_options)
 
+add_executable(test_remote_home test_remote_home.c)
+target_link_libraries(test_remote_home PRIVATE moonlight-lib)
+target_compile_options(test_remote_home PRIVATE -UNDEBUG)
+add_test(NAME test_remote_home COMMAND test_remote_home)
+
 add_executable(test_fractional_fps test_fractional_fps.c)
 target_link_libraries(test_fractional_fps PRIVATE moonlight-lib)
 add_test(NAME test_fractional_fps COMMAND test_fractional_fps)

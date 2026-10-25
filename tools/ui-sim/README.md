@@ -70,6 +70,15 @@ HEVC/AV1/HDR sintéticos para testar habilitação e preferências. A saída con
 dummy; isso não valida decodificação. As árvores JSON incluem `checked` nos
 checkboxes para conferir as transições, além do estado `disabled`.
 
+`tools/ui-sim/dependent-options.json` confere as explicações de dependências,
+troca AV1/HEVC, refresh e ABR, a ajuda de Home/Numpad e o foco nas quatro ações
+do menu da sessão. Também requer `AURORA_UI_SIM_VIDEO_FIXTURE=1` no runtime.
+A ação `stream_menu` monta a view real, com navegação, sobre fundo preto e sem
+estatísticas ou sessão. Seus botões não têm callbacks de ação: não inicia stream
+nem envia Disconnect/End session a um host. Escape fecha a fixture e restaura
+o grupo de foco anterior. Isso valida apresentação e navegação, não o envio de
+teclas pela TV; `test_remote_home` exercita o mapeador webOS de Home e Numpad.
+
 ## Roteiros
 
 ```sh
@@ -99,7 +108,7 @@ Comandos de roteiro:
 
 | Comando | Argumento |
 | --- | --- |
-| `action` | `settings`, `add_host`, `help` ou `exit`; clica no botão real da barra |
+| `action` | `settings`, `add_host`, `help` ou `exit`; clica no botão real da barra. `stream_menu` abre a fixture isolada do menu de sessão |
 | `click_text` | Texto exato, em inglês; rola até o item e clica, inclusive em botões de diálogos |
 | `scroll_text` | Rola até o texto sem clicar; útil para inspecionar seções e mensagens |
 | `click` | Coordenadas, por exemplo `"100 200"` |

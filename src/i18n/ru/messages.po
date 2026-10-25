@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: moonlight-tv\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-24 22:39+0000\n"
+"POT-Creation-Date: 2026-10-25 03:34+0000\n"
 "PO-Revision-Date: 2026-10-19 01:15-0300\n"
 "Last-Translator: \n"
 "Language-Team: Russian\n"
@@ -31,7 +31,7 @@ msgstr "Русский"
 #: src/app/ui/settings/panes/other.pane.c:142
 #: src/app/ui/settings/panes/pref_fps.c:160
 #: src/app/ui/settings/panes/pref_res.c:174
-#: src/app/ui/streaming/streaming.controller.c:649
+#: src/app/ui/streaming/streaming.controller.c:646
 msgid "Cancel"
 msgstr "Отмена"
 
@@ -125,32 +125,40 @@ msgid "Send Page Up / Page Down to the PC."
 msgstr "Отправляет Page Up / Page Down на ПК."
 
 #: src/app/ui/help/help.dialog.c:68
+msgid "Send the Windows key to the PC (Start menu)."
+msgstr "Отправить клавишу Windows на ПК (меню «Пуск»)."
+
+#: src/app/ui/help/help.dialog.c:69
+msgid "Send Numpad 0–9 to the PC."
+msgstr "Отправить клавиши цифрового блока 0–9 на ПК."
+
+#: src/app/ui/help/help.dialog.c:70
 msgid "Yellow"
 msgstr "Жёлтая кнопка"
 
-#: src/app/ui/help/help.dialog.c:68
+#: src/app/ui/help/help.dialog.c:70
 msgid "Cycle the diagnostic log overlay: Off, Live, Frozen."
 msgstr ""
 "Переключает режимы журнала диагностики: выключен, в реальном времени, "
 "заморожен."
 
-#: src/app/ui/help/help.dialog.c:70 src/app/ui/settings/panes/input.pane.c:88
+#: src/app/ui/help/help.dialog.c:72 src/app/ui/settings/panes/input.pane.c:88
 msgid "Gamepad"
 msgstr "Геймпад"
 
-#: src/app/ui/help/help.dialog.c:71
+#: src/app/ui/help/help.dialog.c:73
 msgid "LB + RB + Back + Start, then release all"
 msgstr "LB + RB + Back + Start, затем отпустить всё"
 
-#: src/app/ui/help/help.dialog.c:71
+#: src/app/ui/help/help.dialog.c:73
 msgid "Open the stream menu."
 msgstr "Открывает меню трансляции."
 
-#: src/app/ui/help/help.dialog.c:72
+#: src/app/ui/help/help.dialog.c:74
 msgid "Hold Select / Back (4 s)"
 msgstr "Удерживать Select / Back (4 с)"
 
-#: src/app/ui/help/help.dialog.c:73
+#: src/app/ui/help/help.dialog.c:75
 msgid ""
 "Show or hide pinned performance stats. Hold this button alone; it is also "
 "sent to the PC."
@@ -158,19 +166,19 @@ msgstr ""
 "Показывает или скрывает закреплённую статистику производительности. "
 "Удерживайте только эту кнопку; она также отправляется на ПК."
 
-#: src/app/ui/help/help.dialog.c:74
+#: src/app/ui/help/help.dialog.c:76
 msgid "Y / Triangle with virtual mouse enabled"
 msgstr "Y / Треугольник при включённой виртуальной мыши"
 
-#: src/app/ui/help/help.dialog.c:74
+#: src/app/ui/help/help.dialog.c:76
 msgid "Open the on-screen keyboard."
 msgstr "Открывает экранную клавиатуру."
 
-#: src/app/ui/help/help.dialog.c:76 src/app/ui/settings/panes/input.pane.c:97
+#: src/app/ui/help/help.dialog.c:78 src/app/ui/settings/panes/input.pane.c:97
 msgid "Virtual mouse"
 msgstr "Виртуальная мышь"
 
-#: src/app/ui/help/help.dialog.c:77
+#: src/app/ui/help/help.dialog.c:79
 msgid ""
 "Enable Virtual mouse in the stream menu, or enable it in Settings > Input to "
 "start each stream with it."
@@ -178,68 +186,68 @@ msgstr ""
 "Включите виртуальную мышь в меню трансляции или в Настройки > Ввод, чтобы "
 "использовать её с начала каждой сессии."
 
-#: src/app/ui/help/help.dialog.c:78
+#: src/app/ui/help/help.dialog.c:80
 msgid "Right stick / Left stick"
 msgstr "Правый / левый стик"
 
-#: src/app/ui/help/help.dialog.c:78
+#: src/app/ui/help/help.dialog.c:80
 msgid "Move the pointer / scroll."
 msgstr "Перемещение указателя / прокрутка."
 
-#: src/app/ui/help/help.dialog.c:79
+#: src/app/ui/help/help.dialog.c:81
 msgid "LT / RT"
 msgstr "LT / RT"
 
-#: src/app/ui/help/help.dialog.c:79
+#: src/app/ui/help/help.dialog.c:81
 msgid "Left-click / right-click."
 msgstr "Левый / правый щелчок."
 
-#: src/app/ui/help/help.dialog.c:81
+#: src/app/ui/help/help.dialog.c:83
 msgid "On-screen keyboard"
 msgstr "Экранная клавиатура"
 
-#: src/app/ui/help/help.dialog.c:82
+#: src/app/ui/help/help.dialog.c:84
 msgid "D-pad + A / OK"
 msgstr "Крестовина + A / OK"
 
-#: src/app/ui/help/help.dialog.c:82
+#: src/app/ui/help/help.dialog.c:84
 msgid "Move between keys and press the selected key."
 msgstr "Выбирает клавишу и нажимает её."
 
-#: src/app/ui/help/help.dialog.c:83
+#: src/app/ui/help/help.dialog.c:85
 msgid "Y / X / Start"
 msgstr "Y / X / Start"
 
-#: src/app/ui/help/help.dialog.c:83
+#: src/app/ui/help/help.dialog.c:85
 msgid "Space / Backspace / Enter (standard gamepad layout)."
 msgstr "Пробел / Backspace / Enter (стандартная раскладка геймпада)."
 
-#: src/app/ui/help/help.dialog.c:84
+#: src/app/ui/help/help.dialog.c:86
 msgid "LT / LB / RB"
 msgstr "LT / LB / RB"
 
-#: src/app/ui/help/help.dialog.c:84
+#: src/app/ui/help/help.dialog.c:86
 msgid "Switch letters and symbols / move the text cursor left / right."
 msgstr ""
 "Переключает буквы и символы / перемещает текстовый курсор влево / вправо."
 
-#: src/app/ui/help/help.dialog.c:85
+#: src/app/ui/help/help.dialog.c:87
 msgid "B / Back"
 msgstr "B / Back"
 
-#: src/app/ui/help/help.dialog.c:85
+#: src/app/ui/help/help.dialog.c:87
 msgid "Close the keyboard. Gamepad B also sends Escape to the PC."
 msgstr "Закрывает клавиатуру. Кнопка B геймпада также отправляет Esc на ПК."
 
-#: src/app/ui/help/help.dialog.c:87
+#: src/app/ui/help/help.dialog.c:89
 msgid "Leaving a stream"
 msgstr "Выход из трансляции"
 
-#: src/app/ui/help/help.dialog.c:88 src/app/ui/streaming/streaming.view.c:123
+#: src/app/ui/help/help.dialog.c:90 src/app/ui/streaming/streaming.view.c:141
 msgid "Disconnect"
 msgstr "Отключиться"
 
-#: src/app/ui/help/help.dialog.c:88
+#: src/app/ui/help/help.dialog.c:90
 msgid ""
 "Return to Aurora and leave the application running on the PC so you can "
 "resume later."
@@ -247,13 +255,13 @@ msgstr ""
 "Возвращает в Aurora, оставляя приложение на ПК запущенным, чтобы продолжить "
 "позже."
 
-#: src/app/ui/help/help.dialog.c:89
-#: src/app/ui/streaming/streaming.controller.c:649
-#: src/app/ui/streaming/streaming.view.c:132
+#: src/app/ui/help/help.dialog.c:91
+#: src/app/ui/streaming/streaming.controller.c:646
+#: src/app/ui/streaming/streaming.view.c:151
 msgid "End session"
 msgstr "Завершить сеанс"
 
-#: src/app/ui/help/help.dialog.c:89
+#: src/app/ui/help/help.dialog.c:91
 msgid ""
 "Ask the host to close the application after confirmation. Not available for "
 "Remote Monitor / Remote Input streams."
@@ -261,45 +269,45 @@ msgstr ""
 "После подтверждения просит хост закрыть приложение. Недоступно для "
 "трансляций Remote Monitor / Remote Input."
 
-#: src/app/ui/help/help.dialog.c:91
+#: src/app/ui/help/help.dialog.c:93
 msgid "About Aurora"
 msgstr "Об Aurora"
 
-#: src/app/ui/help/help.dialog.c:93
+#: src/app/ui/help/help.dialog.c:95
 msgid "Product"
 msgstr "Продукт"
 
-#: src/app/ui/help/help.dialog.c:93
+#: src/app/ui/help/help.dialog.c:95
 msgid "Aurora - Moonlight streaming client for LG webOS"
 msgstr "Aurora - клиент трансляции Moonlight для LG webOS"
 
-#: src/app/ui/help/help.dialog.c:94
+#: src/app/ui/help/help.dialog.c:96
 msgid "Version"
 msgstr "Версия"
 
-#: src/app/ui/help/help.dialog.c:95
+#: src/app/ui/help/help.dialog.c:97
 msgid "Video decoder"
 msgstr "Видеодекодер"
 
-#: src/app/ui/help/help.dialog.c:96
+#: src/app/ui/help/help.dialog.c:98
 msgid "Audio backend"
 msgstr "Аудиобэкенд"
 
-#: src/app/ui/help/help.dialog.c:99
+#: src/app/ui/help/help.dialog.c:101
 msgid "System"
 msgstr "Система"
 
-#: src/app/ui/help/help.dialog.c:107
+#: src/app/ui/help/help.dialog.c:109
 msgid "Screen resolution"
 msgstr "Разрешение экрана"
 
-#: src/app/ui/help/help.dialog.c:113
+#: src/app/ui/help/help.dialog.c:115
 msgid "Refresh rate"
 msgstr "Частота обновления"
 
-#: src/app/ui/help/help.dialog.c:168 src/app/ui/help/help.dialog.c:173
-#: src/app/ui/streaming/streaming.controller.c:363
-#: src/app/ui/streaming/streaming.controller.c:370
+#: src/app/ui/help/help.dialog.c:170 src/app/ui/help/help.dialog.c:175
+#: src/app/ui/streaming/streaming.controller.c:361
+#: src/app/ui/streaming/streaming.controller.c:368
 msgid "not available"
 msgstr "недоступно"
 
@@ -541,92 +549,126 @@ msgstr ""
 msgid "%s is conflicting with %s"
 msgstr "%s конфликтует с %s"
 
-#: src/app/ui/settings/panes/basic.pane.c:95
+#: src/app/ui/settings/panes/basic.pane.c:97
 msgid "Balanced"
 msgstr "Сбалансированный"
 
-#: src/app/ui/settings/panes/basic.pane.c:96
+#: src/app/ui/settings/panes/basic.pane.c:98
 msgid "Quality"
 msgstr "Качество"
 
-#: src/app/ui/settings/panes/basic.pane.c:97
+#: src/app/ui/settings/panes/basic.pane.c:99
 msgid "Low latency"
 msgstr "Низкая задержка"
 
-#: src/app/ui/settings/panes/basic.pane.c:103
+#: src/app/ui/settings/panes/basic.pane.c:105
 msgid "Auto"
 msgstr "Автоматически"
 
-#: src/app/ui/settings/panes/basic.pane.c:156
-#: src/app/ui/streaming/streaming.view.c:218
+#: src/app/ui/settings/panes/basic.pane.c:158
+#: src/app/ui/streaming/streaming.view.c:249
 msgid "Resolution"
 msgstr "Разрешение"
 
-#: src/app/ui/settings/panes/basic.pane.c:170
+#: src/app/ui/settings/panes/basic.pane.c:172
 msgid "Frame rate"
 msgstr "Частота кадров"
 
-#: src/app/ui/settings/panes/basic.pane.c:177
-#: src/app/ui/settings/panes/basic.pane.c:263
+#: src/app/ui/settings/panes/basic.pane.c:179
+#: src/app/ui/settings/panes/basic.pane.c:272
 msgid "Bitrate"
 msgstr "Битрейт"
 
-#: src/app/ui/settings/panes/basic.pane.c:193
-#: src/app/ui/streaming/streaming.view.c:220
+#: src/app/ui/settings/panes/basic.pane.c:195
+#: src/app/ui/streaming/streaming.view.c:251
 msgid "Video backend"
 msgstr "Видеобэкенд"
 
-#: src/app/ui/settings/panes/basic.pane.c:200
+#: src/app/ui/settings/panes/basic.pane.c:202
 msgid "HEVC"
 msgstr "HEVC"
 
-#: src/app/ui/settings/panes/basic.pane.c:204
+#: src/app/ui/settings/panes/basic.pane.c:206
 msgid "AV1"
 msgstr "AV1"
 
-#: src/app/ui/settings/panes/basic.pane.c:213
+#: src/app/ui/settings/panes/basic.pane.c:216
 msgid "HDR"
 msgstr "HDR"
 
-#: src/app/ui/settings/panes/basic.pane.c:216
+#: src/app/ui/settings/panes/basic.pane.c:220
 msgid "10-bit SDR"
 msgstr "10-битный SDR"
 
-#: src/app/ui/settings/panes/basic.pane.c:219
-#: src/app/ui/streaming/streaming.view.c:224
+#: src/app/ui/settings/panes/basic.pane.c:222
+msgid "Requires HEVC or AV1. Only used with HDR off."
+msgstr "Требуется HEVC или AV1. Используется только при выключенном HDR."
+
+#: src/app/ui/settings/panes/basic.pane.c:224
+#: src/app/ui/streaming/streaming.view.c:255
 msgid "Audio"
 msgstr "Звук"
 
-#: src/app/ui/settings/panes/basic.pane.c:226
-#: src/app/ui/streaming/streaming.view.c:219
+#: src/app/ui/settings/panes/basic.pane.c:231
+#: src/app/ui/streaming/streaming.view.c:250
 msgid "Video"
 msgstr "Видео"
 
-#: src/app/ui/settings/panes/basic.pane.c:228
+#: src/app/ui/settings/panes/basic.pane.c:233
 msgid "Full range YUV (SDR only)"
 msgstr "Полный диапазон YUV (только SDR)"
 
-#: src/app/ui/settings/panes/basic.pane.c:233
+#: src/app/ui/settings/panes/basic.pane.c:237
+msgid "Turn HDR off to use this option."
+msgstr "Выключите HDR, чтобы использовать эту опцию."
+
+#: src/app/ui/settings/panes/basic.pane.c:239
 msgid "HEVC sliced frames"
 msgstr "Кадры HEVC со слайсами"
 
-#: src/app/ui/settings/panes/basic.pane.c:239
+#: src/app/ui/settings/panes/basic.pane.c:243
+#: src/app/ui/settings/panes/basic.pane.c:256
+msgid "HEVC only. Unavailable with AV1."
+msgstr "Только HEVC. Недоступно с AV1."
+
+#: src/app/ui/settings/panes/basic.pane.c:246
 msgid "Periodic decoder refresh (HEVC)"
 msgstr "Периодическое обновление декодера (HEVC)"
 
-#: src/app/ui/settings/panes/basic.pane.c:253
-#: src/app/ui/settings/panes/basic.pane.c:396
-#: src/app/ui/settings/panes/basic.pane.c:399
+#: src/app/ui/settings/panes/basic.pane.c:261
+#: src/app/ui/settings/panes/basic.pane.c:412
+#: src/app/ui/settings/panes/basic.pane.c:415
 msgid "Refresh interval"
 msgstr "Интервал обновления"
 
-#: src/app/ui/settings/panes/basic.pane.c:265
+#: src/app/ui/settings/panes/basic.pane.c:267
+msgid "Enable periodic decoder refresh to adjust the interval."
+msgstr "Включите периодическое обновление декодера, чтобы настроить интервал."
+
+#: src/app/ui/settings/panes/basic.pane.c:274
 msgid "Adaptive bitrate"
 msgstr "Адаптивный битрейт"
 
-#: src/app/ui/settings/panes/basic.pane.c:267
+#: src/app/ui/settings/panes/basic.pane.c:276
 msgid "Profile"
 msgstr "Профиль"
+
+#: src/app/ui/settings/panes/basic.pane.c:282
+msgid "Enable adaptive bitrate to choose a profile."
+msgstr "Включите адаптивный битрейт, чтобы выбрать профиль."
+
+#: src/app/ui/settings/panes/basic.pane.c:314
+msgid "HEVC and AV1 are alternatives. Selecting one turns the other off."
+msgstr "HEVC и AV1 — альтернативы. Включение одного отключает другой."
+
+#: src/app/ui/settings/panes/basic.pane.c:315
+#: src/app/ui/settings/panes/basic.pane.c:318
+msgid "Unavailable with this video backend."
+msgstr "Недоступно с этим видеобэкендом."
+
+#: src/app/ui/settings/panes/basic.pane.c:317
+msgid "Requires HEVC or AV1."
+msgstr "Требуется HEVC или AV1."
 
 #: src/app/ui/settings/panes/host.pane.c:28
 msgid "Optimize for streaming (SOPS)"
@@ -872,7 +914,7 @@ msgstr "Введите своё разрешение:"
 
 #. punktfunk-style: one compact Stream list, then slim side panes
 #: src/app/ui/settings/settings.controller.c:38
-#: src/app/ui/streaming/streaming.view.c:217
+#: src/app/ui/streaming/streaming.view.c:248
 msgid "Stream"
 msgstr "Трансляция"
 
@@ -951,23 +993,23 @@ msgstr ""
 "Для трансляции с ультраширокого монитора может потребоваться изменить "
 "разрешение на формат 16:9."
 
-#: src/app/ui/streaming/streaming.controller.c:330
+#: src/app/ui/streaming/streaming.controller.c:328
 msgid "total"
 msgstr "всего"
 
-#: src/app/ui/streaming/streaming.controller.c:422
+#: src/app/ui/streaming/streaming.controller.c:420
 msgid "Connecting..."
 msgstr "Подключение..."
 
-#: src/app/ui/streaming/streaming.controller.c:450
+#: src/app/ui/streaming/streaming.controller.c:448
 msgid "Disconnecting..."
 msgstr "Отключение..."
 
-#: src/app/ui/streaming/streaming.controller.c:650
+#: src/app/ui/streaming/streaming.controller.c:647
 msgid "End session on PC?"
 msgstr "Завершить сеанс на ПК?"
 
-#: src/app/ui/streaming/streaming.controller.c:651
+#: src/app/ui/streaming/streaming.controller.c:648
 msgid ""
 "This asks the host to close the application or desktop session and restore "
 "its display. To leave it running, choose Disconnect."
@@ -975,60 +1017,60 @@ msgstr ""
 "Просит хост закрыть приложение или сеанс рабочего стола и восстановить "
 "экран. Чтобы оставить сеанс запущенным, выберите Отключиться."
 
-#: src/app/ui/streaming/streaming.view.c:35
+#: src/app/ui/streaming/streaming.view.c:49
 #, c-format
 msgid "Hint: %s"
 msgstr "Подсказка: %s"
 
-#: src/app/ui/streaming/streaming.view.c:101
+#: src/app/ui/streaming/streaming.view.c:117
 msgid "Full keyboard"
 msgstr "Полная клавиатура"
 
-#: src/app/ui/streaming/streaming.view.c:110
+#: src/app/ui/streaming/streaming.view.c:127
 msgid "Virtual Mouse"
 msgstr "Виртуальная мышь"
 
-#: src/app/ui/streaming/streaming.view.c:190
+#: src/app/ui/streaming/streaming.view.c:221
 msgid "Performance"
 msgstr "Производительность"
 
-#: src/app/ui/streaming/streaming.view.c:202
+#: src/app/ui/streaming/streaming.view.c:233
 msgid "FPS"
 msgstr "FPS"
 
-#: src/app/ui/streaming/streaming.view.c:202
+#: src/app/ui/streaming/streaming.view.c:233
 msgid "Game"
 msgstr "Игра"
 
-#: src/app/ui/streaming/streaming.view.c:203
+#: src/app/ui/streaming/streaming.view.c:234
 msgid "Latency"
 msgstr "Задержка"
 
-#: src/app/ui/streaming/streaming.view.c:204
+#: src/app/ui/streaming/streaming.view.c:235
 msgid "Ping"
 msgstr "Ping"
 
-#: src/app/ui/streaming/streaming.view.c:206
+#: src/app/ui/streaming/streaming.view.c:237
 msgid "Network"
 msgstr "Сеть"
 
-#: src/app/ui/streaming/streaming.view.c:207
+#: src/app/ui/streaming/streaming.view.c:238
 msgid "Frame loss"
 msgstr "Потеря кадров"
 
-#: src/app/ui/streaming/streaming.view.c:208
+#: src/app/ui/streaming/streaming.view.c:239
 msgid "Bandwidth"
 msgstr "Пропускная способность"
 
-#: src/app/ui/streaming/streaming.view.c:221
+#: src/app/ui/streaming/streaming.view.c:252
 msgid "Host processing latency"
 msgstr "Задержка обработки на хосте"
 
-#: src/app/ui/streaming/streaming.view.c:222
+#: src/app/ui/streaming/streaming.view.c:253
 msgid "Decoder latency"
 msgstr "Задержка декодера"
 
-#: src/app/ui/streaming/streaming.view.c:223
+#: src/app/ui/streaming/streaming.view.c:254
 msgid "CPU / RAM"
 msgstr "CPU / RAM"
 

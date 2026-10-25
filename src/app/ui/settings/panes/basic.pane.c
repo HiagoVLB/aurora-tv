@@ -38,6 +38,8 @@ typedef struct {
     lv_obj_t *av1_checkbox;
     lv_obj_t *hdr_checkbox;
     lv_obj_t *force_10bit_checkbox;
+    lv_obj_t *av1_note;
+    lv_obj_t *hdr_note;
 
     pref_dropdown_string_entry_t *vdec_entries;
     int vdec_entries_len;
@@ -209,12 +211,15 @@ static lv_obj_t *create_obj(lv_fragment_t *self, lv_obj_t *container) {
         lv_obj_add_state(av1_checkbox, LV_STATE_DISABLED);
     }
     lv_obj_add_event_cb(av1_checkbox, codec_checkbox_cb, LV_EVENT_VALUE_CHANGED, pane);
+    pane->av1_note = pref_desc_label(view, NULL, false);
 
     pane->hdr_checkbox = pref_checkbox(view, locstr("HDR"), &app_configuration->hdr, false);
     lv_obj_add_event_cb(pane->hdr_checkbox, hdr_state_update_cb, LV_EVENT_VALUE_CHANGED, pane);
+    pane->hdr_note = pref_desc_label(view, NULL, false);
 
     pane->force_10bit_checkbox = pref_checkbox(view, locstr("10-bit SDR"), &app_configuration->force_10bit, false);
     lv_obj_add_event_cb(pane->force_10bit_checkbox, hdr_state_update_cb, LV_EVENT_VALUE_CHANGED, pane);
+    pref_desc_label(view, locstr("Requires HEVC or AV1. Only used with HDR off."), false);
 
     lv_obj_t *audio_row = pref_focus_row(view, locstr("Audio"));
     lv_obj_t *ch_dropdown = pref_dropdown_int(audio_row, pane->surround_entries, pane->surround_entries_len,
@@ -229,11 +234,13 @@ static lv_obj_t *create_obj(lv_fragment_t *self, lv_obj_t *container) {
                                          &app_configuration->force_full_color_range, false);
     pane->full_range_checkbox = full_range;
     lv_obj_add_event_cb(full_range, reconnect_cb, LV_EVENT_VALUE_CHANGED, pane);
+    pref_desc_label(view, locstr("Turn HDR off to use this option."), false);
 
     lv_obj_t *sliced = pref_checkbox(view, locstr("HEVC sliced frames"),
                                      &app_configuration->hevc_sliced_frames, false);
     pane->sliced_checkbox = sliced;
     lv_obj_add_event_cb(sliced, reconnect_cb, LV_EVENT_VALUE_CHANGED, pane);
+    pref_desc_label(view, locstr("HEVC only. Unavailable with AV1."), false);
 
     lv_obj_t *idr_checkbox = lv_checkbox_create(view);
     lv_checkbox_set_text(idr_checkbox, locstr("Periodic decoder refresh (HEVC)"));
@@ -246,6 +253,7 @@ static lv_obj_t *create_obj(lv_fragment_t *self, lv_obj_t *container) {
         lv_obj_add_state(idr_checkbox, LV_STATE_CHECKED);
     }
     pane->idr_checkbox = idr_checkbox;
+    pref_desc_label(view, locstr("HEVC only. Unavailable with AV1."), false);
     pane->idr_refresh_slider_value = app_configuration->idr_refresh_interval_ms >= 500
             ? app_configuration->idr_refresh_interval_ms
             : 10000;
@@ -256,6 +264,7 @@ static lv_obj_t *create_obj(lv_fragment_t *self, lv_obj_t *container) {
     pref_style_inline_control(idr_slider);
     pref_row_bind_control(pane->idr_row, idr_slider);
     pane->idr_slider = idr_slider;
+    pref_desc_label(view, locstr("Enable periodic decoder refresh to adjust the interval."), false);
     lv_obj_add_event_cb(idr_checkbox, idr_checkbox_activate, LV_EVENT_CLICKED, pane);
     lv_obj_add_event_cb(idr_slider, idr_refresh_slider_cb, LV_EVENT_VALUE_CHANGED, pane);
     idr_refresh_state_update(pane);
@@ -270,6 +279,7 @@ static lv_obj_t *create_obj(lv_fragment_t *self, lv_obj_t *container) {
                                            &app_configuration->abr_mode, NULL);
     pref_style_inline_control(pane->abr_dropdown);
     pref_row_bind_control(abr_row, pane->abr_dropdown);
+    pref_desc_label(view, locstr("Enable adaptive bitrate to choose a profile."), false);
     lv_obj_add_event_cb(abr_checkbox, abr_checkbox_cb, LV_EVENT_VALUE_CHANGED, pane);
     lv_obj_add_event_cb(pane->abr_dropdown, reconnect_cb, LV_EVENT_VALUE_CHANGED, pane);
     abr_state_update(pane);
@@ -300,6 +310,12 @@ static void hdr_state_update(basic_pane_t *pane) {
     const bool av1_hdr = app_configuration->av1 && (app->ss4s.video_cap.codecs & SS4S_VIDEO_AV1);
     const bool main10_codec = hevc_hdr || av1_hdr;
     bool hdr_ok = main10_codec && app->ss4s.video_cap.hdr;
+    lv_label_set_text(pane->av1_note, (app->ss4s.video_cap.codecs & SS4S_VIDEO_AV1)
+            ? locstr("HEVC and AV1 are alternatives. Selecting one turns the other off.")
+            : locstr("Unavailable with this video backend."));
+    lv_label_set_text(pane->hdr_note, app->ss4s.video_cap.hdr
+            ? locstr("Requires HEVC or AV1.")
+            : locstr("Unavailable with this video backend."));
     if (pane->sliced_checkbox != NULL) {
         if (hevc_hdr && !av1_hdr) lv_obj_clear_state(pane->sliced_checkbox, LV_STATE_DISABLED);
         else lv_obj_add_state(pane->sliced_checkbox, LV_STATE_DISABLED);

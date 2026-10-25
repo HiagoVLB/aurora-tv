@@ -1,6 +1,6 @@
 # Estado atual do Aurora
 
-Linha de base revisada em **24/10/2026**, horário de São Paulo. Este é o ponto de
+Linha de base revisada em **25/10/2026**, horário de São Paulo. Este é o ponto de
 entrada mantido para saber onde estamos e comparar futuras versões. Os relatórios
 detalhados continuam em [integração VibeShine](VIBESHINE_INTEGRATION.md),
 [comparação Nonary/webOS](NONARY_MOONLIGHT_WEBOS_REVIEW.md) e
@@ -35,6 +35,44 @@ navegação/configurações, descoberta e testes/simulador de UI. As novas alter
 locais automatizam IPK/versionamento e fazem a marca do ELF derivar de APP_VERSION.
 Nem todas as áreas foram validadas em hardware; não considerar tudo pronto para
 release. As revisões comparativas anteriores não alteraram o streaming.
+
+## Usabilidade das opções e controle da TV (25/10/2026)
+
+- Stream mantém as opções condicionais visíveis e explica os requisitos junto
+  aos controles: exclusão HEVC/AV1, HDR/10-bit SDR, YUV SDR, slices e refresh
+  exclusivos de HEVC, intervalo de refresh e perfil de bitrate adaptativo.
+  AV1/HDR também indicam indisponibilidade pelo backend. Os valores salvos e
+  a política efetiva da sessão permanecem os mesmos.
+- O menu da sessão destaca a ação em foco com aumento de 6,25%, fundo mais
+  claro e contorno branco, inclusive por ponteiro. Ao reabrir, começa em
+  Teclado completo. As quatro cores de atalho e a confirmação de End session
+  continuam correspondendo às ações existentes.
+- Home do controle envia Windows esquerdo (pressionar/soltar) durante uma
+  sessão interativa, abrindo o menu Iniciar do host. Idle/view-only mantêm o
+  Home da TV; Home físico/virtual conserva sua função de navegação.
+  Números 0–9 recebidos pelo caminho SDL webOS viram Numpad 0–9. O teclado USB
+  capturado via evdev conserva o mapeamento físico; o fallback SDL não distingue
+  números do controle e de teclados sem captura. O resultado depende também do
+  estado de Num Lock no host. Ajuda atualizada para ambos os atalhos.
+- Dez textos novos traduzidos nos 16 catálogos existentes, sem habilitar idiomas.
+  Auditoria gettext/cstrings aprovada, sem ausentes, vazios ou fuzzy. Build Linux
+  e CTests `test_settings`, `test_session_options` e `test_remote_home` aprovados.
+  UI aprovada em 34 execuções/986 etapas: inglês + 16 catálogos, em 1080p/720p,
+  com inspeção das capturas de textos e menu. `uk`/`zh-TW` continuam inativos no
+  produto; foram carregados apenas no simulador. Também aprovados foco por
+  ponteiro e notas de backend sem AV1/HDR em inglês/pt-BR. Evidências em
+  `.cache/usability/`, matriz `ui/matrix-all.json`, capturas `ui/contacts/`.
+  Nenhum IPK foi gerado/instalado nesta alteração. Home, Numpad e a apresentação
+  física na C2 ainda precisam ser conferidos na TV.
+- README ampliado com tutorial de pareamento, primeira sessão, navegação,
+  aplicação de ajustes/perfis e tabelas das opções acessíveis em Stream, Input,
+  Host e Other. Explica dependências, uso prático e comparação de problemas,
+  sem desenvolver teoria de HDR/codecs. Conferidos os nomes e consumidores no
+  código, links locais, âncoras e estrutura Markdown.
+- Pendência documentada no guia: `quitappafter` é exibido e persistido, mas não
+  tem consumidor no encerramento da sessão. A opção **Quit the game when the
+  stream ends** não implementa fechamento automático; a ação explícita
+  **End session** continua sendo o caminho para solicitar `/cancel` ao host.
 
 ## Revisão das opções experimentais e menus (24/10/2026)
 
