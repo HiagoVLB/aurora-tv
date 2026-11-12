@@ -138,5 +138,68 @@ int main(void) {
     const char *message = NULL;
     gs_get_error(&message);
     assert(strstr(message, "Confirm termination") != NULL);
+    /* Host warnings: read through a successful launch, never block it. */
+    const char *wcode = NULL, *wmsg = NULL;
+    assert(!gs_launch_warning(&client, &wcode, &wmsg)); /* a failed launch clears it */
+    server.currentGame = 0;
+    reply = "<root status_code=\"200\"><gamesession>1</gamesession><sessionUrl0>rtsp://fixture/s</sessionUrl0>"
+            "<clientWarning>virtual_display_disabled_by_client</clientWarning></root>";
+    assert(gs_start_app_ex(&client, &server, &config, 9, false, false, false, 0, NULL, NULL) == GS_OK);
+    assert(gs_launch_warning(&client, &wcode, &wmsg));
+    assert(strcmp(wcode, "virtual_display_disabled_by_client") == 0 && wmsg == NULL);
+    free((void *) server.serverInfo.rtspSessionUrl); server.serverInfo.rtspSessionUrl = NULL;
+    reply = "<root status_code=\"200\"><gamesession>1</gamesession><sessionUrl0>rtsp://fixture/s</sessionUrl0>"
+            "<clientWarning>new_code</clientWarning>"
+            "<clientWarningMessage>  Line 1\nLine 2\r\n\xe2\x80\xae" "rev\tok\n4\n5  </clientWarningMessage></root>";
+    assert(gs_start_app_ex(&client, &server, &config, 9, false, false, false, 0, NULL, NULL) == GS_OK);
+    assert(gs_launch_warning(&client, &wcode, &wmsg));
+    assert(strcmp(wcode, "new_code") == 0);
+    assert(strcmp(wmsg, "Line 1\nLine 2\nrev ok\n4 5") == 0); /* XML folds CRLF; bidi dropped; 3 breaks max */
+    free((void *) server.serverInfo.rtspSessionUrl); server.serverInfo.rtspSessionUrl = NULL;
+    /* Next launch without a warning clears the previous one. */
+    reply = "<root status_code=\"200\"><gamesession>1</gamesession></root>";
+    assert(gs_start_app_ex(&client, &server, &config, 9, false, false, false, 0, NULL, NULL) == GS_OK);
+    assert(!gs_launch_warning(&client, &wcode, &wmsg));
+    char wbuf_code[GS_LAUNCH_WARNING_CODE_MAX + 1], wbuf_msg[GS_LAUNCH_WARNING_MESSAGE_MAX + 1];
+    const char *ignored[] = {
+        /* message without code, duplicate code, not started, bad status, bad code chars */
+        "<root status_code=\"200\"><gamesession>1</gamesession><clientWarningMessage>x</clientWarningMessage></root>",
+        "<root status_code=\"200\"><gamesession>1</gamesession><clientWarning>a</clientWarning><clientWarning>b</clientWarning></root>",
+        "<root status_code=\"200\"><gamesession>0</gamesession><clientWarning>a</clientWarning></root>",
+        "<root status_code=\"500\"><gamesession>1</gamesession><clientWarning>a</clientWarning></root>",
+        "<root status_code=\"200\"><gamesession>1</gamesession><clientWarning>a b</clientWarning></root>",
+        "<root status_code=\"200\"><gamesession>1</gamesession><clientWarning>a</clientWarning>",
+    };
+    for (size_t i = 0; i < sizeof(ignored) / sizeof(*ignored); i++) {
+        assert(!xml_launch_warning(ignored[i], strlen(ignored[i]), wbuf_code, sizeof(wbuf_code), wbuf_msg,
+                                   sizeof(wbuf_msg)));
+        assert(wbuf_code[0] == 0 && wbuf_msg[0] == 0);
+    }
+    /* A duplicate message discards the warning; an oversized message is dropped. */
+    const char *dup = "<root status_code=\"200\"><resume>1</resume><clientWarning>a</clientWarning>"
+                      "<clientWarningMessage>x</clientWarningMessage><clientWarningMessage>y</clientWarningMessage></root>";
+    assert(!xml_launch_warning(dup, strlen(dup), wbuf_code, sizeof(wbuf_code), wbuf_msg, sizeof(wbuf_msg)));
+    char big[1400];
+    int off = snprintf(big, sizeof(big), "<root status_code=\"200\"><resume>1</resume><clientWarning>a</clientWarning>"
+                                         "<clientWarningMessage>");
+    memset(big + off, 'x', 600);
+    snprintf(big + off + 600, sizeof(big) - off - 600, "</clientWarningMessage></root>");
+    assert(xml_launch_warning(big, strlen(big), wbuf_code, sizeof(wbuf_code), wbuf_msg, sizeof(wbuf_msg)));
+    assert(strcmp(wbuf_code, "a") == 0 && wbuf_msg[0] == 0);
+    /* Hardware metrics v1: first GPU only, missing readings -1, '.' decimals in any locale. */
+    GS_HOST_METRICS hm;
+    setlocale(LC_NUMERIC, comma_locale ? "pt_BR.UTF-8" : "C");
+    assert(gs_parse_hardware_metrics("{\"version\":1,\"sampled_at_unix_ms\":1,\"interval_ms\":1000,"
+                                     "\"cpu\":{\"cpu_usage_percent\":34.6},\"gpus\":[{\"id\":-5,\"name\":\"RTX\","
+                                     "\"metrics\":{\"gpu_usage_percent\":80,\"gpu_encoder_percent\":45.2,"
+                                     "\"gpu_temperature_c\":71,\"gpu_vram_used_mb\":5120}},"
+                                     "{\"id\":2,\"metrics\":{\"gpu_usage_percent\":3}}]}", &hm) == GS_OK);
+    setlocale(LC_NUMERIC, "C");
+    assert(hm.interval_ms == 1000 && hm.cpu_usage_percent == 35 && hm.gpu_usage_percent == 80);
+    assert(hm.gpu_encoder_percent == 45 && hm.gpu_temperature_c == 71 && hm.gpu_vram_used_mb == 5120);
+    assert(gs_parse_hardware_metrics("{\"version\":1,\"interval_ms\":1000,\"cpu\":{},\"gpus\":[]}", &hm) == GS_OK);
+    assert(hm.cpu_usage_percent == -1 && hm.gpu_usage_percent == -1 && hm.gpu_temperature_c == -1);
+    assert(gs_parse_hardware_metrics("{\"version\":2,\"cpu\":{\"cpu_usage_percent\":5}}", &hm) != GS_OK);
+    assert(gs_parse_hardware_metrics("{\"error\":\"Hardware metrics are disabled\"}", &hm) != GS_OK);
     puts("VibeShine protocol tests passed");
 }

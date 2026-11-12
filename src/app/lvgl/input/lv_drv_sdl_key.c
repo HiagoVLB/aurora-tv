@@ -494,10 +494,10 @@ static bool read_webos_key(app_ui_input_t *input, const SDL_KeyboardEvent *event
             return false;
         }
         case SDL_SCANCODE_WEBOS_HOME: {
-            /* TV Home everywhere. In the stream menu (session open), launch once on
-             * release; the stream disconnects when Aurora goes to the background. */
+            /* TV Home everywhere. In the stream menu (session open), act once on
+             * release: disconnect first, then open the LG home. */
             if (app->session == NULL || event->type == SDL_KEYUP) {
-                app_webos_open_ribbon();
+                app_webos_go_home(app->session);
             }
             return false;
         }

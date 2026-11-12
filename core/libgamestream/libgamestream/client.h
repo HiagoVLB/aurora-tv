@@ -76,6 +76,10 @@ int gs_start_app(GS_CLIENT hnd, PSERVER_DATA server, PSTREAM_CONFIGURATION confi
 int gs_start_app_ex(GS_CLIENT hnd, PSERVER_DATA server, PSTREAM_CONFIGURATION config, int appId, bool is_gfe,
                     bool sops, bool localaudio, int gamepad_mask, const char *surround_params, const char *app_uuid);
 
+/* Warning returned by the last successful gs_start_app_ex (VibeShine
+ * clientWarning/clientWarningMessage). Pointers stay valid until the next launch. */
+bool gs_launch_warning(GS_CLIENT hnd, const char **code, const char **message);
+
 int gs_applist(GS_CLIENT hnd, const SERVER_DATA *server, PAPP_LIST *app_list);
 
 int gs_unpair(GS_CLIENT hnd, PSERVER_DATA server);
@@ -116,6 +120,21 @@ int gs_set_bitrate(GS_CLIENT hnd, const SERVER_DATA *server, int bitrate_kbps);
 int gs_set_bitrate_ex(GS_CLIENT hnd, const SERVER_DATA *server, int bitrate_kbps, int *applied_kbps);
 
 int gs_get_abr_capabilities(GS_CLIENT hnd, const SERVER_DATA *server, GS_ABR_CAPABILITIES *caps);
+
+/* VibeShine hardware metrics v1 (GET /api/hardware-metrics on the paired HTTPS
+ * port; opt-in `hardware_metrics` on the host). Missing readings are -1; only the
+ * first listed GPU is read. interval_ms is the host's minimum polling interval. */
+typedef struct {
+    int interval_ms;
+    int cpu_usage_percent;
+    int gpu_usage_percent;
+    int gpu_encoder_percent;
+    int gpu_temperature_c;
+    int gpu_vram_used_mb;
+} GS_HOST_METRICS;
+
+int gs_parse_hardware_metrics(const char *json, GS_HOST_METRICS *out);
+int gs_get_hardware_metrics(GS_CLIENT hnd, const SERVER_DATA *server, GS_HOST_METRICS *out);
 
 int gs_set_abr_mode(GS_CLIENT hnd, const SERVER_DATA *server, const GS_ABR_CONFIG *config);
 

@@ -161,7 +161,7 @@ The **?** button opens a scrollable guide inside Aurora, with controls first and
 | **OK**, short press | Send Enter to the PC. |
 | **Hold OK for at least 0.6 seconds**, then release | Right-click on the PC. |
 | **Channel Up / Down** | Send Page Up / Page Down to the PC. |
-| **Home** | Go to the LG home screen. Aurora goes to the background, the stream disconnects and the game keeps running on the PC; reopening Aurora can resume it. |
+| **Home** | Go to the LG home screen. Aurora first disconnects the stream (the game keeps running on the PC), then opens the LG home; resume the game from Aurora. |
 | **0–9** | Send Numpad 0–9 to the PC. The host's Num Lock state affects how applications interpret them. |
 
 ### Gamepad during streaming

@@ -8,6 +8,7 @@
 #include "stream/input/session_input.h"
 #include "stream/session.h"
 #include "stream/adaptive_bitrate.h"
+#include "stream/host_metrics.h"
 #include "embed_wrapper.h"
 
 #if TARGET_WEBOS
@@ -43,6 +44,7 @@ struct session_t {
     SDL_Thread *thread;
     SS4S_Player *player;
     adaptive_bitrate_service_t *abr;
+    host_metrics_service_t *host_metrics;
 #if TARGET_WEBOS
     bool webos_hdr; /* protected by mutex; applied only by the session worker */
 #endif

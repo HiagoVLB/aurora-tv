@@ -47,6 +47,16 @@ int xml_modelist(char *data, size_t len, PDISPLAY_MODE *mode_list);
 
 int xml_status(char *data, size_t len);
 int xml_status_ex(char *data, size_t len, int *status_code, char *message, size_t message_size);
+/* Optional launch/resume warning (VibeShine `clientWarning`, optional
+ * `clientWarningMessage`). Read only from a well-formed status 200 response that
+ * started a stream; a duplicate field or a message without a code is ignored.
+ * The message is plain text: control/bidi characters removed, at most three line
+ * breaks, and dropped when longer than GS_LAUNCH_WARNING_MESSAGE_MAX bytes.
+ * Returns true when a warning code was found. */
+#define GS_LAUNCH_WARNING_CODE_MAX 64
+#define GS_LAUNCH_WARNING_MESSAGE_MAX 512
+bool xml_launch_warning(const char *data, size_t len, char *code, size_t code_size, char *message,
+                        size_t message_size);
 /* VibeShine advertises synthetic controls using stable, reserved UUIDs. */
 bool xml_app_is_remote_control(const APP_LIST *app);
 bool xml_app_is_remote_display(const APP_LIST *app);

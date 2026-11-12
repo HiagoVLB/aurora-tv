@@ -37,11 +37,10 @@ bool stream_input_webos_intercept_remote_keys(stream_input_t *input, const SDL_K
             return true;
         }
         case SDL_SCANCODE_WEBOS_HOME: {
-            /* Home is the TV's Home: go to the LG home screen. Aurora goes to the
-             * background, the stream disconnects and the game keeps running on the PC.
-             * The Windows key moved to GREEN. */
+            /* Home is the TV's Home: disconnect (the game keeps running on the PC),
+             * then go to the LG home screen. The Windows key moved to GREEN. */
             if (event->state == SDL_RELEASED) {
-                app_webos_open_ribbon();
+                app_webos_go_home(session);
             }
             return true;
         }

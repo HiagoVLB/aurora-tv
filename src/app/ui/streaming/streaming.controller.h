@@ -40,6 +40,7 @@ typedef struct {
         lv_obj_t *host_latency;
         lv_obj_t *vdec_latency;
         lv_obj_t *cpu_ram;
+        lv_obj_t *host_load;
         lv_obj_t *audio;
     } stats_items;
     lv_obj_t *stats_compact_label;  /* Single-line stats when show_stats_compact */
@@ -84,3 +85,6 @@ bool streaming_refresh_stats();
 void streaming_toggle_stats_pin(void);
 
 void streaming_notice_show(const char *message);
+
+/* Show a host warning in the notice area for a few seconds. Main thread only. */
+void streaming_host_warning_show(const char *message);

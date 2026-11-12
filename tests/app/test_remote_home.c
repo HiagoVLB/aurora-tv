@@ -1,5 +1,5 @@
 /* Run the actual webOS remote mapping with firmware/UI entry points stubbed. */
-#define app_webos_open_ribbon test_open_ribbon
+#define app_webos_go_home test_go_home
 #define streaming_soft_keyboard_shown test_keyboard_shown
 #define ui_should_block_input test_block_input
 #define bus_pushevent test_post_event
@@ -9,8 +9,12 @@
 #include <stdio.h>
 
 static int ribbon_count;
+static session_t *home_session;
 static int last_event, event_count;
-void test_open_ribbon(void) { ribbon_count++; }
+void test_go_home(session_t *s) {
+    ribbon_count++;
+    home_session = s;
+}
 bool test_keyboard_shown(void) { return false; }
 bool test_block_input(void) { return false; }
 bool test_post_event(int which, void *data1, void *data2) {
@@ -26,8 +30,8 @@ int main(void) {
     stream_input_t input = {.session = &session};
     SDL_KeyboardEvent event = {.keysym.scancode = SDL_SCANCODE_WEBOS_HOME};
     short vk;
-    /* Home is the TV's Home in every state: LG home screen once, on release,
-     * never sent to the PC. */
+    /* Home is the TV's Home in every state: once, on release, never sent to the
+     * PC; with a stream open it gets the session so it disconnects first. */
     for (int state = 0; state < 3; state++) {
         input.session = state == 2 ? NULL : &session;
         input.view_only = state == 1;
@@ -39,6 +43,7 @@ int main(void) {
         event.state = SDL_RELEASED;
         assert(stream_input_webos_intercept_remote_keys(&input, &event, &vk));
         assert(vk == 0 && ribbon_count == 1);
+        assert(home_session == input.session);
     }
     /* Green is the Windows key: both edges reach the host. */
     input.session = &session;
@@ -94,6 +99,6 @@ int main(void) {
         }
         assert(event_count == 1 && last_event == colors[i].user_event);
     }
-    puts("Remote Home -> LG home, Green -> Windows, Numpad 0-9, Yellow menu and Red disconnect passed");
+    puts("Remote Home -> disconnect + LG home, Green -> Windows, Numpad 0-9, Yellow menu and Red disconnect passed");
     return 0;
 }

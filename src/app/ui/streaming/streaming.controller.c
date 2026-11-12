@@ -15,6 +15,7 @@
 #include "util/user_event.h"
 #include "util/i18n.h"
 #include "util/log_overlay.h"
+#include "stream/host_metrics.h"
 #include "logging.h"
 
 #include <stdio.h>
@@ -194,6 +195,36 @@ static void sample_sys_load(void) {
     }
 }
 
+/* "CPU 35% · GPU 80% · Enc 45% · 71°C" from VibeShine hardware metrics; only
+ * the readings the host reported. Returns false when nothing is available. */
+static bool format_host_load(char *buf, size_t size, bool compact) {
+    GS_HOST_METRICS m;
+    if (!host_metrics_snapshot(&m)) {
+        return false;
+    }
+    size_t len = 0;
+    const char *sep = compact ? " " : " \xc2\xb7 ";
+    const struct { int value; const char *fmt; } parts[] = {
+            {m.cpu_usage_percent, compact ? "C%d%%" : "CPU %d%%"},
+            {m.gpu_usage_percent, compact ? "G%d%%" : "GPU %d%%"},
+            {m.gpu_encoder_percent, compact ? "E%d%%" : "Enc %d%%"},
+            {m.gpu_temperature_c, compact ? "%d\xc2\xb0" : "%d\xc2\xb0" "C"},
+    };
+    buf[0] = 0;
+    for (size_t i = 0; i < sizeof(parts) / sizeof(parts[0]); i++) {
+        if (parts[i].value < 0 || len >= size) {
+            continue;
+        }
+        if (len > 0) {
+            len += (size_t) snprintf(buf + len, size - len, "%s", sep);
+        }
+        if (len < size) {
+            len += (size_t) snprintf(buf + len, size - len, parts[i].fmt, parts[i].value);
+        }
+    }
+    return buf[0] != 0;
+}
+
 bool streaming_refresh_stats() {
     streaming_controller_t *controller = current_controller;
     if (!controller) { return false; }
@@ -295,6 +326,13 @@ bool streaming_refresh_stats() {
                 }
             }
         }
+        {
+            char host_load[64];
+            size_t used = strlen(stats_line);
+            if (format_host_load(host_load, sizeof(host_load), true) && used + strlen(host_load) + 5 < sizeof(stats_line)) {
+                snprintf(stats_line + used, sizeof(stats_line) - used, " | PC %s", host_load);
+            }
+        }
         lv_label_set_text(controller->stats_compact_label, stats_line);
         /* Quality dot: green ≤25ms, yellow ≤30ms, red >30ms */
         if (controller->stats_quality_indicator) {
@@ -357,6 +395,12 @@ bool streaming_refresh_stats() {
             lv_label_set_text(controller->stats_items.cpu_ram, "-");
         }
     }
+    if (controller->stats_items.host_load != NULL) {
+        char host_load[96];
+        lv_label_set_text(controller->stats_items.host_load,
+                          format_host_load(host_load, sizeof(host_load), false) ? host_load
+                                                                                : locstr("not available"));
+    }
     lv_label_set_text_fmt(controller->stats_items.audio, "%s, %s (%s)", audio_stream_info.format,
                           audio_stream_info.channels, adec_id ? adec_id : "-");
 
@@ -393,6 +437,26 @@ void streaming_notice_show(const char *message) {
     }
 }
 
+#define HOST_WARNING_SHOW_MS 12000
+
+static lv_timer_t *host_warning_timer = NULL;
+
+static void host_warning_expired(lv_timer_t *timer) {
+    LV_UNUSED(timer);
+    host_warning_timer = NULL; /* one-shot: LVGL deletes it after this call */
+    streaming_notice_show(NULL);
+}
+
+void streaming_host_warning_show(const char *message) {
+    if (!current_controller || !message || !message[0]) { return; }
+    streaming_notice_show(message);
+    if (host_warning_timer != NULL) {
+        lv_timer_del(host_warning_timer);
+    }
+    host_warning_timer = lv_timer_create(host_warning_expired, HOST_WARNING_SHOW_MS, NULL);
+    lv_timer_set_repeat_count(host_warning_timer, 1);
+}
+
 static void constructor(lv_fragment_t *self, void *args) {
     streaming_controller_t *controller = (streaming_controller_t *) self;
     current_controller = controller;
@@ -415,6 +479,10 @@ static void controller_dtor(lv_fragment_t *self) {
     streaming_styles_reset(fragment);
     if (current_controller == fragment) {
         current_controller = NULL;
+        if (host_warning_timer != NULL) {
+            lv_timer_del(host_warning_timer);
+            host_warning_timer = NULL;
+        }
     }
     fragment->soft_kbd = NULL; /* Will be deleted with parent */
 }

@@ -89,6 +89,20 @@ typedef struct session_config_t {
 extern int streaming_errno;
 extern char streaming_errmsg[];
 
+/* Set when a live stream (already showing video) ended by an error while the
+ * game stays on the PC: the error dialog then offers Reconnect, which resumes
+ * this app on this host. Cleared when the next session starts. Main thread reads
+ * it after USER_STREAM_FINISHED. */
+typedef struct {
+    bool valid;
+    char host_uuid[37];
+    int app_id;
+    char app_uuid[37];
+    char app_name[256];
+} streaming_reconnect_target_t;
+
+extern streaming_reconnect_target_t streaming_reconnect_target;
+
 typedef struct app_t app_t;
 typedef struct app_settings_t app_settings_t;
 typedef struct session_t session_t;

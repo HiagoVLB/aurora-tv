@@ -6,6 +6,10 @@
 #include "ui/launcher/launcher.controller.h"
 #include "ui/streaming/streaming.controller.h"
 #include "util/path.h"
+#include "util/bus.h"
+#include "util/user_event.h"
+#include "util/i18n.h"
+#include "stream/session.h"
 #include <SDL_image.h>
 #include <poll.h>
 #include <stdio.h>
@@ -331,6 +335,25 @@ static bool command(char *line) {
             bool opened = open_menu_fixture();
             wait_ui(250);
             return opened;
+        }
+        if (strcmp(argument, "stream_dropped") == 0) {
+            /* Error dialog after a live stream dropped (no session, no host:
+             * Reconnect finds no paired PC here and does nothing). */
+            streaming_errno = STREAMING_INTERRUPT_NETWORK;
+            snprintf(streaming_errmsg, 1024, "%s", locstr("The connection to the PC was lost."));
+            streaming_reconnect_target.valid = true;
+            streaming_reconnect_target.app_id = 1;
+            bus_pushevent(USER_STREAM_FINISHED, NULL, NULL);
+            wait_ui(400);
+            return true;
+        }
+        if (strcmp(argument, "stream_stats") == 0) {
+            /* Same fixture with the performance panel visible (layout only:
+             * no session, so its values are the view's initial text). */
+            if (!open_menu_fixture()) return false;
+            lv_obj_clear_flag(menu_fixture.stats, LV_OBJ_FLAG_HIDDEN);
+            wait_ui(250);
+            return true;
         }
         launcher_fragment_t *launcher = launcher_instance();
         if (!launcher) return false;

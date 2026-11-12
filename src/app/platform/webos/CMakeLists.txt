@@ -1,5 +1,6 @@
 target_sources(moonlight-lib PRIVATE
         keyboard_webos.c
+        home_key.c
         navkey_sdl_webos.c
         pbnjson_compat.c
         game_mode.c game_mode_luna.c

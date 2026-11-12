@@ -9,6 +9,9 @@
 
 #include "stream/session.h"
 #include "stream/input/session_input.h"
+#if TARGET_WEBOS
+#include "platform/webos/app_webos.h"
+#endif
 
 #include "streaming/streaming.controller.h"
 #include "launcher/launcher.controller.h"
@@ -26,6 +29,10 @@
 #include "app_error.h"
 #include "util/i18n.h"
 #include "lvgl/util/lv_app_utils.h"
+#include "backend/pcmanager.h"
+
+#include <stdio.h>
+#include <string.h>
 
 #if TARGET_WEBOS
 /* Do not pass a fullscreen flag. sdl2-compat turns SDL_WINDOW_FULLSCREEN into
@@ -238,6 +245,10 @@ bool ui_dispatch_userevent(app_t *app, int which, void *data1, void *data2) {
                 return true;
             }
             case USER_STREAM_FINISHED: {
+#if TARGET_WEBOS
+                /* Remote Home disconnected the stream; now open the LG home. */
+                app_webos_session_finished();
+#endif
                 if (streaming_errno != 0) {
                     session_error();
                     break;
@@ -409,6 +420,17 @@ static SDL_AssertState app_assertion_handler_ui(const SDL_AssertData *data, void
 }
 
 static void session_error() {
+    if (streaming_reconnect_target.valid) {
+        /* The stream was live and the game is still on the PC: offer to resume it. */
+        static const char *reconnect_btns[] = {translatable("Reconnect"), translatable("OK"), ""};
+        static char message[1400];
+        snprintf(message, sizeof(message), "%s\n%s", streaming_errmsg,
+                 locstr("The game keeps running on the PC. Reconnect to continue where you left off."));
+        lv_obj_t *dialog = lv_msgbox_create_i18n(NULL, locstr("Stream interrupted"), message, reconnect_btns, false);
+        lv_obj_add_event_cb(dialog, session_error_dialog_cb, LV_EVENT_VALUE_CHANGED, NULL);
+        lv_obj_center(dialog);
+        return;
+    }
     static const char *btn_texts[] = {translatable("OK"), ""};
     lv_obj_t *dialog = lv_msgbox_create_i18n(NULL, locstr("Failed to start streaming"), streaming_errmsg,
                                              btn_texts, false);
@@ -416,7 +438,33 @@ static void session_error() {
     lv_obj_center(dialog);
 }
 
+/* Resume the interrupted app exactly like picking it in the launcher; the host
+ * still runs it, so the launch becomes /resume. */
+static void session_reconnect(void) {
+    streaming_reconnect_target_t *t = &streaming_reconnect_target;
+    if (!t->valid || global == NULL || global->session != NULL) {
+        return;
+    }
+    t->valid = false;
+    streaming_scene_arg_t args = {.global = global};
+    uuidstr_fromstr(&args.uuid, t->host_uuid);
+    args.app.id = t->app_id;
+    args.app.name = t->app_name;
+    memcpy(args.app.uuid, t->app_uuid, sizeof(args.app.uuid));
+    if (pcmanager_node(pcmanager, &args.uuid) == NULL) {
+        return;
+    }
+    commons_log_info("Session", "Reconnect requested app=%d", t->app_id);
+    lv_fragment_t *fragment = lv_fragment_create(&streaming_controller_class, &args);
+    lv_obj_t *const *container = lv_fragment_get_container(lv_fragment_manager_get_top(global->ui.fm));
+    lv_fragment_manager_push(global->ui.fm, fragment, container);
+}
+
 static void session_error_dialog_cb(lv_event_t *event) {
     lv_obj_t *dialog = lv_event_get_current_target(event);
+    bool reconnect = streaming_reconnect_target.valid && lv_msgbox_get_active_btn(dialog) == 0;
     lv_msgbox_close_async(dialog);
+    if (reconnect) {
+        session_reconnect();
+    }
 }

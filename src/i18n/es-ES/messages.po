@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: moonlight-tv\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-12 02:28-0300\n"
+"POT-Creation-Date: 2026-11-12 11:14-0300\n"
 "PO-Revision-Date: 2026-10-19 01:15-0300\n"
 "Last-Translator: \n"
 "Language-Team: Spanish\n"
@@ -29,8 +29,8 @@ msgstr "Español (España)"
 #: src/app/ui/settings/panes/other.pane.c:142
 #: src/app/ui/settings/panes/pref_fps.c:162
 #: src/app/ui/settings/panes/pref_res.c:174
-#: src/app/ui/streaming/streaming.controller.c:660
-#: src/app/ui/streaming/streaming.controller.c:715
+#: src/app/ui/streaming/streaming.controller.c:728
+#: src/app/ui/streaming/streaming.controller.c:783
 msgid "Cancel"
 msgstr "Cancelar"
 
@@ -40,8 +40,8 @@ msgstr "Cancelar"
 #: src/app/ui/launcher/launcher.controller.c:629
 #: src/app/ui/launcher/launcher.controller.c:644
 #: src/app/ui/launcher/pair.dialog.c:54
-#: src/app/ui/launcher/server.context_menu.c:143 src/app/ui/root.c:412
-#: src/app/ui/settings/panes/pref_fps.c:162
+#: src/app/ui/launcher/server.context_menu.c:143 src/app/ui/root.c:425
+#: src/app/ui/root.c:434 src/app/ui/settings/panes/pref_fps.c:162
 #: src/app/ui/settings/panes/pref_res.c:174
 msgid "OK"
 msgstr "OK"
@@ -69,6 +69,30 @@ msgstr "Idioma del sistema"
 #: src/app/stream/connection/session_connnection.c:35
 msgid "Unstable connection."
 msgstr "Conexión inestable."
+
+#: src/app/stream/session.c:150
+msgid "The video from the PC stopped arriving."
+msgstr "El vídeo del PC ha dejado de llegar."
+
+#: src/app/stream/session.c:153
+msgid "The connection to the PC was lost."
+msgstr "Se ha perdido la conexión con el PC."
+
+#: src/app/stream/session.c:156
+msgid "The TV's video decoder reported an error."
+msgstr "El decodificador de vídeo del televisor ha informado de un error."
+
+#: src/app/stream/session.c:159
+msgid "An error occurred while streaming."
+msgstr "Se ha producido un error durante la transmisión."
+
+#: src/app/stream/session_worker.c:48
+msgid ""
+"The PC's virtual display is turned off for this device, so the stream shows "
+"the PC's current display."
+msgstr ""
+"La pantalla virtual del PC está desactivada para este dispositivo, así que "
+"la transmisión muestra la pantalla actual del PC."
 
 #: src/app/ui/help/help.dialog.c:33
 msgid "Controls & shortcuts"
@@ -151,7 +175,9 @@ msgstr "Envía Re Pág / Av Pág al PC."
 msgid ""
 "Go to the LG home screen. The stream disconnects and the game keeps running "
 "on the PC."
-msgstr "Va a la pantalla de inicio de LG. La transmisión se desconecta y el juego sigue ejecutándose en el PC."
+msgstr ""
+"Va a la pantalla de inicio de LG. La transmisión se desconecta y el juego "
+"sigue ejecutándose en el PC."
 
 #: src/app/ui/help/help.dialog.c:72
 msgid "Send Numpad 0–9 to the PC."
@@ -260,7 +286,7 @@ msgid "Leaving a stream"
 msgstr "Salir de una transmisión"
 
 #: src/app/ui/help/help.dialog.c:92
-#: src/app/ui/streaming/streaming.controller.c:715
+#: src/app/ui/streaming/streaming.controller.c:783
 #: src/app/ui/streaming/streaming.view.c:154
 msgid "Disconnect"
 msgstr "Desconectar"
@@ -274,7 +300,7 @@ msgstr ""
 "tarde."
 
 #: src/app/ui/help/help.dialog.c:93
-#: src/app/ui/streaming/streaming.controller.c:660
+#: src/app/ui/streaming/streaming.controller.c:728
 #: src/app/ui/streaming/streaming.view.c:164
 msgid "End session"
 msgstr "Finalizar sesión"
@@ -324,8 +350,9 @@ msgid "Refresh rate"
 msgstr "Frecuencia de actualización"
 
 #: src/app/ui/help/help.dialog.c:172 src/app/ui/help/help.dialog.c:177
-#: src/app/ui/streaming/streaming.controller.c:368
-#: src/app/ui/streaming/streaming.controller.c:375
+#: src/app/ui/streaming/streaming.controller.c:402
+#: src/app/ui/streaming/streaming.controller.c:412
+#: src/app/ui/streaming/streaming.controller.c:419
 msgid "not available"
 msgstr "no disponible"
 
@@ -551,7 +578,21 @@ msgstr ""
 "No hay ordenadores emparejados. Usa el botón \"+\" de la barra superior para "
 "añadir uno."
 
-#: src/app/ui/root.c:413
+#. The stream was live and the game is still on the PC: offer to resume it.
+#: src/app/ui/root.c:425
+msgid "Reconnect"
+msgstr "Reconectar"
+
+#: src/app/ui/root.c:428
+msgid ""
+"The game keeps running on the PC. Reconnect to continue where you left off."
+msgstr "El juego sigue ejecutándose en el PC. Vuelve a conectar para continuar donde lo dejaste."
+
+#: src/app/ui/root.c:429
+msgid "Stream interrupted"
+msgstr "Transmisión interrumpida"
+
+#: src/app/ui/root.c:435
 msgid "Failed to start streaming"
 msgstr "Error al iniciar la transmisión"
 
@@ -623,7 +664,7 @@ msgid "Requires HEVC or AV1. Only used with HDR off."
 msgstr "Requiere HEVC o AV1. Solo se usa con HDR desactivado."
 
 #: src/app/ui/settings/panes/basic.pane.c:224
-#: src/app/ui/streaming/streaming.view.c:268
+#: src/app/ui/streaming/streaming.view.c:269
 msgid "Audio"
 msgstr "Audio"
 
@@ -1013,23 +1054,23 @@ msgstr ""
 "Si tienes un monitor ultrapanorámico, quizá debas cambiar su resolución a "
 "16:9 para la transmisión."
 
-#: src/app/ui/streaming/streaming.controller.c:335
+#: src/app/ui/streaming/streaming.controller.c:373
 msgid "total"
 msgstr "total"
 
-#: src/app/ui/streaming/streaming.controller.c:427
+#: src/app/ui/streaming/streaming.controller.c:495
 msgid "Connecting..."
 msgstr "Conectando..."
 
-#: src/app/ui/streaming/streaming.controller.c:456
+#: src/app/ui/streaming/streaming.controller.c:524
 msgid "Disconnecting..."
 msgstr "Desconectando..."
 
-#: src/app/ui/streaming/streaming.controller.c:661
+#: src/app/ui/streaming/streaming.controller.c:729
 msgid "End session on PC?"
 msgstr "¿Finalizar sesión en el PC?"
 
-#: src/app/ui/streaming/streaming.controller.c:662
+#: src/app/ui/streaming/streaming.controller.c:730
 msgid ""
 "This asks the host to close the application or desktop session and restore "
 "its display. To leave it running, choose Disconnect."
@@ -1037,11 +1078,11 @@ msgstr ""
 "Pide al equipo anfitrión que cierre la aplicación o la sesión de escritorio "
 "y restaure su pantalla. Para dejarla abierta, elige Desconectar."
 
-#: src/app/ui/streaming/streaming.controller.c:716
+#: src/app/ui/streaming/streaming.controller.c:784
 msgid "Disconnect from PC?"
 msgstr "¿Desconectar del PC?"
 
-#: src/app/ui/streaming/streaming.controller.c:717
+#: src/app/ui/streaming/streaming.controller.c:785
 msgid ""
 "The game keeps running on the PC, so you can resume it later. To close it, "
 "choose End session."
@@ -1106,15 +1147,19 @@ msgstr "Latencia del decodificador"
 msgid "CPU / RAM"
 msgstr "CPU / RAM"
 
-#: src/app/ui/streaming/streaming.view.c:326
+#: src/app/ui/streaming/streaming.view.c:268
+msgid "PC load"
+msgstr "Carga del PC"
+
+#: src/app/ui/streaming/streaming.view.c:327
 msgid "On-screen log: Live"
 msgstr "Registro en pantalla: en directo"
 
-#: src/app/ui/streaming/streaming.view.c:329
+#: src/app/ui/streaming/streaming.view.c:330
 msgid "On-screen log: Frozen"
 msgstr "Registro en pantalla: congelado"
 
-#: src/app/ui/streaming/streaming.view.c:332
+#: src/app/ui/streaming/streaming.view.c:333
 msgid "On-screen log: Off"
 msgstr "Registro en pantalla: desactivado"
 

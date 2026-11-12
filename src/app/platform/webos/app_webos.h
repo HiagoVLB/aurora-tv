@@ -18,4 +18,15 @@
 
 #pragma once
 
+typedef struct session_t session_t;
+
 void app_webos_open_ribbon();
+
+/* Remote Home. With a stream open, disconnect first (the game keeps running on
+ * the PC) and open the LG home once the stream has closed; otherwise open it now.
+ * The TV sends no background event when its home screen opens over Aurora, so a
+ * stream left running behind it came back with a corrupted picture. */
+void app_webos_go_home(session_t *session);
+
+/* Call when a stream has finished; opens the LG home if Home asked for it. */
+void app_webos_session_finished(void);

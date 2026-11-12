@@ -515,6 +515,8 @@ int gs_start_app_ex(GS_CLIENT hnd, PSERVER_DATA server, STREAM_CONFIGURATION *co
     int ret = GS_OK;
     char *result = NULL;
     HTTP_DATA *data = NULL;
+    hnd->launch_warning_code[0] = 0;
+    hnd->launch_warning_message[0] = 0;
 
     mbedtls_entropy_context entropy;
     mbedtls_entropy_init(&entropy);
@@ -700,6 +702,9 @@ int gs_start_app_ex(GS_CLIENT hnd, PSERVER_DATA server, STREAM_CONFIGURATION *co
         server->serverInfo.rtspSessionUrl = result;
         result = NULL;
     }
+    /* Optional host warning; never changes whether the stream starts. */
+    xml_launch_warning(data->memory, data->size, hnd->launch_warning_code, sizeof(hnd->launch_warning_code),
+                       hnd->launch_warning_message, sizeof(hnd->launch_warning_message));
 
     cleanup:
     if (result != NULL) {
@@ -712,6 +717,15 @@ int gs_start_app_ex(GS_CLIENT hnd, PSERVER_DATA server, STREAM_CONFIGURATION *co
 
     mbedtls_ctr_drbg_free(&ctr_drbg);
     return ret;
+}
+
+bool gs_launch_warning(GS_CLIENT hnd, const char **code, const char **message) {
+    if (code) *code = NULL;
+    if (message) *message = NULL;
+    if (hnd == NULL || hnd->launch_warning_code[0] == 0) return false;
+    if (code) *code = hnd->launch_warning_code;
+    if (message) *message = hnd->launch_warning_message[0] ? hnd->launch_warning_message : NULL;
+    return true;
 }
 
 int gs_quit_app(GS_CLIENT hnd, PSERVER_DATA server) {
@@ -1240,6 +1254,72 @@ int gs_http_wake(GS_CLIENT hnd, const char *url) {
     }
     http_set_timeout(hnd->http, 10);
     int ret = http_request(hnd->http, (char *) url, data);
+    http_data_free(data);
+    return ret;
+}
+
+/* Locale-independent JSON number after "field": (first occurrence), rounded to
+ * an int. Returns false when absent, null or not a number. */
+static bool json_number_field(const char *json, const char *field, int *out) {
+    char pattern[64];
+    snprintf(pattern, sizeof(pattern), "\"%s\"", field);
+    const char *pos = strstr(json, pattern);
+    if (!pos) return false;
+    pos += strlen(pattern);
+    while (*pos == ' ' || *pos == '\t' || *pos == '\n' || *pos == '\r') pos++;
+    if (*pos != ':') return false;
+    pos++;
+    while (*pos == ' ' || *pos == '\t' || *pos == '\n' || *pos == '\r') pos++;
+    bool neg = false;
+    if (*pos == '-') { neg = true; pos++; }
+    if (*pos < '0' || *pos > '9') return false;
+    long long whole = 0;
+    while (*pos >= '0' && *pos <= '9') {
+        if (whole < 100000000) whole = whole * 10 + (*pos - '0');
+        pos++;
+    }
+    if (*pos == '.' && pos[1] >= '5' && pos[1] <= '9') whole++;
+    if (whole > INT_MAX) whole = INT_MAX;
+    *out = (int) (neg ? -whole : whole);
+    return true;
+}
+
+int gs_parse_hardware_metrics(const char *json, GS_HOST_METRICS *out) {
+    if (!json || !out) return GS_INVALID;
+    out->interval_ms = -1;
+    out->cpu_usage_percent = -1;
+    out->gpu_usage_percent = -1;
+    out->gpu_encoder_percent = -1;
+    out->gpu_temperature_c = -1;
+    out->gpu_vram_used_mb = -1;
+    int version = 0;
+    if (!json_number_field(json, "version", &version) || version != 1) {
+        return gs_set_error(GS_UNSUPPORTED_VERSION, "Unsupported hardware metrics version");
+    }
+    json_number_field(json, "interval_ms", &out->interval_ms);
+    json_number_field(json, "cpu_usage_percent", &out->cpu_usage_percent);
+    /* GPU readings live inside "gpus"; read the first GPU only. */
+    const char *gpus = strstr(json, "\"gpus\"");
+    if (gpus) {
+        json_number_field(gpus, "gpu_usage_percent", &out->gpu_usage_percent);
+        json_number_field(gpus, "gpu_encoder_percent", &out->gpu_encoder_percent);
+        json_number_field(gpus, "gpu_temperature_c", &out->gpu_temperature_c);
+        json_number_field(gpus, "gpu_vram_used_mb", &out->gpu_vram_used_mb);
+    }
+    return GS_OK;
+}
+
+int gs_get_hardware_metrics(GS_CLIENT hnd, const SERVER_DATA *server, GS_HOST_METRICS *out) {
+    if (!hnd || !server || !out) return GS_INVALID;
+    char url[4096];
+    HTTP_DATA *data = http_data_alloc();
+    if (!data) return GS_OUT_OF_MEMORY;
+    construct_url(hnd, url, sizeof(url), true, server->serverInfo.address, server_port(server, true),
+                  "api/hardware-metrics", NULL);
+    int ret = http_request(hnd->http, url, data);
+    if (ret == GS_OK) {
+        ret = data->memory ? gs_parse_hardware_metrics(data->memory, out) : GS_INVALID;
+    }
     http_data_free(data);
     return ret;
 }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "http.h"
+#include "xml.h"
 #include <mbedtls/pk.h>
 #include <mbedtls/x509_crt.h>
 
@@ -16,4 +17,7 @@ struct GS_CLIENT_T {
     mbedtls_x509_crt cert;
     char cert_hex[8192];
     HTTP *http;
+    /* Warning from the last successful launch/resume; empty code when none. */
+    char launch_warning_code[GS_LAUNCH_WARNING_CODE_MAX + 1];
+    char launch_warning_message[GS_LAUNCH_WARNING_MESSAGE_MAX + 1];
 };

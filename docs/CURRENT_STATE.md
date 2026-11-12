@@ -34,6 +34,57 @@ ignore cases passed. Nine release-helper tests, version consistency (1.3.3),
 maintained Bash entry-point syntax, and `git diff --check` passed. No IPK build,
 TV installation, or physical streaming test was performed for this cleanup.
 
+## Stream drop on C2 and Reconnect (2026-11-12)
+
+C2 log, session resumed at 13:17:55Z (10:17 São Paulo), AV1 at 60 fps received:
+after 52 min, at 14:09:38.936Z the client lost 6 frames (184210–184215), sent
+the IDR request and kept "Waiting for IDR frame"; no new frame was decoded
+(VideoDiag sample frozen at 3261329). At 14:09:46.997Z the ENet control stream
+got an unexpected disconnect (`connectionTerminated(-1)`), interrupt
+`source=network`; the following host status refresh took 6 s. From the TV side
+this cannot separate a network outage from a host stall; the VibeShine log at
+that time is needed. VibeShine after the installed build fixes unanswered
+recovery IDRs (`73a00e80`) and NVENC picture-identity loss (`40c5f841`).
+
+The dialog then said "Failed to start streaming / Network error happened"
+(wrong title, untranslated text). Now: errors after video was showing open
+"Stream interrupted" with a translated reason, "The game keeps running on the
+PC…", and **Reconnect** (resume the same app/host); launch failures keep the
+old title. Validation in "Nonary / VibeShine review" below.
+
+**Installed on C2 on 2026-11-12, 11:43 São Paulo** through webOS Dev Manager:
+`aurora.ipk` 1.3.6, SHA-256
+`e5aeebfc770f001d97cbda5351c49ca639f015f1b7a1e332f434729ea0e4148f` (Home
+disconnect-first, host warnings, host load in stats, Reconnect). Checked on
+the TV: installed `bin/aurora` (11:17 build) contains the new Home, Reconnect,
+hardware-metrics and clientWarningMessage strings; `aurora-logs-reset.pending`
+present before first launch. Not yet used physically.
+
+The same session read the C2's `/usr/lib/libNDL_directmedia_impl.so.1`: its
+audio strings name only Opus (2ch/5.1ch), PCM and MP3; nothing for AC-3,
+E-AC-3 or Dolby. Dolby output on the current NDL path is therefore not
+possible on this TV.
+
+## Nonary / VibeShine review (2026-11-12)
+
+Read Nonary/moonlight-qt `19758e5e` and VibeShine `9c02f262` (38 and 298 commits
+since the 2026-10-18 baselines). Analysis only, nothing implemented. Candidates:
+paired "put PC to sleep" (VibeShine power-actions v1), host warning notices,
+host CPU/GPU metrics in the stats overlay; test HEVC vs AV1 at 90 fps on C2;
+update VibeShine on the PC. Then implemented (uncommitted at writing, not yet
+on the TV): host warnings in the stream notice and host CPU/GPU load in the
+stats overlay; Dolby blocked on the NDL webOS 5 audio types; DualSense already
+forwards everything except the controller speaker. Validation the same day:
+Home logic moved to `src/app/platform/webos/home_key.c` and the interrupt now
+runs on the next UI tick (not inside the key handler); new `test_home_key`
+(real LVGL timers) and `test_host_metrics` (stubbed host) pass; the latter
+found and fixed a use-after-free when polling stopped on its own before the
+session ended (service now reference-counted). CTest 35/36 (`test_pref_fps`
+pre-existing), VibeShine protocol fixture with ASan/UBSan passed, UI simulator
+`stream_stats` fixture shows the "PC load"/"Uso do PC" row in en-US/pt-BR. New `test_stream_reconnect` and simulator `stream_dropped` cover the Reconnect dialog.
+Not checked on the C2. Details:
+[comparisons/2026-11-12-nonary-vibeshine.md](comparisons/2026-11-12-nonary-vibeshine.md).
+
 ## Remote buttons (2026-11-12, in 1.3.6)
 
 User decision after discussing the options: **Home** goes to the LG home screen
@@ -62,6 +113,17 @@ the upstream-review IPK hash below); SS4S patch hash unchanged.
 webOS Dev Manager (Apps > Install, this `aurora.ipk`); Dev Manager then listed
 Aurora v1.3.6 (it had v1.3.3). Logs reset on first launch; settings/pairing
 kept. Remote buttons and streaming not yet tested physically.
+
+**Home fix (same day).** On the C2, Home during a stream opened the LG home
+but Aurora got no lifecycle event (`aurora.log`: no `SDL_APP_WILLENTERBACKGROUND`,
+no `Interrupt` until the user disconnected by hand at 13:17:52Z), so the stream
+kept running behind the LG home and came back as a blocky, corrupted picture.
+Disconnecting by hand and reconnecting made later Home presses look fine.
+Fix: `app_webos_go_home` interrupts the session (`source=background`, game
+keeps running) and opens the LG home on `USER_STREAM_FINISHED`, with a 3 s
+fallback timer; without a stream it opens the LG home at once. Returning to
+Aurora shows the launcher; auto-resume only re-arms if webOS delivers
+`SDL_APP_DIDENTERFOREGROUND`, which this TV did not log.
 
 ## Version 1.3.6 and upstream review (2026-11-11)
 

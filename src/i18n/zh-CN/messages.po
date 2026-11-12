@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: moonlight-tv\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-12 02:28-0300\n"
+"POT-Creation-Date: 2026-11-12 11:14-0300\n"
 "PO-Revision-Date: 2026-10-19 01:15-0300\n"
 "Last-Translator: \n"
 "Language-Team: Chinese Simplified\n"
@@ -29,8 +29,8 @@ msgstr "简体中文"
 #: src/app/ui/settings/panes/other.pane.c:142
 #: src/app/ui/settings/panes/pref_fps.c:162
 #: src/app/ui/settings/panes/pref_res.c:174
-#: src/app/ui/streaming/streaming.controller.c:660
-#: src/app/ui/streaming/streaming.controller.c:715
+#: src/app/ui/streaming/streaming.controller.c:728
+#: src/app/ui/streaming/streaming.controller.c:783
 msgid "Cancel"
 msgstr "取消"
 
@@ -40,8 +40,8 @@ msgstr "取消"
 #: src/app/ui/launcher/launcher.controller.c:629
 #: src/app/ui/launcher/launcher.controller.c:644
 #: src/app/ui/launcher/pair.dialog.c:54
-#: src/app/ui/launcher/server.context_menu.c:143 src/app/ui/root.c:412
-#: src/app/ui/settings/panes/pref_fps.c:162
+#: src/app/ui/launcher/server.context_menu.c:143 src/app/ui/root.c:425
+#: src/app/ui/root.c:434 src/app/ui/settings/panes/pref_fps.c:162
 #: src/app/ui/settings/panes/pref_res.c:174
 msgid "OK"
 msgstr "确定"
@@ -69,6 +69,28 @@ msgstr "系统语言"
 #: src/app/stream/connection/session_connnection.c:35
 msgid "Unstable connection."
 msgstr "连接不稳定"
+
+#: src/app/stream/session.c:150
+msgid "The video from the PC stopped arriving."
+msgstr "电脑的视频已停止传入。"
+
+#: src/app/stream/session.c:153
+msgid "The connection to the PC was lost."
+msgstr "与电脑的连接已断开。"
+
+#: src/app/stream/session.c:156
+msgid "The TV's video decoder reported an error."
+msgstr "电视的视频解码器报告了错误。"
+
+#: src/app/stream/session.c:159
+msgid "An error occurred while streaming."
+msgstr "串流时发生错误。"
+
+#: src/app/stream/session_worker.c:48
+msgid ""
+"The PC's virtual display is turned off for this device, so the stream shows "
+"the PC's current display."
+msgstr "此设备已关闭电脑的虚拟显示器，因此串流显示电脑当前的显示器。"
 
 #: src/app/ui/help/help.dialog.c:33
 msgid "Controls & shortcuts"
@@ -255,7 +277,7 @@ msgid "Leaving a stream"
 msgstr "离开串流"
 
 #: src/app/ui/help/help.dialog.c:92
-#: src/app/ui/streaming/streaming.controller.c:715
+#: src/app/ui/streaming/streaming.controller.c:783
 #: src/app/ui/streaming/streaming.view.c:154
 msgid "Disconnect"
 msgstr "断开连接"
@@ -267,7 +289,7 @@ msgid ""
 msgstr "返回 Aurora，保留 PC 上运行的应用，以便稍后继续。"
 
 #: src/app/ui/help/help.dialog.c:93
-#: src/app/ui/streaming/streaming.controller.c:660
+#: src/app/ui/streaming/streaming.controller.c:728
 #: src/app/ui/streaming/streaming.view.c:164
 msgid "End session"
 msgstr "结束会话"
@@ -316,8 +338,9 @@ msgid "Refresh rate"
 msgstr "刷新率"
 
 #: src/app/ui/help/help.dialog.c:172 src/app/ui/help/help.dialog.c:177
-#: src/app/ui/streaming/streaming.controller.c:368
-#: src/app/ui/streaming/streaming.controller.c:375
+#: src/app/ui/streaming/streaming.controller.c:402
+#: src/app/ui/streaming/streaming.controller.c:412
+#: src/app/ui/streaming/streaming.controller.c:419
 msgid "not available"
 msgstr "不可用"
 
@@ -537,7 +560,21 @@ msgid ""
 "No paired computers yet. Use the \"+\" button on the top bar to add one."
 msgstr "尚未配对任何电脑。请用顶部栏的“+”按钮添加。"
 
-#: src/app/ui/root.c:413
+#. The stream was live and the game is still on the PC: offer to resume it.
+#: src/app/ui/root.c:425
+msgid "Reconnect"
+msgstr "重新连接"
+
+#: src/app/ui/root.c:428
+msgid ""
+"The game keeps running on the PC. Reconnect to continue where you left off."
+msgstr "游戏仍在电脑上运行。重新连接即可从中断处继续。"
+
+#: src/app/ui/root.c:429
+msgid "Stream interrupted"
+msgstr "串流已中断"
+
+#: src/app/ui/root.c:435
 msgid "Failed to start streaming"
 msgstr "无法开始串流"
 
@@ -607,7 +644,7 @@ msgid "Requires HEVC or AV1. Only used with HDR off."
 msgstr "需要 HEVC 或 AV1。仅在 HDR 关闭时使用。"
 
 #: src/app/ui/settings/panes/basic.pane.c:224
-#: src/app/ui/streaming/streaming.view.c:268
+#: src/app/ui/streaming/streaming.view.c:269
 msgid "Audio"
 msgstr "音频"
 
@@ -981,33 +1018,33 @@ msgid ""
 "16:9 for streaming."
 msgstr "使用超宽屏显示器时，可能需要将分辨率调整为 16:9 才能串流。"
 
-#: src/app/ui/streaming/streaming.controller.c:335
+#: src/app/ui/streaming/streaming.controller.c:373
 msgid "total"
 msgstr "总计"
 
-#: src/app/ui/streaming/streaming.controller.c:427
+#: src/app/ui/streaming/streaming.controller.c:495
 msgid "Connecting..."
 msgstr "正在连接…"
 
-#: src/app/ui/streaming/streaming.controller.c:456
+#: src/app/ui/streaming/streaming.controller.c:524
 msgid "Disconnecting..."
 msgstr "正在断开连接…"
 
-#: src/app/ui/streaming/streaming.controller.c:661
+#: src/app/ui/streaming/streaming.controller.c:729
 msgid "End session on PC?"
 msgstr "结束 PC 上的会话？"
 
-#: src/app/ui/streaming/streaming.controller.c:662
+#: src/app/ui/streaming/streaming.controller.c:730
 msgid ""
 "This asks the host to close the application or desktop session and restore "
 "its display. To leave it running, choose Disconnect."
 msgstr "请求主机关闭应用或桌面会话并恢复显示。若要保持运行，请选择“断开连接”。"
 
-#: src/app/ui/streaming/streaming.controller.c:716
+#: src/app/ui/streaming/streaming.controller.c:784
 msgid "Disconnect from PC?"
 msgstr "要与 PC 断开连接吗？"
 
-#: src/app/ui/streaming/streaming.controller.c:717
+#: src/app/ui/streaming/streaming.controller.c:785
 msgid ""
 "The game keeps running on the PC, so you can resume it later. To close it, "
 "choose End session."
@@ -1070,15 +1107,19 @@ msgstr "解码器延迟"
 msgid "CPU / RAM"
 msgstr "CPU / RAM"
 
-#: src/app/ui/streaming/streaming.view.c:326
+#: src/app/ui/streaming/streaming.view.c:268
+msgid "PC load"
+msgstr "电脑负载"
+
+#: src/app/ui/streaming/streaming.view.c:327
 msgid "On-screen log: Live"
 msgstr "屏幕日志：实时"
 
-#: src/app/ui/streaming/streaming.view.c:329
+#: src/app/ui/streaming/streaming.view.c:330
 msgid "On-screen log: Frozen"
 msgstr "屏幕日志：已冻结"
 
-#: src/app/ui/streaming/streaming.view.c:332
+#: src/app/ui/streaming/streaming.view.c:333
 msgid "On-screen log: Off"
 msgstr "屏幕日志：关闭"
 

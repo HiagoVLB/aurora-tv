@@ -13,6 +13,8 @@
 #include "app_session.h"
 #include "backend/pcmanager/worker/worker.h"
 #include "app_settings.h"
+#include "ui/streaming/streaming.controller.h"
+#include "util/i18n.h"
 
 #if TARGET_WEBOS
 #include "platform/webos/game_mode.h"
@@ -21,11 +23,41 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 #if TARGET_WEBOS
 /* Installer greps this string out of the ELF. */
 static const char aurora_build_tag[] __attribute__((used)) = "aurora-v" APP_VERSION;
 #endif
+
+static void show_host_warning(void *data) {
+    streaming_host_warning_show(data);
+    free(data);
+}
+
+/* Host warnings never change whether the stream starts. Known codes use local,
+ * translatable text; other codes show the host's own (sanitized) message. */
+static void session_report_host_warning(app_t *app, GS_CLIENT client) {
+    const char *code = NULL, *message = NULL;
+    if (!gs_launch_warning(client, &code, &message)) {
+        return;
+    }
+    commons_log_warn("Session", "Host warning code=%s message=%s", code, message ? message : "(none)");
+    const char *text = NULL;
+    if (strcmp(code, "virtual_display_disabled_by_client") == 0) {
+        text = locstr("The PC's virtual display is turned off for this device, so the stream shows the PC's "
+                      "current display.");
+    } else {
+        text = message;
+    }
+    if (text == NULL || text[0] == 0) {
+        return;
+    }
+    char *copy = strdup(text);
+    if (copy != NULL && !app_bus_post(app, show_host_warning, copy)) {
+        free(copy);
+    }
+}
 
 int session_worker(session_t *session) {
     app_t *app = session->app;
@@ -120,6 +152,8 @@ int session_worker(session_t *session) {
         goto thread_cleanup;
     }
 
+    session_report_host_warning(app, client);
+
     commons_log_info("Session", "Audio %d channels",
                      CHANNEL_COUNT_FROM_AUDIO_CONFIGURATION(session->config.stream.audioConfiguration));
 
@@ -189,6 +223,8 @@ int session_worker(session_t *session) {
         };
         session->abr = adaptive_bitrate_start(&abr_config);
     }
+    /* Host CPU/GPU load for the stats overlay; polls only while it is shown. */
+    session->host_metrics = host_metrics_start(app, server);
 #if TARGET_WEBOS
     bool game_mode_hdr = false;
 #endif
@@ -208,6 +244,8 @@ int session_worker(session_t *session) {
     }
     SDL_UnlockMutex(session->mutex);
     bus_pushevent(USER_STREAM_CLOSE, NULL, NULL);
+    host_metrics_stop(session->host_metrics);
+    session->host_metrics = NULL;
 
     session_set_state(session, STREAMING_DISCONNECTING);
     Uint32 teardown_started = SDL_GetTicks();

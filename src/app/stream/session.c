@@ -7,10 +7,13 @@
 #include "backend/pcmanager/priv.h"
 
 #include <Limelight.h>
+#include <stdio.h>
+#include <string.h>
 
 #include "libgamestream/errors.h"
 
 #include "logging.h"
+#include "util/i18n.h"
 #include "ss4s.h"
 #include "input/input_gamepad.h"
 #include "app_session.h"
@@ -26,6 +29,7 @@
 
 int streaming_errno = GS_OK;
 char streaming_errmsg[1024];
+streaming_reconnect_target_t streaming_reconnect_target;
 
 static bool streaming_sops_supported(PDISPLAY_MODE modes, int w, int h, int fps);
 
@@ -143,17 +147,27 @@ void session_interrupt(session_t *session, bool quitapp, streaming_interrupt_rea
     if (reason >= STREAMING_INTERRUPT_ERROR) {
         switch (reason) {
             case STREAMING_INTERRUPT_WATCHDOG:
-                streaming_error(session, reason, "Video pipeline stalled");
+                streaming_error(session, reason, "%s", locstr("The video from the PC stopped arriving."));
                 break;
             case STREAMING_INTERRUPT_NETWORK:
-                streaming_error(session, reason, "Network error happened");
+                streaming_error(session, reason, "%s", locstr("The connection to the PC was lost."));
                 break;
             case STREAMING_INTERRUPT_DECODER:
-                streaming_error(session, reason, "Decoder reported error");
+                streaming_error(session, reason, "%s", locstr("The TV's video decoder reported an error."));
                 break;
             default:
-                streaming_error(session, reason, "Error occurred while in streaming");
+                streaming_error(session, reason, "%s", locstr("An error occurred while streaming."));
                 break;
+        }
+        /* The game is still on the PC (quit_app is never set for errors): let the
+         * dialog offer Reconnect if video had been showing. */
+        if (session->state == STREAMING_STREAMING && !quitapp && session->server && session->server->uuid) {
+            streaming_reconnect_target_t *t = &streaming_reconnect_target;
+            snprintf(t->host_uuid, sizeof(t->host_uuid), "%s", session->server->uuid);
+            t->app_id = session->app_id;
+            memcpy(t->app_uuid, session->app_uuid, sizeof(t->app_uuid));
+            snprintf(t->app_name, sizeof(t->app_name), "%s", session->app_name ? session->app_name : "");
+            t->valid = t->app_id != 0;
         }
     }
     SDL_CondSignal(session->cond);
@@ -270,6 +284,10 @@ void streaming_set_hdr(session_t *session, bool hdr) {
 
 void streaming_error(session_t *session, int code, const char *fmt, ...) {
     SDL_LockMutex(session->mutex);
+    if (code == GS_OK) {
+        /* A new session is starting: forget the previous reconnect offer. */
+        streaming_reconnect_target.valid = false;
+    }
     streaming_errno = code;
     va_list arglist;
     va_start(arglist, fmt);

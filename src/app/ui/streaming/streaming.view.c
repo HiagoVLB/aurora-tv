@@ -265,6 +265,7 @@ lv_obj_t *streaming_scene_create(lv_fragment_t *self, lv_obj_t *parent) {
         controller->stats_items.host_latency = gfn_kv_row(stats, locstr("Host processing latency"));
         controller->stats_items.vdec_latency = gfn_kv_row(stats, locstr("Decoder latency"));
         controller->stats_items.cpu_ram = gfn_kv_row(stats, locstr("CPU / RAM"));
+        controller->stats_items.host_load = gfn_kv_row(stats, locstr("PC load"));
         controller->stats_items.audio = gfn_kv_row(stats, locstr("Audio"));
     }
 

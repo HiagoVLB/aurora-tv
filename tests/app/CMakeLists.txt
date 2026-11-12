@@ -93,6 +93,21 @@ target_link_libraries(test_remote_home PRIVATE moonlight-lib)
 target_compile_options(test_remote_home PRIVATE -UNDEBUG)
 add_test(NAME test_remote_home COMMAND test_remote_home)
 
+add_executable(test_home_key test_home_key.c)
+target_link_libraries(test_home_key PRIVATE moonlight-lib)
+target_compile_options(test_home_key PRIVATE -UNDEBUG)
+add_test(NAME test_home_key COMMAND test_home_key)
+
+add_executable(test_host_metrics test_host_metrics.c)
+target_link_libraries(test_host_metrics PRIVATE moonlight-lib)
+target_compile_options(test_host_metrics PRIVATE -UNDEBUG)
+add_test(NAME test_host_metrics COMMAND test_host_metrics)
+
+add_executable(test_stream_reconnect test_stream_reconnect.c)
+target_link_libraries(test_stream_reconnect PRIVATE moonlight-lib)
+target_compile_options(test_stream_reconnect PRIVATE -UNDEBUG)
+add_test(NAME test_stream_reconnect COMMAND test_stream_reconnect)
+
 add_executable(test_fractional_fps test_fractional_fps.c)
 target_link_libraries(test_fractional_fps PRIVATE moonlight-lib)
 add_test(NAME test_fractional_fps COMMAND test_fractional_fps)
