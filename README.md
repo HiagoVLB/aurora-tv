@@ -44,7 +44,7 @@ Screenshots illustrate the interface and may differ from the current build.
 2. Choose HEVC or AV1 if supported, or turn both off to request H.264. Selecting HEVC turns AV1 off, and vice versa.
 3. Set **Bitrate** and **Audio**. Use the channel layout that matches your speakers or audio receiver. Leave optional video tweaks off for the first comparison.
 4. Close Settings to save, then select a game or Desktop from the PC's application list.
-5. During the stream, hold **Back** on the Magic Remote, press **Red / Exit**, or use the [gamepad shortcut](#gamepad-during-streaming) to open the stream menu. Use **Left/Right** to select an action and **OK / A** to activate it; **Back / B** returns to the stream.
+5. During the stream, hold **Back** on the Magic Remote, press **Yellow / Exit**, or use the [gamepad shortcut](#gamepad-during-streaming) to open the stream menu. Use **Left/Right** to select an action and **OK / A** to activate it; **Back / B** returns to the stream.
 6. Choose **Disconnect** to return to Aurora and resume later, or **End session** to ask the host to close the application after confirmation.
 
 Start with **60 FPS** and a moderate bitrate, then increase one setting at a time. Higher bitrate is useful only when the network, host, and decoder can sustain it. Compare 60 and 120 FPS where supported; a high-refresh panel alone does not establish support for decoding every stream at 120 FPS. The older 3584 × 2016 recommendation came from C5 experiments and is not a universal C2 preset.
@@ -87,7 +87,7 @@ These descriptions explain what to change in Aurora and when to use it. Labels b
 | Option | What it does / when to use it |
 | --- | --- |
 | **View-only mode** | Shows the stream without forwarding your controls to the PC. Turn it off to interact with the game or desktop. |
-| **Capture system keys** | Forwards supported system keys, such as Windows/Meta, from the keyboard to the PC. Availability also depends on the TV's keyboard handling. The remote's Home shortcut is handled separately. |
+| **Capture system keys** | Forwards supported system keys, such as Windows/Meta, from the keyboard to the PC. Availability also depends on the TV's keyboard handling. The remote's Green button sends the Windows key; Home goes to the LG home screen. |
 | **Use mouse hardware**, when available | Reads a supported mouse through the direct device path. Requires device access; unavailable builds omit this control. Enabling it disables the separate absolute mouse mode option. |
 | **Absolute mouse mode** | Sends pointer positions instead of relative movement. Useful for desktop pointing; relative movement is usually needed for games that capture the mouse. |
 | **Analog stick deadzone** | Ignores small movements around the stick's center. Increase it if the pointer or game moves while the stick is untouched; higher values require more movement before input begins. |
@@ -118,7 +118,7 @@ These descriptions explain what to change in Aurora and when to use it. Labels b
 | Option | What it does / when to use it |
 | --- | --- |
 | **Language** | Chooses the interface language. **System Language** follows the TV/system language. |
-| **Show logs** | Shows live diagnostic messages over the interface. Turn it on while reproducing a problem; turning it off hides the overlay while file logging continues. **Yellow** can also cycle its display mode. |
+| **Show logs** | Shows live diagnostic messages over the interface. Turn it on while reproducing a problem; turning it off hides the overlay while file logging continues. The stream menu's **On-screen log** button cycles Off → Live → Frozen. |
 | **Game mode**, on supported rooted webOS setups | Tries to apply game picture/sound settings for the session and restore the previous values afterward. Appears only when the required root service is detected; it does not enable HDMI ALLM or VRR. |
 | **Reset all settings to defaults** | Restores preferences after confirmation, keeping PC pairing. This also resets language and stream settings; reconnect an active stream to use the defaults. |
 
@@ -152,15 +152,17 @@ The **?** button opens a scrollable guide inside Aurora, with controls first and
 
 | Control | Action |
 | --- | --- |
-| **Hold Back** on the Magic Remote, or press **Red / Exit** | Open the stream menu. Holding Back sends the remote's Exit action. |
+| **Yellow** | Open the stream menu. Press Yellow again to close it. |
+| **Hold Back** on the Magic Remote, or press **Exit** | Open the stream menu. Holding Back sends the remote's Exit action. |
+| **Red** | Ask to disconnect (Cancel / Disconnect). The game keeps running on the PC. Cancel returns to the game. |
+| **Green** | Send the Windows key to the PC (Start menu). |
 | **Back**, short press | Send Escape to the PC. Close the on-screen keyboard when it is open. |
 | **Blue** | Open the on-screen keyboard. |
 | **OK**, short press | Send Enter to the PC. |
 | **Hold OK for at least 0.6 seconds**, then release | Right-click on the PC. |
 | **Channel Up / Down** | Send Page Up / Page Down to the PC. |
-| **Home** | Send the Windows key to the PC during an interactive stream. Outside an interactive stream, keep the TV's Home behavior. |
+| **Home** | Go to the LG home screen. Aurora goes to the background, the stream disconnects and the game keeps running on the PC; reopening Aurora can resume it. |
 | **0–9** | Send Numpad 0–9 to the PC. The host's Num Lock state affects how applications interpret them. |
-| **Yellow** | Cycle the diagnostic log overlay: Off → Live → Frozen → Off. |
 
 ### Gamepad during streaming
 

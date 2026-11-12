@@ -126,6 +126,19 @@ lv_obj_t *streaming_scene_create(lv_fragment_t *self, lv_obj_t *parent) {
     lv_obj_add_style(vmouse_label, &controller->overlay_button_label_style, 0);
     lv_label_set_text(vmouse_label, locstr("Virtual Mouse"));
 
+    /* On-screen diagnostic log: Off -> Live -> Frozen (formerly the Yellow button). */
+    lv_obj_t *log_btn = lv_btn_create(actions);
+    lv_obj_add_flag(log_btn, LV_OBJ_FLAG_EVENT_BUBBLE);
+    lv_obj_add_style(log_btn, &controller->overlay_button_style, 0);
+    lv_obj_add_style(log_btn, &controller->overlay_button_style_focused, LV_STATE_FOCUSED);
+    lv_obj_set_style_bg_color(log_btn, lv_palette_lighten(LV_PALETTE_GREY, 1), 0);
+    lv_obj_set_style_bg_color(log_btn, lv_palette_lighten(LV_PALETTE_GREY, 3), LV_STATE_FOCUSED);
+    lv_obj_t *log_label = lv_label_create(log_btn);
+    lv_obj_add_style(log_label, &controller->overlay_button_label_style, 0);
+    controller->log_btn = log_btn;
+    controller->log_label = log_label;
+    streaming_update_log_button(controller);
+
     lv_obj_t *actions_spacing = lv_obj_create(actions);
     lv_obj_remove_style_all(actions_spacing);
     lv_obj_set_flex_grow(actions_spacing, 1);
@@ -150,7 +163,7 @@ lv_obj_t *streaming_scene_create(lv_fragment_t *self, lv_obj_t *parent) {
     lv_obj_add_style(exit_lbl, &controller->overlay_button_label_style, 0);
     lv_label_set_text(exit_lbl, locstr("End session"));
 
-    lv_obj_t *buttons[] = {kbd_btn, vmouse_btn, suspend_btn, exit_btn};
+    lv_obj_t *buttons[] = {kbd_btn, vmouse_btn, log_btn, suspend_btn, exit_btn};
     for (size_t i = 0; i < sizeof(buttons) / sizeof(buttons[0]); i++) {
         /* Replace the theme's keyboard-only ring with the same visible focus
          * for the remote, gamepad and pointer. Local theme props override styles. */
@@ -302,6 +315,23 @@ void streaming_styles_reset(streaming_controller_t *controller) {
     lv_style_reset(&controller->overlay_button_style);
     lv_style_reset(&controller->overlay_button_style_focused);
     lv_style_reset(&controller->overlay_button_label_style);
+}
+
+void streaming_update_log_button(streaming_controller_t *controller) {
+    if (controller == NULL || controller->log_label == NULL) {
+        return;
+    }
+    switch (log_overlay_get_state()) {
+        case LOG_OVERLAY_LIVE:
+            lv_label_set_text(controller->log_label, locstr("On-screen log: Live"));
+            break;
+        case LOG_OVERLAY_FROZEN:
+            lv_label_set_text(controller->log_label, locstr("On-screen log: Frozen"));
+            break;
+        default:
+            lv_label_set_text(controller->log_label, locstr("On-screen log: Off"));
+            break;
+    }
 }
 
 void streaming_overlay_resized(streaming_controller_t *controller) {

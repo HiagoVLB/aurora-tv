@@ -12,7 +12,6 @@
 
 #include "util/user_event.h"
 #include "util/bus.h"
-#include "util/log_overlay.h"
 #include "lv_drv_sdl_key.h"
 #include "stream/session_events.h"
 
@@ -55,20 +54,21 @@ static bool read_keyboard(app_ui_input_t *input, const SDL_KeyboardEvent *event,
 
 static bool read_event(const SDL_Event *event, lv_drv_sdl_key_t *state);
 
+static int8_t stick_held_x; /* -1 left, 0, +1 right */
+static int8_t stick_held_y; /* -1 up, 0, +1 down */
+
 /** Left-stick edge → one LVGL key (punktfunk-style menu nav). */
 static bool read_stick_menu_nav(const SDL_ControllerAxisEvent *axis, lv_drv_sdl_key_t *state) {
     enum { DEAD = 16000 };
-    static int8_t held_x; /* -1 left, 0, +1 right */
-    static int8_t held_y; /* -1 up, 0, +1 down */
 
     int8_t *held = NULL;
     lv_key_t neg_key = 0, pos_key = 0;
     if (axis->axis == SDL_CONTROLLER_AXIS_LEFTX) {
-        held = &held_x;
+        held = &stick_held_x;
         neg_key = LV_KEY_LEFT;
         pos_key = LV_KEY_RIGHT;
     } else if (axis->axis == SDL_CONTROLLER_AXIS_LEFTY) {
-        held = &held_y;
+        held = &stick_held_y;
         neg_key = LV_KEY_UP;
         pos_key = LV_KEY_DOWN;
     } else {
@@ -113,6 +113,16 @@ int lv_sdl_init_key_input(lv_drv_sdl_key_t *drv, app_ui_input_t *input) {
 void lv_sdl_key_input_release_key(lv_indev_t *indev) {
     lv_drv_sdl_key_t *state = (lv_drv_sdl_key_t *) indev->driver;
     state->state = LV_INDEV_STATE_RELEASED;
+}
+
+void lv_sdl_key_input_release_gamepad(lv_indev_t *indev) {
+    /* A pad that disconnects (powered off, Bluetooth drop) never sends the button-up for a
+     * held D-pad direction, so LVGL kept repeating it for the rest of the session. */
+    lv_sdl_key_input_release_key(indev);
+    lv_indev_wait_release(indev);
+    stick_held_x = 0;
+    stick_held_y = 0;
+    stick_auto_release = false;
 }
 
 /* A gap between two reads longer than this means the main loop stalled rather
@@ -170,15 +180,6 @@ static void sdl_input_read(lv_indev_drv_t *drv, lv_indev_data_t *data) {
     } else if (SDL_PeepEvents(&e, 1, SDL_GETEVENT, SDL_KEYDOWN, SDL_KEYUP) > 0) {
 #if TARGET_WEBOS
         webos_key_input_mode(input, &e.key);
-        /* punktfunk-style: Yellow cycles on-screen log (Off → Live → Frozen). */
-        if ((int) e.key.keysym.scancode == SDL_SCANCODE_WEBOS_YELLOW) {
-            if (e.type == SDL_KEYDOWN) {
-                log_overlay_cycle();
-            }
-            state->state = LV_INDEV_STATE_RELEASED;
-            data->continue_reading = true;
-            return;
-        }
 #endif
         bool nav_to_lvgl = false;
         bool back_closes_kbd = false;
@@ -493,23 +494,42 @@ static bool read_webos_key(app_ui_input_t *input, const SDL_KeyboardEvent *event
             return false;
         }
         case SDL_SCANCODE_WEBOS_HOME: {
-            if (app->session == NULL) {
+            /* TV Home everywhere. In the stream menu (session open), launch once on
+             * release; the stream disconnects when Aurora goes to the background. */
+            if (app->session == NULL || event->type == SDL_KEYUP) {
                 app_webos_open_ribbon();
             }
             return false;
         }
+        case SDL_SCANCODE_WEBOS_YELLOW:
+            /* Yellow opened the stream menu; pressing it again closes it like Back.
+             * The on-screen log lives in the stream menu and Settings > Other. */
+            if (app->session != NULL && streaming_overlay_shown() && !streaming_soft_keyboard_shown()) {
+                state->key = LV_KEY_ESC;
+                return true;
+            }
+            return false;
         case SDL_SCANCODE_WEBOS_RED:
         case SDL_SCANCODE_WEBOS_GREEN:
         case SDL_SCANCODE_WEBOS_BLUE: {
+            int scancode = (int) event->keysym.scancode;
+            if (app->session != NULL && scancode == SDL_SCANCODE_WEBOS_RED) {
+                /* Red asks before Disconnect, also from the stream menu. */
+                if (event->type == SDL_KEYDOWN) {
+                    bus_pushevent(USER_ASK_DISCONNECT, NULL, NULL);
+                }
+                return false;
+            }
+            if (app->session != NULL && scancode == SDL_SCANCODE_WEBOS_GREEN) {
+                /* Green is the Windows key during a stream; nothing to do in the menu. */
+                return false;
+            }
             SDL_Event btn_event;
             SDL_memcpy(&btn_event.key, event, sizeof(SDL_KeyboardEvent));
             btn_event.type = USER_REMOTEBUTTONEVENT;
             SDL_PushEvent(&btn_event);
             return false;
         }
-        case SDL_SCANCODE_WEBOS_YELLOW:
-            /* Handled in sdl_input_read peep path. */
-            return false;
         default:
             return false;
     }

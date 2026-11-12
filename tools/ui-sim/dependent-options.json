@@ -22,6 +22,7 @@
     {"scroll_text": "Send Numpad 0–9 to the PC."},
     {"key": "Escape"},
     {"action": "stream_menu"},
+    {"expect": "On-screen log: Off"},
     {"key": "Right"},
     {"key": "Right"},
     {"key": "Right"},

@@ -34,6 +34,63 @@ ignore cases passed. Nine release-helper tests, version consistency (1.3.3),
 maintained Bash entry-point syntax, and `git diff --check` passed. No IPK build,
 TV installation, or physical streaming test was performed for this cleanup.
 
+## Remote buttons (2026-11-12, in 1.3.6)
+
+User decision after discussing the options: **Home** goes to the LG home screen
+in every state (Aurora goes to the background, the stream disconnects, the game
+keeps running on the PC); **Green** sends the Windows key (moved from Home);
+**Yellow** opens the stream menu (Yellow again closes it); **Red** shows a
+"Disconnect from PC?" confirmation (Cancel returns straight to the game when Red
+opened the menu; also works from inside the menu); **Blue** is unchanged
+(on-screen keyboard). The on-screen log left the remote and became the
+stream-menu button "On-screen log: Off / Live / Frozen" (Settings > Other > Show
+logs still works everywhere). New strings translated in all 16 catalogs.
+Recorded in [FORK_FEATURES.md](FORK_FEATURES.md) section 1.
+
+Validation: CTest 33/34 (same pre-existing `test_pref_fps`), rewritten
+`test_remote_home` (Home -> LG home once on release in every state, Green ->
+Windows on both edges and never in view-only/idle, Yellow menu and Red
+disconnect once per press, never sent to the PC), UI simulator help + stream
+menu in en-US and pt-BR. `tools/ui-sim/dependent-options.json` fails at its first
+step independently of this change (the dummy video backend shows "Unavailable
+with this video backend" instead of the HEVC/AV1 text). webOS IPK 1.3.6 rebuilt
+and verified, SHA-256
+`f6e4360af8c164d8a156f97da188b029378352797ba256bca8412684e591f8d1` (supersedes
+the upstream-review IPK hash below); SS4S patch hash unchanged.
+
+**Installed on C2 (192.168.0.134) on 2026-11-12, 10:14 São Paulo**, through
+webOS Dev Manager (Apps > Install, this `aurora.ipk`); Dev Manager then listed
+Aurora v1.3.6 (it had v1.3.3). Logs reset on first launch; settings/pairing
+kept. Remote buttons and streaming not yet tested physically.
+
+## Version 1.3.6 and upstream review (2026-11-11)
+
+Reviewed upstream `916f3810..dcf4daa5` (24 commits, after upstream v1.3.3) on
+branch `upstream-review-2026-11-11` and bumped **1.3.5 -> 1.3.6**. Ported:
+gamepad-disconnect D-pad release (`e04d6065`), D-pad exit from Custom FPS
+(`d3689c26`), pointer drag start position (`1b2b04f1`, `578be892`), cover
+corner tint after Settings (`21fccab1`), test key spacing (`8e67e22c`).
+Rejected on purpose: `hdrMode=0` for 10-bit SDR (`231fe195`, breaks the
+VibeShine contract), Rubylight link features, SMP-only SS4S change, and two
+test edits that contradict local behavior. Steam BLE and the stats-pin overlay
+are deferred. SS4S local patch unchanged (same SHA-256).
+
+Linux Debug + CTest 33/34 (`test_pref_res` now passes; `test_pref_fps` is the
+pre-existing fixture failure, cause identified), VibeShine protocol fixture
+passed. Details: [upstream review](UPSTREAM_REVIEW_2026-11-11.md). New
+[fork features and upstream ledger](FORK_FEATURES.md) lists local features that
+every port must keep and every upstream decision so far. The TV had 1.3.3
+installed on 2026-11-11 (1.3.4 and 1.3.5 were never installed).
+`python3 scripts/webos/build_ipk.py --backend docker --jobs 6` produced and
+verified `aurora.ipk` 1.3.6, SHA-256
+`edd84ec940c76d1e2ff8802e98b3624f48f4a5767a68cd4fd14678c95df02766`
+(receipt `.cache/ipk/latest.json`). Not installed on the TV by this review.
+
+The 2026-11-11 22:50 disconnect seen on the TV was host-side: video stopped,
+the control stream disconnected, and every resume returned HTTP 503 "Failed to
+initialize a video encoder on the selected adapter" from `192.168.0.70`. The
+client tore down cleanly; no Aurora crash was logged.
+
 ## Version 1.3.5 (2026-10-25)
 
 At the user's request, bumped the central source version from **1.3.4** to

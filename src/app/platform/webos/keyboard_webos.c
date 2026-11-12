@@ -37,11 +37,9 @@ bool stream_input_webos_intercept_remote_keys(stream_input_t *input, const SDL_K
             return true;
         }
         case SDL_SCANCODE_WEBOS_HOME: {
-            /* The remote's Home opens the host's Start menu; ribbon when idle/view-only. */
-            if (session != NULL && !input->view_only) {
-                *keyCode = VK_LWIN;
-                return false;
-            }
+            /* Home is the TV's Home: go to the LG home screen. Aurora goes to the
+             * background, the stream disconnects and the game keeps running on the PC.
+             * The Windows key moved to GREEN. */
             if (event->state == SDL_RELEASED) {
                 app_webos_open_ribbon();
             }
@@ -77,8 +75,23 @@ bool stream_input_webos_intercept_remote_keys(stream_input_t *input, const SDL_K
             }
             return true;
         case SDL_SCANCODE_WEBOS_RED:
-            /* RED keeps opening the streaming overlay (options menu). */
-            bus_pushevent(USER_OPEN_OVERLAY, NULL, NULL);
+            /* RED asks before Disconnect; the game keeps running on the PC. */
+            if (event->state == SDL_PRESSED) {
+                bus_pushevent(USER_ASK_DISCONNECT, NULL, NULL);
+            }
+            return true;
+        case SDL_SCANCODE_WEBOS_GREEN:
+            /* GREEN is the Windows key (Start menu); both edges reach the host. */
+            if (session == NULL || input->view_only) {
+                return true;
+            }
+            *keyCode = VK_LWIN;
+            return false;
+        case SDL_SCANCODE_WEBOS_YELLOW:
+            /* YELLOW opens the stream menu (inside the menu it closes it, see lv_drv_sdl_key.c). */
+            if (event->state == SDL_PRESSED) {
+                bus_pushevent(USER_OPEN_OVERLAY, NULL, NULL);
+            }
             return true;
         default:
             return false;

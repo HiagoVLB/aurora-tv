@@ -18,8 +18,13 @@ typedef struct {
     lv_obj_t *video;
     lv_obj_t *actions;
     lv_obj_t *kbd_btn, *vmouse_btn;
+    lv_obj_t *log_btn, *log_label;
     lv_obj_t *suspend_btn, *quit_btn;
     lv_obj_t *quit_dialog;
+    /* Red-button Disconnect confirmation; hides the menu again on Cancel
+     * when the menu was opened only for the dialog. */
+    lv_obj_t *disconnect_dialog;
+    bool disconnect_dialog_hides_overlay;
     bool remote_display;
     lv_obj_t *stats;
     struct {
@@ -64,6 +69,9 @@ void streaming_styles_init(streaming_controller_t *controller);
 void streaming_styles_reset(streaming_controller_t *controller);
 
 void streaming_overlay_resized(streaming_controller_t *controller);
+
+/** Stream menu log button text for the current on-screen log state. */
+void streaming_update_log_button(streaming_controller_t *controller);
 
 bool streaming_overlay_shown();
 

@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: moonlight-tv\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-25 03:34+0000\n"
+"POT-Creation-Date: 2026-11-12 02:28-0300\n"
 "PO-Revision-Date: 2026-10-19 01:15-0300\n"
 "Last-Translator: \n"
 "Language-Team: Chinese Traditional\n"
@@ -18,34 +18,35 @@ msgstr ""
 "X-Crowdin-Project: moonlight-tv\n"
 "X-Crowdin-Project-ID: 484733\n"
 
-#: src/app/app.c:186
+#: src/app/app.c:187
 msgid "[Localized Language]"
 msgstr "繁體中文"
 
-#: src/app/app.c:419 src/app/ui/launcher/add.dialog.c:42
+#: src/app/app.c:423 src/app/ui/launcher/add.dialog.c:42
 #: src/app/ui/launcher/apps.controller.c:876
 #: src/app/ui/launcher/server.context_menu.c:101
 #: src/app/ui/launcher/server.context_menu.c:187
 #: src/app/ui/settings/panes/other.pane.c:142
-#: src/app/ui/settings/panes/pref_fps.c:160
+#: src/app/ui/settings/panes/pref_fps.c:162
 #: src/app/ui/settings/panes/pref_res.c:174
-#: src/app/ui/streaming/streaming.controller.c:646
+#: src/app/ui/streaming/streaming.controller.c:660
+#: src/app/ui/streaming/streaming.controller.c:715
 msgid "Cancel"
 msgstr "取消"
 
-#: src/app/app.c:419 src/app/ui/launcher/add.dialog.c:42
+#: src/app/app.c:423 src/app/ui/launcher/add.dialog.c:42
 #: src/app/ui/launcher/apps.controller.c:800
 #: src/app/ui/launcher/apps.controller.c:912
 #: src/app/ui/launcher/launcher.controller.c:629
 #: src/app/ui/launcher/launcher.controller.c:644
 #: src/app/ui/launcher/pair.dialog.c:54
 #: src/app/ui/launcher/server.context_menu.c:143 src/app/ui/root.c:412
-#: src/app/ui/settings/panes/pref_fps.c:160
+#: src/app/ui/settings/panes/pref_fps.c:162
 #: src/app/ui/settings/panes/pref_res.c:174
 msgid "OK"
 msgstr "確定"
 
-#: src/app/app.c:420
+#: src/app/app.c:424
 msgid "Quit Aurora?"
 msgstr "結束 Aurora？"
 
@@ -65,7 +66,7 @@ msgstr "7.1 聲道環繞音效"
 msgid "System Language"
 msgstr "系統語言"
 
-#: src/app/stream/connection/session_connnection.c:40
+#: src/app/stream/connection/session_connnection.c:35
 msgid "Unstable connection."
 msgstr "連線不穩定。"
 
@@ -86,10 +87,18 @@ msgid "TV remote"
 msgstr "電視遙控器"
 
 #: src/app/ui/help/help.dialog.c:63
-msgid "Hold Back / press Red or Exit"
-msgstr "長按返回 / 按紅色鍵或 Exit"
+msgid "Yellow"
+msgstr "黃色鍵"
+
+#: src/app/ui/help/help.dialog.c:63
+msgid "Open the stream menu. Press Yellow again to close it."
+msgstr "開啟串流選單。再按一次黃色鍵即可關閉。"
 
 #: src/app/ui/help/help.dialog.c:64
+msgid "Hold Back / press Yellow or Exit"
+msgstr "長按返回 / 按黃色鍵或 Exit"
+
+#: src/app/ui/help/help.dialog.c:65
 msgid ""
 "Open the stream menu. A short Back press sends Escape to the PC; holding "
 "Back on a Magic Remote sends Exit."
@@ -97,81 +106,91 @@ msgstr ""
 "開啟串流選單。短按返回會傳送 Esc 至 PC；在 Magic Remote 上長按返回會傳送 "
 "Exit。"
 
-#: src/app/ui/help/help.dialog.c:65
-msgid "Blue"
-msgstr "藍色鍵"
-
-#: src/app/ui/help/help.dialog.c:65
-msgid "Open the on-screen keyboard. Press Back to close it."
-msgstr "開啟螢幕小鍵盤，按返回關閉。"
+#: src/app/ui/help/help.dialog.c:66
+msgid "Red"
+msgstr "紅色鍵"
 
 #: src/app/ui/help/help.dialog.c:66
-msgid "Hold OK (0.6 s), then release"
-msgstr "按住 OK（0.6 秒）後放開"
-
-#: src/app/ui/help/help.dialog.c:66
-msgid "Right-click on the PC. A short OK press sends Enter."
-msgstr "傳送滑鼠右鍵點擊至 PC。短按 OK 會傳送 Enter。"
+msgid "Ask to disconnect. The game keeps running on the PC."
+msgstr "詢問是否中斷連線。遊戲會繼續在 PC 上執行。"
 
 #: src/app/ui/help/help.dialog.c:67
-msgid "Channel Up / Down"
-msgstr "頻道上 / 下"
+msgid "Green"
+msgstr "綠色鍵"
 
 #: src/app/ui/help/help.dialog.c:67
-msgid "Send Page Up / Page Down to the PC."
-msgstr "傳送 Page Up / Page Down 至 PC。"
-
-#: src/app/ui/help/help.dialog.c:68
 msgid "Send the Windows key to the PC (Start menu)."
 msgstr "傳送 Windows 鍵至電腦（開始功能表）。"
 
+#: src/app/ui/help/help.dialog.c:68
+msgid "Blue"
+msgstr "藍色鍵"
+
+#: src/app/ui/help/help.dialog.c:68
+msgid "Open the on-screen keyboard. Press Back to close it."
+msgstr "開啟螢幕小鍵盤，按返回關閉。"
+
 #: src/app/ui/help/help.dialog.c:69
+msgid "Hold OK (0.6 s), then release"
+msgstr "按住 OK（0.6 秒）後放開"
+
+#: src/app/ui/help/help.dialog.c:69
+msgid "Right-click on the PC. A short OK press sends Enter."
+msgstr "傳送滑鼠右鍵點擊至 PC。短按 OK 會傳送 Enter。"
+
+#: src/app/ui/help/help.dialog.c:70
+msgid "Channel Up / Down"
+msgstr "頻道上 / 下"
+
+#: src/app/ui/help/help.dialog.c:70
+msgid "Send Page Up / Page Down to the PC."
+msgstr "傳送 Page Up / Page Down 至 PC。"
+
+#: src/app/ui/help/help.dialog.c:71
+msgid ""
+"Go to the LG home screen. The stream disconnects and the game keeps running "
+"on the PC."
+msgstr "前往 LG 主畫面。串流會中斷，遊戲繼續在 PC 上執行。"
+
+#: src/app/ui/help/help.dialog.c:72
 msgid "Send Numpad 0–9 to the PC."
 msgstr "傳送數字鍵盤 0–9 至電腦。"
 
-#: src/app/ui/help/help.dialog.c:70
-msgid "Yellow"
-msgstr "黃色鍵"
-
-#: src/app/ui/help/help.dialog.c:70
-msgid "Cycle the diagnostic log overlay: Off, Live, Frozen."
-msgstr "切換診斷記錄面板：關閉、即時、凍結。"
-
-#: src/app/ui/help/help.dialog.c:72 src/app/ui/settings/panes/input.pane.c:88
+#: src/app/ui/help/help.dialog.c:74 src/app/ui/settings/panes/input.pane.c:88
 msgid "Gamepad"
 msgstr "遊戲控制器"
 
-#: src/app/ui/help/help.dialog.c:73
+#: src/app/ui/help/help.dialog.c:75
 msgid "LB + RB + Back + Start, then release all"
 msgstr "按住 LB + RB + Back + Start，再全部放開"
 
-#: src/app/ui/help/help.dialog.c:73
+#: src/app/ui/help/help.dialog.c:75
 msgid "Open the stream menu."
 msgstr "開啟串流選單。"
 
-#: src/app/ui/help/help.dialog.c:74
+#: src/app/ui/help/help.dialog.c:76
 msgid "Hold Select / Back (4 s)"
 msgstr "長按 Select / Back（4 秒）"
 
-#: src/app/ui/help/help.dialog.c:75
+#: src/app/ui/help/help.dialog.c:77
 msgid ""
 "Show or hide pinned performance stats. Hold this button alone; it is also "
 "sent to the PC."
 msgstr "顯示或隱藏固定的效能統計。請只按住此按鈕；它也會傳送至 PC。"
 
-#: src/app/ui/help/help.dialog.c:76
+#: src/app/ui/help/help.dialog.c:78
 msgid "Y / Triangle with virtual mouse enabled"
 msgstr "啟用虛擬滑鼠時按 Y / 三角形"
 
-#: src/app/ui/help/help.dialog.c:76
+#: src/app/ui/help/help.dialog.c:78
 msgid "Open the on-screen keyboard."
 msgstr "開啟螢幕小鍵盤。"
 
-#: src/app/ui/help/help.dialog.c:78 src/app/ui/settings/panes/input.pane.c:97
+#: src/app/ui/help/help.dialog.c:80 src/app/ui/settings/panes/input.pane.c:97
 msgid "Virtual mouse"
 msgstr "虛擬滑鼠"
 
-#: src/app/ui/help/help.dialog.c:79
+#: src/app/ui/help/help.dialog.c:81
 msgid ""
 "Enable Virtual mouse in the stream menu, or enable it in Settings > Input to "
 "start each stream with it."
@@ -179,124 +198,126 @@ msgstr ""
 "在串流選單啟用虛擬滑鼠，或在「設定 > 輸入」中啟用，以便每次串流開始時自動使"
 "用。"
 
-#: src/app/ui/help/help.dialog.c:80
+#: src/app/ui/help/help.dialog.c:82
 msgid "Right stick / Left stick"
 msgstr "右搖桿 / 左搖桿"
 
-#: src/app/ui/help/help.dialog.c:80
+#: src/app/ui/help/help.dialog.c:82
 msgid "Move the pointer / scroll."
 msgstr "移動指標 / 捲動。"
 
-#: src/app/ui/help/help.dialog.c:81
+#: src/app/ui/help/help.dialog.c:83
 msgid "LT / RT"
 msgstr "LT / RT"
 
-#: src/app/ui/help/help.dialog.c:81
+#: src/app/ui/help/help.dialog.c:83
 msgid "Left-click / right-click."
 msgstr "滑鼠左鍵 / 右鍵點擊。"
 
-#: src/app/ui/help/help.dialog.c:83
+#: src/app/ui/help/help.dialog.c:85
 msgid "On-screen keyboard"
 msgstr "螢幕小鍵盤"
 
-#: src/app/ui/help/help.dialog.c:84
+#: src/app/ui/help/help.dialog.c:86
 msgid "D-pad + A / OK"
 msgstr "方向鍵 + A / OK"
 
-#: src/app/ui/help/help.dialog.c:84
+#: src/app/ui/help/help.dialog.c:86
 msgid "Move between keys and press the selected key."
 msgstr "在按鍵間移動並按下選取的按鍵。"
 
-#: src/app/ui/help/help.dialog.c:85
+#: src/app/ui/help/help.dialog.c:87
 msgid "Y / X / Start"
 msgstr "Y / X / Start"
 
-#: src/app/ui/help/help.dialog.c:85
+#: src/app/ui/help/help.dialog.c:87
 msgid "Space / Backspace / Enter (standard gamepad layout)."
 msgstr "空白鍵 / Backspace / Enter（標準控制器配置）。"
 
-#: src/app/ui/help/help.dialog.c:86
+#: src/app/ui/help/help.dialog.c:88
 msgid "LT / LB / RB"
 msgstr "LT / LB / RB"
 
-#: src/app/ui/help/help.dialog.c:86
+#: src/app/ui/help/help.dialog.c:88
 msgid "Switch letters and symbols / move the text cursor left / right."
 msgstr "切換字母與符號 / 將文字游標左移 / 右移。"
 
-#: src/app/ui/help/help.dialog.c:87
+#: src/app/ui/help/help.dialog.c:89
 msgid "B / Back"
 msgstr "B / Back"
 
-#: src/app/ui/help/help.dialog.c:87
+#: src/app/ui/help/help.dialog.c:89
 msgid "Close the keyboard. Gamepad B also sends Escape to the PC."
 msgstr "關閉小鍵盤。控制器 B 鍵也會傳送 Esc 至 PC。"
 
-#: src/app/ui/help/help.dialog.c:89
+#: src/app/ui/help/help.dialog.c:91
 msgid "Leaving a stream"
 msgstr "離開串流"
 
-#: src/app/ui/help/help.dialog.c:90 src/app/ui/streaming/streaming.view.c:141
+#: src/app/ui/help/help.dialog.c:92
+#: src/app/ui/streaming/streaming.controller.c:715
+#: src/app/ui/streaming/streaming.view.c:154
 msgid "Disconnect"
 msgstr "中斷連線"
 
-#: src/app/ui/help/help.dialog.c:90
+#: src/app/ui/help/help.dialog.c:92
 msgid ""
 "Return to Aurora and leave the application running on the PC so you can "
 "resume later."
 msgstr "返回 Aurora，讓 PC 上的應用程式繼續執行，以便稍後恢復。"
 
-#: src/app/ui/help/help.dialog.c:91
-#: src/app/ui/streaming/streaming.controller.c:646
-#: src/app/ui/streaming/streaming.view.c:151
+#: src/app/ui/help/help.dialog.c:93
+#: src/app/ui/streaming/streaming.controller.c:660
+#: src/app/ui/streaming/streaming.view.c:164
 msgid "End session"
 msgstr "結束工作階段"
 
-#: src/app/ui/help/help.dialog.c:91
+#: src/app/ui/help/help.dialog.c:93
 msgid ""
 "Ask the host to close the application after confirmation. Not available for "
 "Remote Monitor / Remote Input streams."
 msgstr ""
 "確認後要求主機關閉應用程式。Remote Monitor / Remote Input 串流不支援此操作。"
 
-#: src/app/ui/help/help.dialog.c:93
+#: src/app/ui/help/help.dialog.c:95
 msgid "About Aurora"
 msgstr "關於 Aurora"
 
-#: src/app/ui/help/help.dialog.c:95
+#: src/app/ui/help/help.dialog.c:97
 msgid "Product"
 msgstr "產品"
 
-#: src/app/ui/help/help.dialog.c:95
+#: src/app/ui/help/help.dialog.c:97
 msgid "Aurora - Moonlight streaming client for LG webOS"
 msgstr "Aurora - 適用於 LG webOS 的 Moonlight 串流用戶端"
 
-#: src/app/ui/help/help.dialog.c:96
+#: src/app/ui/help/help.dialog.c:98
 msgid "Version"
 msgstr "版本"
 
-#: src/app/ui/help/help.dialog.c:97
+#: src/app/ui/help/help.dialog.c:99
 msgid "Video decoder"
 msgstr "視訊解碼器"
 
-#: src/app/ui/help/help.dialog.c:98
+#: src/app/ui/help/help.dialog.c:100
 msgid "Audio backend"
 msgstr "音訊後端"
 
-#: src/app/ui/help/help.dialog.c:101
+#: src/app/ui/help/help.dialog.c:103
 msgid "System"
 msgstr "系統"
 
-#: src/app/ui/help/help.dialog.c:109
+#: src/app/ui/help/help.dialog.c:111
 msgid "Screen resolution"
 msgstr "螢幕解析度"
 
-#: src/app/ui/help/help.dialog.c:115
+#: src/app/ui/help/help.dialog.c:117
 msgid "Refresh rate"
 msgstr "更新頻率"
 
-#: src/app/ui/help/help.dialog.c:170 src/app/ui/help/help.dialog.c:175
-#: src/app/ui/streaming/streaming.controller.c:361
+#: src/app/ui/help/help.dialog.c:172 src/app/ui/help/help.dialog.c:177
 #: src/app/ui/streaming/streaming.controller.c:368
+#: src/app/ui/streaming/streaming.controller.c:375
 msgid "not available"
 msgstr "無法使用"
 
@@ -547,7 +568,7 @@ msgid "Auto"
 msgstr "自動"
 
 #: src/app/ui/settings/panes/basic.pane.c:158
-#: src/app/ui/streaming/streaming.view.c:249
+#: src/app/ui/streaming/streaming.view.c:262
 msgid "Resolution"
 msgstr "解析度"
 
@@ -561,7 +582,7 @@ msgid "Bitrate"
 msgstr "位元率"
 
 #: src/app/ui/settings/panes/basic.pane.c:195
-#: src/app/ui/streaming/streaming.view.c:251
+#: src/app/ui/streaming/streaming.view.c:264
 msgid "Video backend"
 msgstr "視訊後端"
 
@@ -586,12 +607,12 @@ msgid "Requires HEVC or AV1. Only used with HDR off."
 msgstr "需要 HEVC 或 AV1。僅在 HDR 關閉時使用。"
 
 #: src/app/ui/settings/panes/basic.pane.c:224
-#: src/app/ui/streaming/streaming.view.c:255
+#: src/app/ui/streaming/streaming.view.c:268
 msgid "Audio"
 msgstr "音訊"
 
 #: src/app/ui/settings/panes/basic.pane.c:231
-#: src/app/ui/streaming/streaming.view.c:250
+#: src/app/ui/streaming/streaming.view.c:263
 msgid "Video"
 msgstr "視訊"
 
@@ -839,31 +860,31 @@ msgid ""
 "stream."
 msgstr "還原預設設定？配對資料將會保留，但需要重新連線串流。"
 
-#: src/app/ui/settings/panes/pref_fps.c:90
-#: src/app/ui/settings/panes/pref_fps.c:95
+#: src/app/ui/settings/panes/pref_fps.c:92
+#: src/app/ui/settings/panes/pref_fps.c:97
 #, c-format
 msgid "%d FPS"
 msgstr "%d FPS"
 
 #. Custom FPS option
-#: src/app/ui/settings/panes/pref_fps.c:100
-#: src/app/ui/settings/panes/pref_fps.c:161
+#: src/app/ui/settings/panes/pref_fps.c:102
+#: src/app/ui/settings/panes/pref_fps.c:163
 msgid "Custom FPS"
 msgstr "自訂影格率"
 
-#: src/app/ui/settings/panes/pref_fps.c:118
-#: src/app/ui/settings/panes/pref_fps.c:137
+#: src/app/ui/settings/panes/pref_fps.c:120
+#: src/app/ui/settings/panes/pref_fps.c:139
 #, c-format
 msgid "%.2f FPS (Custom)"
 msgstr "%.2f FPS（自訂）"
 
-#: src/app/ui/settings/panes/pref_fps.c:121
-#: src/app/ui/settings/panes/pref_fps.c:140
+#: src/app/ui/settings/panes/pref_fps.c:123
+#: src/app/ui/settings/panes/pref_fps.c:142
 #, c-format
 msgid "%d FPS (Custom)"
 msgstr "%d FPS（自訂）"
 
-#: src/app/ui/settings/panes/pref_fps.c:171
+#: src/app/ui/settings/panes/pref_fps.c:173
 #, c-format
 msgid "Enter a custom framerate (%d-%d FPS):"
 msgstr "輸入自訂影格率（%d–%d FPS）："
@@ -891,7 +912,7 @@ msgstr "輸入自訂解析度："
 
 #. punktfunk-style: one compact Stream list, then slim side panes
 #: src/app/ui/settings/settings.controller.c:38
-#: src/app/ui/streaming/streaming.view.c:248
+#: src/app/ui/streaming/streaming.view.c:261
 msgid "Stream"
 msgstr "串流"
 
@@ -903,36 +924,36 @@ msgstr "輸入"
 msgid "Host"
 msgstr "主機"
 
-#: src/app/ui/settings/settings.controller.c:1011
-#: src/app/ui/settings/settings.controller.c:1022
+#: src/app/ui/settings/settings.controller.c:1016
+#: src/app/ui/settings/settings.controller.c:1027
 msgid "Later"
 msgstr "稍後"
 
-#: src/app/ui/settings/settings.controller.c:1011
+#: src/app/ui/settings/settings.controller.c:1016
 msgid "Restart app"
 msgstr "重新啟動應用程式"
 
-#: src/app/ui/settings/settings.controller.c:1013
+#: src/app/ui/settings/settings.controller.c:1018
 msgid "Language changes take effect after restarting the app. Restart now?"
 msgstr "語言變更會在重新啟動應用程式後生效。立即重新啟動？"
 
-#: src/app/ui/settings/settings.controller.c:1022
+#: src/app/ui/settings/settings.controller.c:1027
 msgid "Reconnect streaming"
 msgstr "重新連線串流"
 
-#: src/app/ui/settings/settings.controller.c:1025
+#: src/app/ui/settings/settings.controller.c:1030
 msgid ""
 "Settings apply on the next streaming session. Reconnect now to use them "
 "right away?"
 msgstr "設定將於下次串流工作階段生效。立即重新連線以套用設定？"
 
-#: src/app/ui/settings/settings.controller.c:1544
-#: src/app/ui/settings/settings.controller.c:1841
+#: src/app/ui/settings/settings.controller.c:1554
+#: src/app/ui/settings/settings.controller.c:1852
 #: src/app/ui/settings/settings.view.c:36
 msgid "Settings"
 msgstr "設定"
 
-#: src/app/ui/settings/settings.controller.c:1773
+#: src/app/ui/settings/settings.controller.c:1784
 msgid "More settings"
 msgstr "更多設定"
 
@@ -960,29 +981,40 @@ msgid ""
 "16:9 for streaming."
 msgstr "使用超寬螢幕時，可能需要將解析度調整為 16:9 才能串流。"
 
-#: src/app/ui/streaming/streaming.controller.c:328
+#: src/app/ui/streaming/streaming.controller.c:335
 msgid "total"
 msgstr "總計"
 
-#: src/app/ui/streaming/streaming.controller.c:420
+#: src/app/ui/streaming/streaming.controller.c:427
 msgid "Connecting..."
 msgstr "連線中..."
 
-#: src/app/ui/streaming/streaming.controller.c:448
+#: src/app/ui/streaming/streaming.controller.c:456
 msgid "Disconnecting..."
 msgstr "正在中斷連線..."
 
-#: src/app/ui/streaming/streaming.controller.c:647
+#: src/app/ui/streaming/streaming.controller.c:661
 msgid "End session on PC?"
 msgstr "結束 PC 上的工作階段？"
 
-#: src/app/ui/streaming/streaming.controller.c:648
+#: src/app/ui/streaming/streaming.controller.c:662
 msgid ""
 "This asks the host to close the application or desktop session and restore "
 "its display. To leave it running, choose Disconnect."
 msgstr ""
 "要求主機關閉應用程式或桌面工作階段並還原顯示。若要讓它繼續執行，請選擇「中斷"
 "連線」。"
+
+#: src/app/ui/streaming/streaming.controller.c:716
+msgid "Disconnect from PC?"
+msgstr "要與 PC 中斷連線嗎？"
+
+#: src/app/ui/streaming/streaming.controller.c:717
+msgid ""
+"The game keeps running on the PC, so you can resume it later. To close it, "
+"choose End session."
+msgstr ""
+"遊戲會繼續在 PC 上執行，你可以稍後繼續。若要關閉，請選擇「結束工作階段」。"
 
 #: src/app/ui/streaming/streaming.view.c:49
 #, c-format
@@ -997,49 +1029,70 @@ msgstr "完整鍵盤"
 msgid "Virtual Mouse"
 msgstr "虛擬滑鼠"
 
-#: src/app/ui/streaming/streaming.view.c:221
+#: src/app/ui/streaming/streaming.view.c:234
 msgid "Performance"
 msgstr "效能"
 
-#: src/app/ui/streaming/streaming.view.c:233
+#: src/app/ui/streaming/streaming.view.c:246
 msgid "FPS"
 msgstr "FPS"
 
-#: src/app/ui/streaming/streaming.view.c:233
+#: src/app/ui/streaming/streaming.view.c:246
 msgid "Game"
 msgstr "遊戲"
 
-#: src/app/ui/streaming/streaming.view.c:234
+#: src/app/ui/streaming/streaming.view.c:247
 msgid "Latency"
 msgstr "延遲"
 
-#: src/app/ui/streaming/streaming.view.c:235
+#: src/app/ui/streaming/streaming.view.c:248
 msgid "Ping"
 msgstr "Ping"
 
-#: src/app/ui/streaming/streaming.view.c:237
+#: src/app/ui/streaming/streaming.view.c:250
 msgid "Network"
 msgstr "網路"
 
-#: src/app/ui/streaming/streaming.view.c:238
+#: src/app/ui/streaming/streaming.view.c:251
 msgid "Frame loss"
 msgstr "影格遺失"
 
-#: src/app/ui/streaming/streaming.view.c:239
+#: src/app/ui/streaming/streaming.view.c:252
 msgid "Bandwidth"
 msgstr "頻寬"
 
-#: src/app/ui/streaming/streaming.view.c:252
+#: src/app/ui/streaming/streaming.view.c:265
 msgid "Host processing latency"
 msgstr "主機處理延遲"
 
-#: src/app/ui/streaming/streaming.view.c:253
+#: src/app/ui/streaming/streaming.view.c:266
 msgid "Decoder latency"
 msgstr "解碼器延遲"
 
-#: src/app/ui/streaming/streaming.view.c:254
+#: src/app/ui/streaming/streaming.view.c:267
 msgid "CPU / RAM"
 msgstr "CPU / RAM"
+
+#: src/app/ui/streaming/streaming.view.c:326
+msgid "On-screen log: Live"
+msgstr "螢幕記錄：即時"
+
+#: src/app/ui/streaming/streaming.view.c:329
+msgid "On-screen log: Frozen"
+msgstr "螢幕記錄：已凍結"
+
+#: src/app/ui/streaming/streaming.view.c:332
+msgid "On-screen log: Off"
+msgstr "螢幕記錄：關閉"
+
+#~ msgid "Open the stream menu. Press Green again to close it."
+#~ msgstr "開啟串流選單。再按一次綠色鍵即可關閉。"
+
+#~ msgid "Hold Back / press Red or Exit"
+#~ msgstr "長按返回 / 按紅色鍵或 Exit"
+
+#~ msgid "Cycle the diagnostic log overlay: Off, Live, Frozen."
+#~ msgstr "切換診斷記錄面板：關閉、即時、凍結。"
 
 #~ msgid "Experimental"
 #~ msgstr "實驗功能"

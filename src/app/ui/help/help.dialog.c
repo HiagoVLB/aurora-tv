@@ -60,14 +60,16 @@ lv_obj_t *help_dialog_create(app_t *app) {
     add_help_text(list, locstr("During streaming, use these shortcuts to control Aurora. Scroll with Up/Down or the mouse wheel. Press Back/B/Escape to close this guide."));
 
     add_section(list, locstr("TV remote"));
-    add_shortcut(list, locstr("Hold Back / press Red or Exit"),
+    add_shortcut(list, locstr("Yellow"), locstr("Open the stream menu. Press Yellow again to close it."));
+    add_shortcut(list, locstr("Hold Back / press Yellow or Exit"),
                  locstr("Open the stream menu. A short Back press sends Escape to the PC; holding Back on a Magic Remote sends Exit."));
+    add_shortcut(list, locstr("Red"), locstr("Ask to disconnect. The game keeps running on the PC."));
+    add_shortcut(list, locstr("Green"), locstr("Send the Windows key to the PC (Start menu)."));
     add_shortcut(list, locstr("Blue"), locstr("Open the on-screen keyboard. Press Back to close it."));
     add_shortcut(list, locstr("Hold OK (0.6 s), then release"), locstr("Right-click on the PC. A short OK press sends Enter."));
     add_shortcut(list, locstr("Channel Up / Down"), locstr("Send Page Up / Page Down to the PC."));
-    add_shortcut(list, "Home", locstr("Send the Windows key to the PC (Start menu)."));
+    add_shortcut(list, "Home", locstr("Go to the LG home screen. The stream disconnects and the game keeps running on the PC."));
     add_shortcut(list, "0–9", locstr("Send Numpad 0–9 to the PC."));
-    add_shortcut(list, locstr("Yellow"), locstr("Cycle the diagnostic log overlay: Off, Live, Frozen."));
 
     add_section(list, locstr("Gamepad"));
     add_shortcut(list, locstr("LB + RB + Back + Start, then release all"), locstr("Open the stream menu."));

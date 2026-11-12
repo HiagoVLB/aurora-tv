@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: moonlight-tv\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-25 03:34+0000\n"
+"POT-Creation-Date: 2026-11-12 02:28-0300\n"
 "PO-Revision-Date: 2026-10-19 01:15-0300\n"
 "Last-Translator: \n"
 "Language-Team: Italian\n"
@@ -18,34 +18,35 @@ msgstr ""
 "X-Crowdin-Project: moonlight-tv\n"
 "X-Crowdin-Project-ID: 484733\n"
 
-#: src/app/app.c:186
+#: src/app/app.c:187
 msgid "[Localized Language]"
 msgstr "Italiano"
 
-#: src/app/app.c:419 src/app/ui/launcher/add.dialog.c:42
+#: src/app/app.c:423 src/app/ui/launcher/add.dialog.c:42
 #: src/app/ui/launcher/apps.controller.c:876
 #: src/app/ui/launcher/server.context_menu.c:101
 #: src/app/ui/launcher/server.context_menu.c:187
 #: src/app/ui/settings/panes/other.pane.c:142
-#: src/app/ui/settings/panes/pref_fps.c:160
+#: src/app/ui/settings/panes/pref_fps.c:162
 #: src/app/ui/settings/panes/pref_res.c:174
-#: src/app/ui/streaming/streaming.controller.c:646
+#: src/app/ui/streaming/streaming.controller.c:660
+#: src/app/ui/streaming/streaming.controller.c:715
 msgid "Cancel"
 msgstr "Annulla"
 
-#: src/app/app.c:419 src/app/ui/launcher/add.dialog.c:42
+#: src/app/app.c:423 src/app/ui/launcher/add.dialog.c:42
 #: src/app/ui/launcher/apps.controller.c:800
 #: src/app/ui/launcher/apps.controller.c:912
 #: src/app/ui/launcher/launcher.controller.c:629
 #: src/app/ui/launcher/launcher.controller.c:644
 #: src/app/ui/launcher/pair.dialog.c:54
 #: src/app/ui/launcher/server.context_menu.c:143 src/app/ui/root.c:412
-#: src/app/ui/settings/panes/pref_fps.c:160
+#: src/app/ui/settings/panes/pref_fps.c:162
 #: src/app/ui/settings/panes/pref_res.c:174
 msgid "OK"
 msgstr "OK"
 
-#: src/app/app.c:420
+#: src/app/app.c:424
 msgid "Quit Aurora?"
 msgstr "Uscire da Aurora?"
 
@@ -65,7 +66,7 @@ msgstr "7.1 Surround"
 msgid "System Language"
 msgstr "Lingua di sistema"
 
-#: src/app/stream/connection/session_connnection.c:40
+#: src/app/stream/connection/session_connnection.c:35
 msgid "Unstable connection."
 msgstr "Connessione instabile."
 
@@ -87,10 +88,18 @@ msgid "TV remote"
 msgstr "Telecomando TV"
 
 #: src/app/ui/help/help.dialog.c:63
-msgid "Hold Back / press Red or Exit"
-msgstr "Tieni premuto Indietro / premi Rosso o Exit"
+msgid "Yellow"
+msgstr "Giallo"
+
+#: src/app/ui/help/help.dialog.c:63
+msgid "Open the stream menu. Press Yellow again to close it."
+msgstr "Apre il menu dello streaming. Premi di nuovo Giallo per chiuderlo."
 
 #: src/app/ui/help/help.dialog.c:64
+msgid "Hold Back / press Yellow or Exit"
+msgstr "Tieni premuto Indietro / premi Giallo o Exit"
+
+#: src/app/ui/help/help.dialog.c:65
 msgid ""
 "Open the stream menu. A short Back press sends Escape to the PC; holding "
 "Back on a Magic Remote sends Exit."
@@ -98,64 +107,73 @@ msgstr ""
 "Apre il menu dello streaming. Una breve pressione di Indietro invia Esc al "
 "PC; tenendo premuto Indietro sul Magic Remote si invia Exit."
 
-#: src/app/ui/help/help.dialog.c:65
-msgid "Blue"
-msgstr "Blu"
-
-#: src/app/ui/help/help.dialog.c:65
-msgid "Open the on-screen keyboard. Press Back to close it."
-msgstr "Apre la tastiera su schermo. Premi Indietro per chiuderla."
+#: src/app/ui/help/help.dialog.c:66
+msgid "Red"
+msgstr "Rosso"
 
 #: src/app/ui/help/help.dialog.c:66
-msgid "Hold OK (0.6 s), then release"
-msgstr "Tieni premuto OK (0,6 s), poi rilascia"
-
-#: src/app/ui/help/help.dialog.c:66
-msgid "Right-click on the PC. A short OK press sends Enter."
-msgstr "Esegue un clic destro sul PC. Una breve pressione di OK invia Invio."
+msgid "Ask to disconnect. The game keeps running on the PC."
+msgstr "Chiede se disconnettersi. Il gioco continua a funzionare sul PC."
 
 #: src/app/ui/help/help.dialog.c:67
-msgid "Channel Up / Down"
-msgstr "Canale su / giù"
+msgid "Green"
+msgstr "Verde"
 
 #: src/app/ui/help/help.dialog.c:67
-msgid "Send Page Up / Page Down to the PC."
-msgstr "Invia Pag Su / Pag Giù al PC."
-
-#: src/app/ui/help/help.dialog.c:68
 msgid "Send the Windows key to the PC (Start menu)."
 msgstr "Invia il tasto Windows al PC (menu Start)."
 
+#: src/app/ui/help/help.dialog.c:68
+msgid "Blue"
+msgstr "Blu"
+
+#: src/app/ui/help/help.dialog.c:68
+msgid "Open the on-screen keyboard. Press Back to close it."
+msgstr "Apre la tastiera su schermo. Premi Indietro per chiuderla."
+
 #: src/app/ui/help/help.dialog.c:69
+msgid "Hold OK (0.6 s), then release"
+msgstr "Tieni premuto OK (0,6 s), poi rilascia"
+
+#: src/app/ui/help/help.dialog.c:69
+msgid "Right-click on the PC. A short OK press sends Enter."
+msgstr "Esegue un clic destro sul PC. Una breve pressione di OK invia Invio."
+
+#: src/app/ui/help/help.dialog.c:70
+msgid "Channel Up / Down"
+msgstr "Canale su / giù"
+
+#: src/app/ui/help/help.dialog.c:70
+msgid "Send Page Up / Page Down to the PC."
+msgstr "Invia Pag Su / Pag Giù al PC."
+
+#: src/app/ui/help/help.dialog.c:71
+msgid ""
+"Go to the LG home screen. The stream disconnects and the game keeps running "
+"on the PC."
+msgstr "Va alla schermata iniziale LG. Lo streaming si disconnette e il gioco continua a funzionare sul PC."
+
+#: src/app/ui/help/help.dialog.c:72
 msgid "Send Numpad 0–9 to the PC."
 msgstr "Invia i tasti 0–9 del tastierino numerico al PC."
 
-#: src/app/ui/help/help.dialog.c:70
-msgid "Yellow"
-msgstr "Giallo"
-
-#: src/app/ui/help/help.dialog.c:70
-msgid "Cycle the diagnostic log overlay: Off, Live, Frozen."
-msgstr ""
-"Alterna il registro diagnostico tra disattivato, in tempo reale e bloccato."
-
-#: src/app/ui/help/help.dialog.c:72 src/app/ui/settings/panes/input.pane.c:88
+#: src/app/ui/help/help.dialog.c:74 src/app/ui/settings/panes/input.pane.c:88
 msgid "Gamepad"
 msgstr "Controller"
 
-#: src/app/ui/help/help.dialog.c:73
+#: src/app/ui/help/help.dialog.c:75
 msgid "LB + RB + Back + Start, then release all"
 msgstr "LB + RB + Back + Start, poi rilascia tutti"
 
-#: src/app/ui/help/help.dialog.c:73
+#: src/app/ui/help/help.dialog.c:75
 msgid "Open the stream menu."
 msgstr "Apre il menu dello streaming."
 
-#: src/app/ui/help/help.dialog.c:74
+#: src/app/ui/help/help.dialog.c:76
 msgid "Hold Select / Back (4 s)"
 msgstr "Tieni premuto Select / Back (4 s)"
 
-#: src/app/ui/help/help.dialog.c:75
+#: src/app/ui/help/help.dialog.c:77
 msgid ""
 "Show or hide pinned performance stats. Hold this button alone; it is also "
 "sent to the PC."
@@ -163,19 +181,19 @@ msgstr ""
 "Mostra o nasconde le statistiche delle prestazioni fisse. Tieni premuto solo "
 "questo pulsante; viene inviato anche al PC."
 
-#: src/app/ui/help/help.dialog.c:76
+#: src/app/ui/help/help.dialog.c:78
 msgid "Y / Triangle with virtual mouse enabled"
 msgstr "Y / Triangolo con il mouse virtuale attivo"
 
-#: src/app/ui/help/help.dialog.c:76
+#: src/app/ui/help/help.dialog.c:78
 msgid "Open the on-screen keyboard."
 msgstr "Apre la tastiera su schermo."
 
-#: src/app/ui/help/help.dialog.c:78 src/app/ui/settings/panes/input.pane.c:97
+#: src/app/ui/help/help.dialog.c:80 src/app/ui/settings/panes/input.pane.c:97
 msgid "Virtual mouse"
 msgstr "Mouse virtuale"
 
-#: src/app/ui/help/help.dialog.c:79
+#: src/app/ui/help/help.dialog.c:81
 msgid ""
 "Enable Virtual mouse in the stream menu, or enable it in Settings > Input to "
 "start each stream with it."
@@ -183,69 +201,71 @@ msgstr ""
 "Attiva il mouse virtuale nel menu dello streaming o in Impostazioni > Input "
 "per usarlo dall'inizio di ogni sessione."
 
-#: src/app/ui/help/help.dialog.c:80
+#: src/app/ui/help/help.dialog.c:82
 msgid "Right stick / Left stick"
 msgstr "Stick destro / sinistro"
 
-#: src/app/ui/help/help.dialog.c:80
+#: src/app/ui/help/help.dialog.c:82
 msgid "Move the pointer / scroll."
 msgstr "Muove il puntatore / scorre."
 
-#: src/app/ui/help/help.dialog.c:81
+#: src/app/ui/help/help.dialog.c:83
 msgid "LT / RT"
 msgstr "LT / RT"
 
-#: src/app/ui/help/help.dialog.c:81
+#: src/app/ui/help/help.dialog.c:83
 msgid "Left-click / right-click."
 msgstr "Clic sinistro / destro."
 
-#: src/app/ui/help/help.dialog.c:83
+#: src/app/ui/help/help.dialog.c:85
 msgid "On-screen keyboard"
 msgstr "Tastiera su schermo"
 
-#: src/app/ui/help/help.dialog.c:84
+#: src/app/ui/help/help.dialog.c:86
 msgid "D-pad + A / OK"
 msgstr "Croce direzionale + A / OK"
 
-#: src/app/ui/help/help.dialog.c:84
+#: src/app/ui/help/help.dialog.c:86
 msgid "Move between keys and press the selected key."
 msgstr "Sposta la selezione tra i tasti e preme quello selezionato."
 
-#: src/app/ui/help/help.dialog.c:85
+#: src/app/ui/help/help.dialog.c:87
 msgid "Y / X / Start"
 msgstr "Y / X / Start"
 
-#: src/app/ui/help/help.dialog.c:85
+#: src/app/ui/help/help.dialog.c:87
 msgid "Space / Backspace / Enter (standard gamepad layout)."
 msgstr "Spazio / Backspace / Invio (disposizione standard del controller)."
 
-#: src/app/ui/help/help.dialog.c:86
+#: src/app/ui/help/help.dialog.c:88
 msgid "LT / LB / RB"
 msgstr "LT / LB / RB"
 
-#: src/app/ui/help/help.dialog.c:86
+#: src/app/ui/help/help.dialog.c:88
 msgid "Switch letters and symbols / move the text cursor left / right."
 msgstr ""
 "Alterna lettere e simboli / sposta il cursore del testo a sinistra / destra."
 
-#: src/app/ui/help/help.dialog.c:87
+#: src/app/ui/help/help.dialog.c:89
 msgid "B / Back"
 msgstr "B / Back"
 
-#: src/app/ui/help/help.dialog.c:87
+#: src/app/ui/help/help.dialog.c:89
 msgid "Close the keyboard. Gamepad B also sends Escape to the PC."
 msgstr ""
 "Chiude la tastiera. Il pulsante B del controller invia anche Esc al PC."
 
-#: src/app/ui/help/help.dialog.c:89
+#: src/app/ui/help/help.dialog.c:91
 msgid "Leaving a stream"
 msgstr "Uscire dallo streaming"
 
-#: src/app/ui/help/help.dialog.c:90 src/app/ui/streaming/streaming.view.c:141
+#: src/app/ui/help/help.dialog.c:92
+#: src/app/ui/streaming/streaming.controller.c:715
+#: src/app/ui/streaming/streaming.view.c:154
 msgid "Disconnect"
 msgstr "Disconnetti"
 
-#: src/app/ui/help/help.dialog.c:90
+#: src/app/ui/help/help.dialog.c:92
 msgid ""
 "Return to Aurora and leave the application running on the PC so you can "
 "resume later."
@@ -253,13 +273,13 @@ msgstr ""
 "Torna ad Aurora lasciando aperta l'applicazione sul PC, per riprenderla in "
 "seguito."
 
-#: src/app/ui/help/help.dialog.c:91
-#: src/app/ui/streaming/streaming.controller.c:646
-#: src/app/ui/streaming/streaming.view.c:151
+#: src/app/ui/help/help.dialog.c:93
+#: src/app/ui/streaming/streaming.controller.c:660
+#: src/app/ui/streaming/streaming.view.c:164
 msgid "End session"
 msgstr "Termina sessione"
 
-#: src/app/ui/help/help.dialog.c:91
+#: src/app/ui/help/help.dialog.c:93
 msgid ""
 "Ask the host to close the application after confirmation. Not available for "
 "Remote Monitor / Remote Input streams."
@@ -267,45 +287,45 @@ msgstr ""
 "Chiede all'host di chiudere l'applicazione dopo la conferma. Non disponibile "
 "per gli stream Remote Monitor / Remote Input."
 
-#: src/app/ui/help/help.dialog.c:93
+#: src/app/ui/help/help.dialog.c:95
 msgid "About Aurora"
 msgstr "Informazioni su Aurora"
 
-#: src/app/ui/help/help.dialog.c:95
+#: src/app/ui/help/help.dialog.c:97
 msgid "Product"
 msgstr "Prodotto"
 
-#: src/app/ui/help/help.dialog.c:95
+#: src/app/ui/help/help.dialog.c:97
 msgid "Aurora - Moonlight streaming client for LG webOS"
 msgstr "Aurora - client di streaming Moonlight per LG webOS"
 
-#: src/app/ui/help/help.dialog.c:96
+#: src/app/ui/help/help.dialog.c:98
 msgid "Version"
 msgstr "Versione"
 
-#: src/app/ui/help/help.dialog.c:97
+#: src/app/ui/help/help.dialog.c:99
 msgid "Video decoder"
 msgstr "Decodificatore video"
 
-#: src/app/ui/help/help.dialog.c:98
+#: src/app/ui/help/help.dialog.c:100
 msgid "Audio backend"
 msgstr "Backend audio"
 
-#: src/app/ui/help/help.dialog.c:101
+#: src/app/ui/help/help.dialog.c:103
 msgid "System"
 msgstr "Sistema"
 
-#: src/app/ui/help/help.dialog.c:109
+#: src/app/ui/help/help.dialog.c:111
 msgid "Screen resolution"
 msgstr "Risoluzione dello schermo"
 
-#: src/app/ui/help/help.dialog.c:115
+#: src/app/ui/help/help.dialog.c:117
 msgid "Refresh rate"
 msgstr "Frequenza di aggiornamento"
 
-#: src/app/ui/help/help.dialog.c:170 src/app/ui/help/help.dialog.c:175
-#: src/app/ui/streaming/streaming.controller.c:361
+#: src/app/ui/help/help.dialog.c:172 src/app/ui/help/help.dialog.c:177
 #: src/app/ui/streaming/streaming.controller.c:368
+#: src/app/ui/streaming/streaming.controller.c:375
 msgid "not available"
 msgstr "non disponibile"
 
@@ -564,7 +584,7 @@ msgid "Auto"
 msgstr "Automatico"
 
 #: src/app/ui/settings/panes/basic.pane.c:158
-#: src/app/ui/streaming/streaming.view.c:249
+#: src/app/ui/streaming/streaming.view.c:262
 msgid "Resolution"
 msgstr "Risoluzione"
 
@@ -578,7 +598,7 @@ msgid "Bitrate"
 msgstr "Bitrate"
 
 #: src/app/ui/settings/panes/basic.pane.c:195
-#: src/app/ui/streaming/streaming.view.c:251
+#: src/app/ui/streaming/streaming.view.c:264
 msgid "Video backend"
 msgstr "Backend video"
 
@@ -603,12 +623,12 @@ msgid "Requires HEVC or AV1. Only used with HDR off."
 msgstr "Richiede HEVC o AV1. Usato solo con HDR disattivato."
 
 #: src/app/ui/settings/panes/basic.pane.c:224
-#: src/app/ui/streaming/streaming.view.c:255
+#: src/app/ui/streaming/streaming.view.c:268
 msgid "Audio"
 msgstr "Audio"
 
 #: src/app/ui/settings/panes/basic.pane.c:231
-#: src/app/ui/streaming/streaming.view.c:250
+#: src/app/ui/streaming/streaming.view.c:263
 msgid "Video"
 msgstr "Video"
 
@@ -861,31 +881,31 @@ msgstr ""
 "Ripristinare i valori predefiniti? Le associazioni verranno mantenute. "
 "Dovrai riconnettere lo streaming."
 
-#: src/app/ui/settings/panes/pref_fps.c:90
-#: src/app/ui/settings/panes/pref_fps.c:95
+#: src/app/ui/settings/panes/pref_fps.c:92
+#: src/app/ui/settings/panes/pref_fps.c:97
 #, c-format
 msgid "%d FPS"
 msgstr "%d FPS"
 
 #. Custom FPS option
-#: src/app/ui/settings/panes/pref_fps.c:100
-#: src/app/ui/settings/panes/pref_fps.c:161
+#: src/app/ui/settings/panes/pref_fps.c:102
+#: src/app/ui/settings/panes/pref_fps.c:163
 msgid "Custom FPS"
 msgstr "FPS personalizzati"
 
-#: src/app/ui/settings/panes/pref_fps.c:118
-#: src/app/ui/settings/panes/pref_fps.c:137
+#: src/app/ui/settings/panes/pref_fps.c:120
+#: src/app/ui/settings/panes/pref_fps.c:139
 #, c-format
 msgid "%.2f FPS (Custom)"
 msgstr "%.2f FPS (personalizzati)"
 
-#: src/app/ui/settings/panes/pref_fps.c:121
-#: src/app/ui/settings/panes/pref_fps.c:140
+#: src/app/ui/settings/panes/pref_fps.c:123
+#: src/app/ui/settings/panes/pref_fps.c:142
 #, c-format
 msgid "%d FPS (Custom)"
 msgstr "%d FPS (personalizzati)"
 
-#: src/app/ui/settings/panes/pref_fps.c:171
+#: src/app/ui/settings/panes/pref_fps.c:173
 #, c-format
 msgid "Enter a custom framerate (%d-%d FPS):"
 msgstr "Inserisci una frequenza fotogrammi (%d–%d FPS):"
@@ -913,7 +933,7 @@ msgstr "Inserisci una risoluzione personalizzata:"
 
 #. punktfunk-style: one compact Stream list, then slim side panes
 #: src/app/ui/settings/settings.controller.c:38
-#: src/app/ui/streaming/streaming.view.c:248
+#: src/app/ui/streaming/streaming.view.c:261
 msgid "Stream"
 msgstr "Streaming"
 
@@ -925,24 +945,24 @@ msgstr "Input"
 msgid "Host"
 msgstr "Host"
 
-#: src/app/ui/settings/settings.controller.c:1011
-#: src/app/ui/settings/settings.controller.c:1022
+#: src/app/ui/settings/settings.controller.c:1016
+#: src/app/ui/settings/settings.controller.c:1027
 msgid "Later"
 msgstr "Più tardi"
 
-#: src/app/ui/settings/settings.controller.c:1011
+#: src/app/ui/settings/settings.controller.c:1016
 msgid "Restart app"
 msgstr "Riavvia app"
 
-#: src/app/ui/settings/settings.controller.c:1013
+#: src/app/ui/settings/settings.controller.c:1018
 msgid "Language changes take effect after restarting the app. Restart now?"
 msgstr "La nuova lingua sarà attiva dopo il riavvio dell'app. Riavviare ora?"
 
-#: src/app/ui/settings/settings.controller.c:1022
+#: src/app/ui/settings/settings.controller.c:1027
 msgid "Reconnect streaming"
 msgstr "Riconnetti streaming"
 
-#: src/app/ui/settings/settings.controller.c:1025
+#: src/app/ui/settings/settings.controller.c:1030
 msgid ""
 "Settings apply on the next streaming session. Reconnect now to use them "
 "right away?"
@@ -950,13 +970,13 @@ msgstr ""
 "Le impostazioni si applicano alla prossima sessione. Riconnettere ora per "
 "usarle subito?"
 
-#: src/app/ui/settings/settings.controller.c:1544
-#: src/app/ui/settings/settings.controller.c:1841
+#: src/app/ui/settings/settings.controller.c:1554
+#: src/app/ui/settings/settings.controller.c:1852
 #: src/app/ui/settings/settings.view.c:36
 msgid "Settings"
 msgstr "Impostazioni"
 
-#: src/app/ui/settings/settings.controller.c:1773
+#: src/app/ui/settings/settings.controller.c:1784
 msgid "More settings"
 msgstr "Altre impostazioni"
 
@@ -992,29 +1012,41 @@ msgstr ""
 "Con un monitor ultrawide, potrebbe essere necessario impostare una "
 "risoluzione 16:9 per lo streaming."
 
-#: src/app/ui/streaming/streaming.controller.c:328
+#: src/app/ui/streaming/streaming.controller.c:335
 msgid "total"
 msgstr "totale"
 
-#: src/app/ui/streaming/streaming.controller.c:420
+#: src/app/ui/streaming/streaming.controller.c:427
 msgid "Connecting..."
 msgstr "Connessione..."
 
-#: src/app/ui/streaming/streaming.controller.c:448
+#: src/app/ui/streaming/streaming.controller.c:456
 msgid "Disconnecting..."
 msgstr "Disconnessione..."
 
-#: src/app/ui/streaming/streaming.controller.c:647
+#: src/app/ui/streaming/streaming.controller.c:661
 msgid "End session on PC?"
 msgstr "Terminare la sessione sul PC?"
 
-#: src/app/ui/streaming/streaming.controller.c:648
+#: src/app/ui/streaming/streaming.controller.c:662
 msgid ""
 "This asks the host to close the application or desktop session and restore "
 "its display. To leave it running, choose Disconnect."
 msgstr ""
 "Chiede all'host di chiudere l'applicazione o la sessione desktop e "
 "ripristinare lo schermo. Per lasciarla aperta, scegli Disconnetti."
+
+#: src/app/ui/streaming/streaming.controller.c:716
+msgid "Disconnect from PC?"
+msgstr "Disconnettersi dal PC?"
+
+#: src/app/ui/streaming/streaming.controller.c:717
+msgid ""
+"The game keeps running on the PC, so you can resume it later. To close it, "
+"choose End session."
+msgstr ""
+"Il gioco continua a funzionare sul PC, quindi puoi riprenderlo più tardi. "
+"Per chiuderlo, scegli Termina sessione."
 
 #: src/app/ui/streaming/streaming.view.c:49
 #, c-format
@@ -1029,49 +1061,72 @@ msgstr "Tastiera completa"
 msgid "Virtual Mouse"
 msgstr "Mouse virtuale"
 
-#: src/app/ui/streaming/streaming.view.c:221
+#: src/app/ui/streaming/streaming.view.c:234
 msgid "Performance"
 msgstr "Prestazioni"
 
-#: src/app/ui/streaming/streaming.view.c:233
+#: src/app/ui/streaming/streaming.view.c:246
 msgid "FPS"
 msgstr "FPS"
 
-#: src/app/ui/streaming/streaming.view.c:233
+#: src/app/ui/streaming/streaming.view.c:246
 msgid "Game"
 msgstr "Gioco"
 
-#: src/app/ui/streaming/streaming.view.c:234
+#: src/app/ui/streaming/streaming.view.c:247
 msgid "Latency"
 msgstr "Latenza"
 
-#: src/app/ui/streaming/streaming.view.c:235
+#: src/app/ui/streaming/streaming.view.c:248
 msgid "Ping"
 msgstr "Ping"
 
-#: src/app/ui/streaming/streaming.view.c:237
+#: src/app/ui/streaming/streaming.view.c:250
 msgid "Network"
 msgstr "Rete"
 
-#: src/app/ui/streaming/streaming.view.c:238
+#: src/app/ui/streaming/streaming.view.c:251
 msgid "Frame loss"
 msgstr "Perdita fotogrammi"
 
-#: src/app/ui/streaming/streaming.view.c:239
+#: src/app/ui/streaming/streaming.view.c:252
 msgid "Bandwidth"
 msgstr "Larghezza di banda"
 
-#: src/app/ui/streaming/streaming.view.c:252
+#: src/app/ui/streaming/streaming.view.c:265
 msgid "Host processing latency"
 msgstr "Latenza di elaborazione dell'host"
 
-#: src/app/ui/streaming/streaming.view.c:253
+#: src/app/ui/streaming/streaming.view.c:266
 msgid "Decoder latency"
 msgstr "Latenza del decoder"
 
-#: src/app/ui/streaming/streaming.view.c:254
+#: src/app/ui/streaming/streaming.view.c:267
 msgid "CPU / RAM"
 msgstr "CPU / RAM"
+
+#: src/app/ui/streaming/streaming.view.c:326
+msgid "On-screen log: Live"
+msgstr "Registro a schermo: dal vivo"
+
+#: src/app/ui/streaming/streaming.view.c:329
+msgid "On-screen log: Frozen"
+msgstr "Registro a schermo: bloccato"
+
+#: src/app/ui/streaming/streaming.view.c:332
+msgid "On-screen log: Off"
+msgstr "Registro a schermo: disattivato"
+
+#~ msgid "Open the stream menu. Press Green again to close it."
+#~ msgstr "Apre il menu dello streaming. Premi di nuovo Verde per chiuderlo."
+
+#~ msgid "Hold Back / press Red or Exit"
+#~ msgstr "Tieni premuto Indietro / premi Rosso o Exit"
+
+#~ msgid "Cycle the diagnostic log overlay: Off, Live, Frozen."
+#~ msgstr ""
+#~ "Alterna il registro diagnostico tra disattivato, in tempo reale e "
+#~ "bloccato."
 
 #~ msgid "Experimental"
 #~ msgstr "Sperimentale"

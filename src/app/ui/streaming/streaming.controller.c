@@ -14,6 +14,7 @@
 #include "stream/session.h"
 #include "util/user_event.h"
 #include "util/i18n.h"
+#include "util/log_overlay.h"
 #include "logging.h"
 
 #include <stdio.h>
@@ -27,6 +28,12 @@ static void suspend_streaming(lv_event_t *event);
 static void open_keyboard(lv_event_t *event);
 
 static void toggle_vmouse(lv_event_t *event);
+
+static void toggle_log(lv_event_t *event);
+
+static void ask_disconnect(streaming_controller_t *controller);
+
+static void close_disconnect_dialog(streaming_controller_t *controller);
 
 static void stream_fragment_del_timer_cb(lv_timer_t *timer);
 
@@ -445,6 +452,7 @@ static bool on_event(lv_fragment_t *self, int code, void *userdata) {
                 lv_msgbox_close(controller->quit_dialog);
                 controller->quit_dialog = NULL;
             }
+            close_disconnect_dialog(controller);
             controller->progress = progress_dialog_create(locstr("Disconnecting..."));
             lv_obj_add_flag(controller->overlay, LV_OBJ_FLAG_HIDDEN);
             lv_obj_add_flag(controller->stats, LV_OBJ_FLAG_HIDDEN);
@@ -465,6 +473,10 @@ static bool on_event(lv_fragment_t *self, int code, void *userdata) {
         }
         case USER_OPEN_OVERLAY: {
             show_overlay(controller);
+            return true;
+        }
+        case USER_ASK_DISCONNECT: {
+            ask_disconnect(controller);
             return true;
         }
         case USER_CLOSE_SOFT_KEYBOARD: {
@@ -525,6 +537,7 @@ static void on_view_created(lv_fragment_t *self, lv_obj_t *view) {
     lv_obj_add_event_cb(controller->suspend_btn, suspend_streaming, LV_EVENT_CLICKED, self);
     lv_obj_add_event_cb(controller->kbd_btn, open_keyboard, LV_EVENT_CLICKED, self);
     lv_obj_add_event_cb(controller->vmouse_btn, toggle_vmouse, LV_EVENT_CLICKED, self);
+    lv_obj_add_event_cb(controller->log_btn, toggle_log, LV_EVENT_CLICKED, self);
     lv_obj_add_event_cb(controller->base.obj, hide_overlay, LV_EVENT_CLICKED, self);
     lv_obj_add_event_cb(controller->base.obj, on_cancel_key, LV_EVENT_CANCEL, controller);
 
@@ -602,6 +615,7 @@ static void on_delete_obj(lv_fragment_t *self, lv_obj_t *view) {
         lv_msgbox_close(controller->quit_dialog);
         controller->quit_dialog = NULL;
     }
+    close_disconnect_dialog(controller);
     if (controller->notice) {
         lv_obj_del(controller->notice);
     }
@@ -655,6 +669,60 @@ static void exit_streaming(lv_event_t *event) {
     lv_obj_center(self->quit_dialog);
 }
 
+static void disconnect_confirm(lv_event_t *event) {
+    streaming_controller_t *self = lv_event_get_user_data(event);
+    lv_obj_t *dialog = lv_event_get_current_target(event);
+    bool confirmed = lv_msgbox_get_active_btn(dialog) == 1;
+    if (confirmed) {
+        /* The stream closes; do not touch the menu from the delete callback. */
+        self->disconnect_dialog_hides_overlay = false;
+    }
+    lv_msgbox_close(dialog);
+    if (confirmed && self->global->session) {
+        session_interrupt(self->global->session, false, STREAMING_INTERRUPT_USER);
+    }
+}
+
+static void disconnect_dialog_deleted(lv_event_t *event) {
+    streaming_controller_t *self = lv_event_get_user_data(event);
+    bool hide = self->disconnect_dialog_hides_overlay;
+    self->disconnect_dialog = NULL;
+    self->disconnect_dialog_hides_overlay = false;
+    /* Cancel or Back: return straight to the game if Red opened the menu. */
+    if (hide) {
+        hide_overlay_impl(self);
+    }
+}
+
+static void close_disconnect_dialog(streaming_controller_t *controller) {
+    if (controller->disconnect_dialog == NULL) {
+        return;
+    }
+    controller->disconnect_dialog_hides_overlay = false;
+    lv_msgbox_close(controller->disconnect_dialog);
+    controller->disconnect_dialog = NULL;
+}
+
+static void ask_disconnect(streaming_controller_t *controller) {
+    if (controller->disconnect_dialog || controller->quit_dialog || controller->global->session == NULL) {
+        return;
+    }
+    if (controller->soft_kbd) {
+        soft_keyboard_close_cb(controller);
+    }
+    /* The dialog needs UI input (stream input paused), so open the menu behind it. */
+    bool opened = show_overlay(controller);
+    static const char *buttons[] = {translatable("Cancel"), translatable("Disconnect"), ""};
+    controller->disconnect_dialog = lv_msgbox_create_i18n(NULL, locstr("Disconnect from PC?"),
+        locstr("The game keeps running on the PC, so you can resume it later. To close it, choose End session."),
+        buttons, false);
+    controller->disconnect_dialog_hides_overlay = opened;
+    lv_obj_set_width(controller->disconnect_dialog, LV_PCT(80));
+    lv_obj_add_event_cb(controller->disconnect_dialog, disconnect_confirm, LV_EVENT_VALUE_CHANGED, controller);
+    lv_obj_add_event_cb(controller->disconnect_dialog, disconnect_dialog_deleted, LV_EVENT_DELETE, controller);
+    lv_obj_center(controller->disconnect_dialog);
+}
+
 static void suspend_streaming(lv_event_t *event) {
     streaming_controller_t *self = lv_event_get_user_data(event);
     session_interrupt(self->global->session, false, STREAMING_INTERRUPT_USER);
@@ -702,6 +770,13 @@ static void toggle_vmouse(lv_event_t *event) {
     session_toggle_vmouse(app->session);
 }
 
+static void toggle_log(lv_event_t *event) {
+    streaming_controller_t *controller = lv_event_get_user_data(event);
+    /* Keep the menu open so the new state is visible on the button. */
+    log_overlay_cycle();
+    streaming_update_log_button(controller);
+}
+
 static void stream_fragment_del_timer_cb(lv_timer_t *timer) {
     lv_fragment_t *fragment = timer->user_data;
     lv_timer_del(timer);
@@ -715,6 +790,7 @@ bool show_overlay(streaming_controller_t *controller) {
     overlay_showing = true;
     lv_obj_clear_flag(controller->base.obj, LV_OBJ_FLAG_HIDDEN);
     lv_group_focus_obj(controller->kbd_btn);
+    streaming_update_log_button(controller);
 
     lv_area_t coords = controller->video->coords;
     streaming_enter_overlay(controller->global->session, coords.x1, coords.y1, lv_area_get_width(&coords),
@@ -755,10 +831,8 @@ static void hide_overlay(lv_event_t *event) {
 
 static void update_buttons_layout(streaming_controller_t *controller) {
     lv_area_t coords;
-    lv_obj_get_coords(controller->quit_btn, &coords);
-    lv_area_center(&coords, &controller->button_points[1]);
-    lv_obj_get_coords(controller->suspend_btn, &coords);
-    lv_area_center(&coords, &controller->button_points[3]);
+    /* Red asks before Disconnect and Yellow closes the menu, so only Blue
+     * presses a menu button directly (points 1-3 stay unset). */
     lv_obj_get_coords(controller->kbd_btn, &coords);
     lv_area_center(&coords, &controller->button_points[4]);
     app_input_set_button_points(&controller->global->ui.input, controller->button_points);

@@ -19,6 +19,10 @@ not identify a version with local changes.
 - [Current state](docs/CURRENT_STATE.md): dated baseline, references,
   implementation, gaps, and validation. Consult it for planning, investigation,
   and comparison; verify task-relevant claims against the code.
+- [Fork features and upstream ledger](docs/FORK_FEATURES.md): **read before any
+  upstream port.** Local features that must survive, every upstream commit
+  already ported/rejected (with reason), and the port checklist. Never merge
+  upstream wholesale or resolve a conflict in a listed area with upstream's side.
 - [Streaming history](docs/WEBOS_STREAMING_HISTORY.md): experiments and audio
   already evaluated on the C5. Read before changing pacing, PTS, AV1 120, or 5.1 mapping.
 - [VibeShine integration](docs/VIBESHINE_INTEGRATION.md) and
